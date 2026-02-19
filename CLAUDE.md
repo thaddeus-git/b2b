@@ -27,10 +27,14 @@ possible_distributor_inspection/
 
 **Inspect a single website:**
 ```
-Use the skill: skills/distributor-inspector.md
+Use the Skill tool with: distributor-inspector
 Input: URL to inspect
 Output: JSON with digest, tags, score, and action recommendation
 ```
+
+**Skill Location:**
+- Local: `~/.claude/skills/distributor-inspector/SKILL.md`
+- Remote: `git@github.com:thaddeus-git/b2b.git` (branch: `inspection`)
 
 **Key Design:**
 1. **Criterion Digest**: LLM extracts key info from website
