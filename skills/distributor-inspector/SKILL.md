@@ -58,32 +58,53 @@ See `config/tags.md` for complete taxonomy.
 
 ## Output Format
 
-```json
-{
-  "url": "https://example.com",
-  "digest": {
-    "company_name": "Name",
-    "description": "Brief",
-    "products_sold": ["..."],
-    "services_offered": ["..."],
-    "brands_carried": ["..."],
-    "geographic_focus": "Country",
-    "team_presence": "...",
-    "sla_mentions": "..."
-  },
-  "tags": ["tag1", "tag2"],
-  "scoring": {
-    "required_checks": {
-      "sells_as_expected": true,
-      "no_competitor_focus": true
-    },
-    "cleaning_equipment_bonus": 70,
-    "total_score": 78,
-    "grade": "B"
-  },
-  "key_signals": ["...", "..."],
-  "action": "standard"
-}
+**Markdown format** for human and AI readability:
+
+```markdown
+## {company_name} - {grade} ({score}/100)
+
+**URL:** {url}
+**Tags:** {tag1}, {tag2}
+**Action:** {action}
+
+### Company Profile
+- **Products:** {products}
+- **Services:** {services}
+- **Brands:** {brands}
+- **Geography:** {geography}
+- **Team:** {team_presence}
+- **SLA:** {sla_mentions}
+
+### Key Signals
+{signals_list}
+
+### Scoring Details
+- Sells as expected: {pass/fail}
+- No competitor focus: {pass/fail}
+- Cleaning equipment bonus: +{bonus}
+- Total score: {total}
+```
+
+**For batch results**, compile into summary table:
+
+```markdown
+# Distributor Inspection Results
+
+## Action Summary
+
+| Action | Count | Companies |
+|--------|-------|-----------|
+| prioritize | X | {list} |
+| standard | X | {list} |
+| explore | X | {list} |
+| route-to-sales | X | {list} |
+| exclude | X | {list} |
+
+## Top Prospects
+{ranked_list_with_details}
+
+## Competitor Distributors
+{table_with_competitor_brands}
 ```
 
 ## Process
