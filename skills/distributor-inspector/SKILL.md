@@ -11,6 +11,14 @@ Inspect and score potential distributor websites for OrientStar Robotics (cleani
 
 Evaluates websites against ICP criteria, categorizes by niche market using standardized tags, and routes to appropriate action (prioritize/standard/explore/exclude/route-to-sales).
 
+## Evidence Policy (Facts-Only)
+
+**Hard rule:** Only include claims and scoring evidence that are explicitly supported by website content.
+
+- If a capability is not explicitly stated, mark it as **Unknown** — do not infer.
+- Do not write implied statements like "trained teams", "after-sales established", "customer base" unless the site explicitly states it.
+- Indirect hints go in **Observations**, not capability claims or scoring.
+
 ## When to Use
 
 ```dot
