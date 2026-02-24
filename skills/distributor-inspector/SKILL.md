@@ -82,6 +82,7 @@ See `references/tags.md` for complete taxonomy.
 
 **URL:** {url}
 **Tags:** {tag1}, {tag2}
+**Confidence:** {high|medium|low}
 **Action:** {action}
 **Play:** {play} (optional - only if competitor footprint detected)
 
