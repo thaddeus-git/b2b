@@ -56,9 +56,9 @@ cp -r skills/distributor-inspector ~/.claude/skills/
 
 **Key Design:**
 1. **Criterion Digest**: LLM extracts key info from website
-2. **Categorization**: Applies niche market tags from `config/tags.md`
-3. **Scoring**: Required gates + cleaning equipment bonus
-4. **Action**: prioritized / standard / explore / exclude / route-to-sales
+2. **Categorization**: Applies niche market tags from `references/tags.md`
+3. **Scoring**: Required gate + bonuses (cleaning equipment + competitor footprint)
+4. **Action + Play**: prioritize / standard / explore / exclude / route-to-sales (with competitive-conversion play when applicable)
 
 ## Ideal Customer Profile (ICP) - Distributor
 
