@@ -157,10 +157,12 @@ See `references/tags.md` for complete taxonomy.
 
 | Level | Evidence | Points |
 |-------|----------|--------|
-| Light | Mentions cleaning equipment | +30 |
-| Moderate | Has product category | +50 |
-| Strong | Core offering, multiple products | +70 |
-| Dominant | Primary business, extensive catalog | +90 |
+| Light | Mentions cleaning equipment, informational only | +30 |
+| Moderate | Active in market: product catalog OR rental services OR Devis fulfillment | +50 |
+| Strong | Core business: multiple products/rentals with pricing, established operations | +70 |
+| Dominant | Primary business: extensive catalog/inventory, major distributor | +90 |
+
+**Key insight:** Rental businesses are valid distributors. If they can survive renting/selling cleaning equipment, they can survive with cleaning robots.
 
 ## Competitor Footprint Bonus
 
