@@ -127,6 +127,22 @@ See `references/tags.md` for complete taxonomy.
 | Strong | Core offering, multiple products | +70 |
 | Dominant | Primary business, extensive catalog | +90 |
 
+## Competitor Footprint Bonus
+
+| Tier | Evidence | Points | Example |
+|------|----------|--------|---------|
+| Tier 1 | Official distributor / Authorized partner language | +20 | "Official distributor of PUDU", "Authorized Gausium partner" |
+| Tier 2 | Product pages / Sales evidence | +10 | Product listings, "we sell PUDU models", pricing pages |
+| Tier 3 | Mentions only | +0 | Blog posts, comparisons, "compatible with..." |
+
+**Why this is a bonus, not a blocker:** Competitor distributors already have:
+- Customer base in cleaning robotics
+- Sales and deployment teams trained on robots
+- After-sales service capability
+- Market knowledge and relationships
+
+These are high-value prospects for competitive conversion.
+
 ## Competitor Detection
 
 Check `references/competing-brands.md` for brands to detect:
