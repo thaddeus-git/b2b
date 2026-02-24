@@ -142,6 +142,8 @@ See `references/tags.md` for complete taxonomy.
 3. **Score**: Run required checks + apply bonuses (cleaning equipment + competitor footprint + channel capability)
 4. **Route**: Return action + play recommendation (if competitor footprint)
 
+**Routing precedence:** Competitor footprint Tier 1–2 overrides score-based action.
+
 ## Cleaning Equipment Bonus
 
 | Level | Evidence | Points |
