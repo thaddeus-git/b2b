@@ -157,13 +157,12 @@ See `references/tags.md` for complete taxonomy.
 | Tier 2 | Product pages / Sales evidence | +10 | Product listings, competitor SKU/model names from `references/competing-brands.md` |
 | Tier 3 | Mentions only | +0 | Blog posts, comparisons, "compatible with..." |
 
-**Why this is a bonus, not a blocker:** Competitor distributors already have:
-- Customer base in cleaning robotics
-- Sales and deployment teams trained on robots
-- After-sales service capability
-- Market knowledge and relationships
+**Why this is a bonus, not a blocker:** Competitor distributors are often high-value because they:
+- Are already selling comparable products in the category (explicit competitor evidence)
+- May already have channel motion for robots (distribution language, partner programs, pricing pages)
+- Are typically open to multi-brand portfolios (if the site explicitly mentions multiple brands)
 
-These are high-value prospects for competitive conversion.
+> Note: These are general patterns — do not claim capabilities about a specific company unless explicitly stated.
 
 ## Channel Capability Bonus
 
