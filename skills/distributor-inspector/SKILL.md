@@ -150,6 +150,23 @@ See `references/tags.md` for complete taxonomy.
 
 These are high-value prospects for competitive conversion.
 
+## Channel Capability Bonus
+
+Use bonus signals from `references/keywords.md`:
+
+| Points | Evidence |
+|--------|----------|
+| +5 | 1 capability signal |
+| +10 | 2 capability signals |
+| +20 | 3+ signals OR explicit service/repair/spare parts/training page |
+
+**Signals to detect:**
+- **After-sales**: spare parts, maintenance, technical support, repair
+- **Showroom/Demo**: showroom, demonstration, test drive, trial
+- **Multiple brands**: "brands", "distributors of", "authorized dealer"
+- **Multiple categories**: equipment + supplies + accessories
+- **Clear SLA**: 24/48h response time, service guarantee
+
 ## Competitor Detection
 
 Check `references/competing-brands.md` for brands to detect:
