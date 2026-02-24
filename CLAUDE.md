@@ -10,31 +10,49 @@ This project is for inspecting and evaluating websites as potential distributors
 
 ```
 possible_distributor_inspection/
-├── config/
-│   ├── keywords.md       # Product/service keywords by target industry (editable)
-│   └── tags.md            # Niche market tag taxonomy (editable)
+├── .claude-plugin/
+│   └── plugin.json           # Marketplace plugin configuration
 ├── skills/
-│   └── distributor-inspector.md  # Main skill for inspecting and scoring websites
-├── human_input/
-│   ├── competing brands & SKUs.md  # Competitor brands to detect
-│   ├── competitor distributors.csv  # Known competitor distributors (skip)
-│   ├── serp_results.csv     # Search engine results to process
-│   └── possible distributors(consider to merge into the current one).md  # Examples
-└── CLAUDE.md                # This file
+│   └── distributor-inspector/
+│       ├── SKILL.md          # Main skill for inspecting and scoring websites
+│       └── references/       # Bundled reference files
+│           ├── keywords.md   # Product/service keywords by target industry
+│           ├── tags.md       # Niche market tag taxonomy
+│           └── competing-brands.md  # Competitor brands to detect
+├── workspace/                # Your private working data (gitignored)
+│   ├── competitor_distributors.csv  # Known competitor distributors (skip)
+│   ├── serp_results.csv      # Search engine results to process
+│   └── possible_distributors.md     # Examples/notes
+├── docs/
+│   ├── design.md
+│   └── plans/                # Implementation plans
+├── README.md                 # Marketplace documentation
+└── CLAUDE.md                 # This file
 ```
 
 ## How to Use
 
-**Inspect a single website:**
+**Inspect a website:**
 ```
 Use the Skill tool with: distributor-inspector
 Input: URL to inspect
-Output: JSON with digest, tags, score, and action recommendation
+Output: Markdown report with company profile, tags, score, and action recommendation
 ```
 
-**Skill Location:**
-- Local: `~/.claude/skills/distributor-inspector/SKILL.md`
-- Remote: `git@github.com:thaddeus-git/b2b.git` (branch: `inspection`)
+**Installation (Marketplace):**
+```bash
+/plugin marketplace add thaddeus-git/b2b
+/plugin install distributor-inspector@b2b
+```
+
+**Manual Installation:**
+```bash
+# Copy to project
+cp -r skills/distributor-inspector /path/to/project/.claude/
+
+# Or copy globally
+cp -r skills/distributor-inspector ~/.claude/skills/
+```
 
 **Key Design:**
 1. **Criterion Digest**: LLM extracts key info from website
