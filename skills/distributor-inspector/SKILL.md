@@ -70,6 +70,7 @@ See `references/tags.md` for complete taxonomy.
 **URL:** {url}
 **Tags:** {tag1}, {tag2}
 **Action:** {action}
+**Play:** {play} (optional - only if competitor footprint detected)
 
 ### Company Profile
 - **Products:** {products}
@@ -84,9 +85,12 @@ See `references/tags.md` for complete taxonomy.
 
 ### Scoring Details
 - Sells as expected: {pass/fail}
-- No competitor focus: {pass/fail}
 - Cleaning equipment bonus: +{bonus}
-- Total score: {total}
+- Competitor footprint bonus: +{bonus} (Tier X: {evidence})
+- **Total score: {total}**
+
+### Sales Play (if applicable)
+{play_name}: {play_description}
 ```
 
 **For batch results**, compile into summary table:
