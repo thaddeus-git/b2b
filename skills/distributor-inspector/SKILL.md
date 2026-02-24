@@ -32,6 +32,8 @@ digraph use_flowchart {
 
 `{primary-product-category}-{business-model}`
 
+**Multiple tags allowed:** If a distributor sells cleaning robots specifically (e.g., "Reinigungsroboter", "robot de nettoyage", "robot pulitore"), apply both `cleaning-equipment-distributor` AND `robotics-distributor`.
+
 **Product categories:** cleaning-equipment, cleaning-supplies, facility-management, cleaning-services, robotics, industrial-equipment, hospitality-supplies, general-merchandise
 
 **Business models:** distributor, wholesaler, retailer, service-provider, system-integrator, manufacturer
