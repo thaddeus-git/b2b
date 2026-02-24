@@ -1,0 +1,109 @@
+# B2B Distributor Skills
+
+Agent skills for B2B distributor inspection and qualification for **OrientStar Robotics** (cleaning robots).
+
+These skills follow the [Agent Skills specification](https://agentskills.io/specification) and are compatible with Claude Code and Codex CLI.
+
+## Installation
+
+### Marketplace (Claude Code)
+
+```bash
+/plugin marketplace add thaddeus-git/b2b
+/plugin install distributor-inspector@b2b
+```
+
+### Manually
+
+#### Claude Code
+
+Copy the skill folder to your project's `/.claude` folder:
+
+```bash
+# Clone the repository
+git clone -b inspection git@github.com:thaddeus-git/b2b.git
+
+# Copy skill to your project
+cp -r b2b/skills/distributor-inspector /path/to/your/project/.claude/
+```
+
+Or copy to your global skills folder:
+
+```bash
+cp -r b2b/skills/distributor-inspector ~/.claude/skills/
+```
+
+#### Codex CLI
+
+Copy to the Codex skills directory:
+
+```bash
+cp -r b2b/skills/distributor-inspector ~/.codex/skills/
+```
+
+## Skills
+
+| Skill | Description |
+|-------|-------------|
+| [distributor-inspector](skills/distributor-inspector) | Inspect and score potential distributor websites against ICP criteria, categorize by niche market, and route to appropriate sales action |
+
+## Usage
+
+### Distributor Inspector
+
+Use when evaluating websites as potential distributors for OrientStar Robotics:
+
+```
+Use the Skill tool with: distributor-inspector
+Input: URL to inspect
+Output: Markdown report with company profile, tags, score, and action recommendation
+```
+
+**Actions returned:**
+- `prioritize` (90+): High-potential distributor, contact first
+- `standard` (70-89): Good fit, normal outreach
+- `explore` (50-69): Potential but needs research
+- `exclude` (<50): Does not meet criteria
+- `route-to-sales`: Competitor distributor (Pudu, Gausium, etc.)
+
+## Configuration
+
+The skill includes bundled reference files:
+
+| File | Purpose |
+|------|---------|
+| `references/keywords.md` | Product/service keywords by target industry |
+| `references/tags.md` | Niche market tag taxonomy |
+| `references/competing-brands.md` | Competitor brands to detect |
+
+To customize, edit these files directly in your installed skill folder.
+
+## ICP Criteria
+
+The skill evaluates distributors against OrientStar Robotics' Ideal Customer Profile:
+
+**Must-Have:**
+- 20-500 employees, ~€10M revenue
+- Complete teams (Sales, Deployment, After-sales)
+- Quantifiable SLA capability
+- Trial/PoC support capability
+- Multi-city market coverage
+
+**Bonus Criteria:**
+- Distribution network (tier-2 resellers)
+- System integration capability
+- Property management/FM customers
+- Local industry resources
+- Competitor channel background (Pudu, Gausium)
+
+## Target Industries
+
+1. Commercial cleaning equipment distributors
+2. Property management (FM/IFM)
+3. Cleaning service contractors
+4. System integrators
+5. B2B-capable consumer electronics distributors
+
+## License
+
+MIT
