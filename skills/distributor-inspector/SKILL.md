@@ -100,12 +100,21 @@ See `references/tags.md` for complete taxonomy.
 ### Observations (non-interpretive)
 - {objective observation without capability inference}
 
-### Scoring Details
-- Sells as expected: {pass/fail}
-- Cleaning equipment bonus: +{bonus}
-- Competitor footprint bonus: +{bonus} (Tier X: {evidence})
-- Channel capability bonus: +{bonus} ({signals})
-- **Total score: {total}** (capped at 100)
+### Scoring Breakdown
+
+| Component | Points | Evidence |
+|-----------|--------|----------|
+| Required: Sells as expected | {PASS/FAIL} | {what they sell} |
+| Cleaning equipment bonus | +{0-90} | {level}: {specific evidence from site} |
+| Competitor footprint bonus | +{0-20} | {Tier X}: {competitor brand + evidence} |
+| Channel capability bonus | +{0-20} | {count} signals: {specific signals found} |
+| **Total** | **{score}** | (capped at 100) |
+
+**Score calculation:**
+- Base: {PASS = continue | FAIL = exclude}
+- Cleaning equipment: {reasoning for level chosen}
+- Competitor footprint: {reasoning for tier chosen}
+- Channel capability: {list each signal with evidence}
 
 ### Sales Play (if applicable)
 - Cite only explicitly verified evidence.
