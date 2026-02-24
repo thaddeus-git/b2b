@@ -38,7 +38,7 @@ digraph use_flowchart {
 
 **Special tags:** competitor-robot-distributor, pure-2c-retail
 
-See `config/tags.md` for complete taxonomy.
+See `references/tags.md` for complete taxonomy.
 
 ## Scoring
 
@@ -125,7 +125,7 @@ See `config/tags.md` for complete taxonomy.
 
 ## Competitor Detection
 
-Check `human_input/competing brands & SKUs.md` for brands to detect:
+Check `references/competing-brands.md` for brands to detect:
 - Pudu, Gausium, LionsBot, Tennant, Nilfisk, Kärcher, Adlatus, ICE Cobotics, SoftBank, Avidbots
 
 If competitor products found → apply `competitor-robot-distributor` tag → action: `route-to-sales`
@@ -134,6 +134,6 @@ If competitor products found → apply `competitor-robot-distributor` tag → ac
 
 | File | Purpose |
 |------|---------|
-| `config/keywords.md` | Product/service keywords by industry |
-| `config/tags.md` | Niche market tag taxonomy |
-| `human_input/competing brands & SKUs.md` | Competitor brands to detect |
+| `references/keywords.md` | Product/service keywords by industry |
+| `references/tags.md` | Niche market tag taxonomy |
+| `references/competing-brands.md` | Competitor brands to detect |
