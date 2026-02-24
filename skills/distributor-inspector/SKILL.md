@@ -186,7 +186,7 @@ Award points **only** when the website explicitly shows these signals:
 | Signal Type | Examples of Explicit Evidence |
 |------------|-------------------------------|
 | After-sales support | "Service", "Repair", "Spare parts", "Wartung", "Support center", "ticket system" |
-| Demo / trial | "Demo", "Vorführung", "Teststellung", "Pilot", "free trial" |
+| Demo / trial / rental | "Demo", "Vorführung", "Teststellung", "Pilot", "free trial", "Location", "rental", "leasing" |
 | Multiple brands | Brand pages, logos, "We distribute X, Y, Z" |
 | Multiple categories | Separate product categories (e.g., cleaning robots + reception robots + industrial robots) |
 | SLA / response times | "SLA", "response within 24h", "Supportzeiten", "Service Level" |
