@@ -1,0 +1,15 @@
+{
+  "name": "b2b-distributor-skills",
+  "version": "1.3.2",
+  "description": "Agent skills for B2B distributor inspection and qualification for OrientStar Robotics",
+  "author": "thaddeus-git",
+  "repository": "git@github.com:thaddeus-git/b2b.git",
+  "branch": "inspection",
+  "skills": [
+    {
+      "name": "distributor-inspector",
+      "description": "Inspect and score potential distributor websites for OrientStar Robotics cleaning robots",
+      "path": "skills/distributor-inspector"
+    }
+  ]
+}
