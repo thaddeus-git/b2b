@@ -108,6 +108,8 @@ See `references/tags.md` for complete taxonomy.
 - **Total score: {total}** (capped at 100)
 
 ### Sales Play (if applicable)
+- Cite only explicitly verified evidence.
+- Do not include assumptions like "trained teams" or "after-sales capability" unless the site explicitly states training/service/repair.
 {play_name}: {play_description}
 ```
 
