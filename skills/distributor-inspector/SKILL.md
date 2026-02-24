@@ -94,8 +94,11 @@ See `references/tags.md` for complete taxonomy.
 - **Team:** {team_presence}
 - **SLA:** {sla_mentions}
 
-### Key Signals
-{signals_list}
+### Verified Evidence (quotes/snippets)
+- {verbatim or close paraphrase + page context}
+
+### Observations (non-interpretive)
+- {objective observation without capability inference}
 
 ### Scoring Details
 - Sells as expected: {pass/fail}
