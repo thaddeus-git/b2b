@@ -10,7 +10,7 @@ These skills follow the [Agent Skills specification](https://agentskills.io/spec
 
 ```bash
 /plugin marketplace add thaddeus-git/b2b
-/plugin install distributor-inspector@b2b
+/plugin install b2b@b2b
 ```
 
 ### Manually
@@ -23,8 +23,8 @@ Copy the skill folder to your project's `/.claude` folder:
 # Clone the repository
 git clone -b inspection git@github.com:thaddeus-git/b2b.git
 
-# Copy skill to your project
-cp -r b2b/skills/distributor-inspector /path/to/your/project/.claude/
+# Copy skills to your project
+cp -r b2b/skills/* /path/to/your/project/.claude/skills/
 ```
 
 Or copy to your global skills folder:
@@ -46,6 +46,7 @@ cp -r b2b/skills/distributor-inspector ~/.codex/skills/
 | Skill | Description |
 |-------|-------------|
 | [distributor-inspector](skills/distributor-inspector) | Inspect and score potential distributor websites against ICP criteria, categorize by niche market, and route to appropriate sales action |
+| [google-search](skills/google-search) | Run localized Google searches via Bright Data SERP API with country/language controls and batch mode |
 
 ## Usage
 
@@ -65,6 +66,14 @@ Output: Markdown report with company profile, tags, score, and action recommenda
 - `explore` (50-69): Potential but needs research
 - `exclude` (<50): Does not meet criteria
 - `route-to-sales`: Competitor distributor (Pudu, Gausium, etc.)
+
+### Google Search
+
+Use when you need localized search results for distributor research:
+
+```bash
+python skills/google-search/scripts/search.py "Gausium Deutschland" "DE" "de" "10"
+```
 
 ## Configuration
 

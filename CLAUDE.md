@@ -19,6 +19,10 @@ possible_distributor_inspection/
 │           ├── keywords.md   # Product/service keywords by target industry
 │           ├── tags.md       # Niche market tag taxonomy
 │           └── competing-brands.md  # Competitor brands to detect
+│   └── google-search/
+│       ├── SKILL.md          # Localized Google search via Bright Data SERP API
+│       ├── scripts/          # setup.py, search.py, test_search.py
+│       └── references/api.md # API and country/language reference
 ├── workspace/                # Your private working data (gitignored)
 │   ├── competitor_distributors.csv  # Known competitor distributors (skip)
 │   ├── serp_results.csv      # Search engine results to process
@@ -39,10 +43,17 @@ Input: URL to inspect
 Output: Markdown report with company profile, tags, score, and action recommendation
 ```
 
+**Run localized web search:**
+```
+Use the Skill tool with: google-search
+Input: query + locale (country/language)
+Output: JSON search results with title/url/snippet
+```
+
 **Installation (Marketplace):**
 ```bash
 /plugin marketplace add thaddeus-git/b2b
-/plugin install distributor-inspector@b2b
+/plugin install b2b@b2b
 ```
 
 **Manual Installation:**
