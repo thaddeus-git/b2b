@@ -92,7 +92,8 @@ See `references/tags.md` for complete taxonomy.
 - Sells as expected: {pass/fail}
 - Cleaning equipment bonus: +{bonus}
 - Competitor footprint bonus: +{bonus} (Tier X: {evidence})
-- **Total score: {total}**
+- Channel capability bonus: +{bonus} ({signals})
+- **Total score: {total}** (capped at 100)
 
 ### Sales Play (if applicable)
 {play_name}: {play_description}
