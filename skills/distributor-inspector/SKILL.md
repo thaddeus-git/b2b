@@ -153,6 +153,24 @@ See `references/tags.md` for complete taxonomy.
 
 **Routing precedence:** Competitor footprint Tier 1–2 overrides score-based action.
 
+## Exclusion Rules
+
+**Exclude only:**
+
+| Category | Criteria | Example |
+|----------|----------|---------|
+| Competitor manufacturer | Makes autonomous cleaning robots AND is in `references/competing-brands.md` | Nilfisk (Liberty SC50) |
+| Wrong segment | Core business is outside cleaning equipment entirely | Municipal road equipment, construction machinery |
+
+**Do NOT exclude:**
+
+| Category | Why | Example |
+|----------|-----|---------|
+| Traditional equipment manufacturer | Could add robot distribution; has customers, service, market presence | Comac, Dulevo, Fimap |
+| Any company NOT in competing-brands.md | Not a direct competitor | — |
+
+**Key distinction:** A manufacturer of traditional scrubbers/sweepers is NOT a competitor. Only manufacturers of autonomous cleaning robots (listed in competing-brands.md) are competitors.
+
 ## Cleaning Equipment Bonus
 
 | Level | Evidence | Points |
