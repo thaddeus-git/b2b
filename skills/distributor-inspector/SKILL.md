@@ -1,6 +1,6 @@
 ---
 name: distributor-inspector
-description: Use when evaluating websites as potential distributors for OrientStar Robotics (cleaning robots). Use when needing to score companies against ICP criteria, categorize by niche market, or identify competitor distributors for sales outreach.
+description: Use when evaluating websites as potential distributors for OrientStar Robotics (cleaning robots). Scores based on verifiable website evidence only (facts-only), categorizes by niche market tags, and identifies competitor distributors for sales outreach.
 ---
 
 # Distributor Inspector
