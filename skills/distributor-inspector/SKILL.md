@@ -139,7 +139,7 @@ See `references/tags.md` for complete taxonomy.
 | Tier | Evidence | Points | Example |
 |------|----------|--------|---------|
 | Tier 1 | Official distributor / Authorized partner language | +20 | "Official distributor of PUDU", "Authorized Gausium partner" |
-| Tier 2 | Product pages / Sales evidence | +10 | Product listings, "we sell PUDU models", pricing pages |
+| Tier 2 | Product pages / Sales evidence | +10 | Product listings, competitor SKU/model names from `references/competing-brands.md` |
 | Tier 3 | Mentions only | +0 | Blog posts, comparisons, "compatible with..." |
 
 **Why this is a bonus, not a blocker:** Competitor distributors already have:
