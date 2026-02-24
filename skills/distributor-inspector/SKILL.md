@@ -47,6 +47,9 @@ See `references/tags.md` for complete taxonomy.
 | Required: Sells as expected | PASS/FAIL |
 | Bonus: Cleaning equipment | +30 to +90 |
 | Bonus: Competitor footprint | +0 to +20 |
+| Bonus: Channel capability | +0 to +20 |
+
+> **Total score capped at 100.**
 
 | Grade | Score | Action |
 |-------|-------|--------|
