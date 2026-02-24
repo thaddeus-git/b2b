@@ -164,22 +164,25 @@ See `references/tags.md` for complete taxonomy.
 
 > Note: These are general patterns — do not claim capabilities about a specific company unless explicitly stated.
 
-## Channel Capability Bonus
+## Channel Capability Bonus (Facts-Only)
 
-Use bonus signals from `references/keywords.md`:
+Award points **only** when the website explicitly shows these signals:
 
-| Points | Evidence |
-|--------|----------|
-| +5 | 1 capability signal |
-| +10 | 2 capability signals |
-| +20 | 3+ signals OR explicit service/repair/spare parts/training page |
+| Signal Type | Examples of Explicit Evidence |
+|------------|-------------------------------|
+| After-sales support | "Service", "Repair", "Spare parts", "Wartung", "Support center", "ticket system" |
+| Demo / trial | "Demo", "Vorführung", "Teststellung", "Pilot", "free trial" |
+| Multiple brands | Brand pages, logos, "We distribute X, Y, Z" |
+| Multiple categories | Separate product categories (e.g., cleaning robots + reception robots + industrial robots) |
+| SLA / response times | "SLA", "response within 24h", "Supportzeiten", "Service Level" |
 
-**Signals to detect:**
-- **After-sales**: spare parts, maintenance, technical support, repair
-- **Showroom/Demo**: showroom, demonstration, test drive, trial
-- **Multiple brands**: "brands", "distributors of", "authorized dealer"
-- **Multiple categories**: equipment + supplies + accessories
-- **Clear SLA**: 24/48h response time, service guarantee
+**Scoring:**
+- +5 = 1 explicit signal
+- +10 = 2 explicit signals
+- +20 = 3+ explicit signals **OR** explicit service/repair/training infrastructure page
+
+**Not scored (record as Observation only):**
+- Partner portal, warehouse/logistics, quiz — useful signals but not counted for points
 
 ## Competitor Detection
 
