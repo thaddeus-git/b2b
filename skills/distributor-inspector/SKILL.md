@@ -45,8 +45,8 @@ See `references/tags.md` for complete taxonomy.
 | Component | Points |
 |-----------|--------|
 | Required: Sells as expected | PASS/FAIL |
-| Required: No competitor focus | PASS/FAIL |
 | Bonus: Cleaning equipment | +30 to +90 |
+| Bonus: Competitor footprint | +0 to +20 |
 
 | Grade | Score | Action |
 |-------|-------|--------|
@@ -54,7 +54,11 @@ See `references/tags.md` for complete taxonomy.
 | B | 70-89 | standard |
 | C | 50-69 | explore |
 | D/F | <50 | exclude |
-| (any) + competitor tag | — | route-to-sales |
+| Tier 1-2 competitor footprint | — | route-to-sales + play |
+
+**Competitor footprint triggers special routing:**
+- If Tier 1-2 competitor evidence → Action: `route-to-sales`, Play: `competitive-conversion`
+- If no/minimal competitor footprint → Action based on score above
 
 ## Output Format
 
