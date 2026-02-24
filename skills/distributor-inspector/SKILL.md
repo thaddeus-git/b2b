@@ -119,8 +119,8 @@ See `references/tags.md` for complete taxonomy.
 
 1. **Digest**: Fetch website, extract key info (company, products, services, brands, team, SLA)
 2. **Categorize**: Apply niche market tags (multiple allowed)
-3. **Score**: Run required checks + apply cleaning equipment bonus
-4. **Route**: Return action recommendation
+3. **Score**: Run required checks + apply bonuses (cleaning equipment + competitor footprint)
+4. **Route**: Return action + play recommendation (if competitor footprint)
 
 ## Cleaning Equipment Bonus
 
