@@ -152,7 +152,16 @@ These are high-value prospects for competitive conversion.
 Check `references/competing-brands.md` for brands to detect:
 - Pudu, Gausium, LionsBot, Tennant, Nilfisk, Kärcher, Adlatus, ICE Cobotics, SoftBank, Avidbots
 
-If competitor products found → apply `competitor-robot-distributor` tag → action: `route-to-sales`
+**When competitor products found:**
+1. Apply `competitor-robot-distributor` tag
+2. Score competitor footprint tier (+0 to +20 bonus)
+3. Route to sales with play label:
+
+| Tier | Action | Play | Sales Approach |
+|------|------|------|----------------|
+| Tier 1 | route-to-sales | `competitive-conversion` | "You already know robot distribution. Here's why adding OrientStar grows your margin..." |
+| Tier 2 | route-to-sales | `competitive-conversion` | "You're selling [competitor]. Here's what OrientStar does better for [specific use case]..." |
+| Tier 3 | Score-based | — | Standard approach based on score |
 
 ## Configuration Files
 
