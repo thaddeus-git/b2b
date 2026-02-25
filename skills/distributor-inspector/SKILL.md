@@ -182,11 +182,17 @@ Total score capped at 100.
 ### Step 5: Route
 
 Return action + play recommendation:
+
+**For distributors (PASS required gate):**
 - Grade A (90+): `prioritize`
 - Grade B (70-89): `standard`
 - Grade C (50-69): `explore`
-- Grade D/F (<50): `exclude`
 - Tier 1-2 competitor footprint: `route-to-sales` + `competitive-conversion` play
+
+**For non-distributors (FAIL required gate):**
+- Tagged `cleaning-services-provider`: `service-provider-prospect`
+- Tagged `hospitality-service-provider`: `route-to-ka` + note "Use KA-inspector for Key Account evaluation"
+- All others: `exclude`
 
 ## Error Handling
 
