@@ -1,6 +1,6 @@
 ---
 name: distributor-inspector
-description: Use when evaluating websites as potential distributors for OrientStar Robotics (cleaning robots). Use when needing to score companies against ICP criteria, categorize by niche market, or identify competitor distributors for sales outreach.
+description: Use when evaluating websites as potential distributors for OrientStar Robotics (cleaning robots). Requires Chrome DevTools MCP. Use when needing to score companies against ICP criteria, categorize by niche market, or identify competitor distributors for sales outreach.
 ---
 
 # Distributor Inspector
@@ -10,6 +10,19 @@ Inspect and score potential distributor websites for OrientStar Robotics (cleani
 ## Overview
 
 Evaluates websites against ICP criteria, categorizes by niche market using standardized tags, and routes to appropriate action (prioritize/standard/explore/exclude/route-to-sales).
+
+## Prerequisites
+
+This skill requires **Chrome DevTools MCP** for website inspection.
+
+Install it first:
+```bash
+claude mcp add chrome-devtools --scope user npx chrome-devtools-mcp@latest
+```
+
+Then restart Claude Code.
+
+For enrichment searches, this skill uses the **google-search** skill (Bright Data SERP API). Ensure it's configured with valid API credentials.
 
 ## When to Use
 
@@ -126,10 +139,82 @@ See `references/tags.md` for complete taxonomy.
 
 ## Process
 
-1. **Digest**: Fetch website, extract key info (company, products, services, brands, team, SLA)
-2. **Categorize**: Apply niche market tags (multiple allowed)
-3. **Score**: Run required checks + apply bonuses (cleaning equipment + competitor footprint + channel capability)
-4. **Route**: Return action + play recommendation (if competitor footprint)
+### Step 1: Navigate to Website
+
+Use Chrome DevTools MCP:
+```
+mcp__chrome_devtools__navigate_page(url)
+```
+
+If navigation fails, return error with URL for manual review.
+
+### Step 2: Extract Content
+
+Use Chrome DevTools MCP:
+```
+mcp__chrome_devtools__take_snapshot()
+```
+
+Parse the accessibility tree output for:
+- Company name
+- Products and services
+- Brands carried
+- Team/employee indicators
+- SLA/service mentions
+- Geographic coverage
+
+If `take_snapshot` returns empty, try `mcp__chrome_devtools__take_screenshot()` as fallback for visual inspection.
+
+### Step 3: Categorize
+
+Apply niche market tags from `references/tags.md` (multiple tags allowed).
+
+### Step 4: Score
+
+Run required gate check + apply bonuses:
+- Required: Sells as expected (PASS/FAIL)
+- Bonus: Cleaning equipment level (+30 to +90)
+- Bonus: Competitor footprint tier (+30 to +90)
+- Bonus: Channel capability signals (+0 to +20)
+
+Total score capped at 100.
+
+### Step 5: Route
+
+Return action + play recommendation:
+- Grade A (90+): `prioritize`
+- Grade B (70-89): `standard`
+- Grade C (50-69): `explore`
+- Grade D/F (<50): `exclude`
+- Tier 1-2 competitor footprint: `route-to-sales` + `competitive-conversion` play
+
+## Error Handling
+
+### Chrome DevTools MCP Not Available
+
+If Chrome DevTools MCP tools are not available, fail with:
+
+```
+Error: Chrome DevTools MCP required for website inspection.
+
+Install with:
+claude mcp add chrome-devtools --scope user npx chrome-devtools-mcp@latest
+
+Then restart Claude Code.
+```
+
+### Navigation Failure
+
+If `navigate_page` fails:
+1. Return error with the URL
+2. Suggest manual review
+3. Do NOT fall back to WebFetch
+
+### Empty Snapshot
+
+If `take_snapshot` returns empty content:
+1. Try `take_screenshot` for visual inspection
+2. Note in output that content extraction was limited
 
 ## Cleaning Equipment Bonus
 
@@ -200,7 +285,7 @@ Check `references/competing-brands.md` for brands to detect:
 
 ## Enrichment Workflow (Optional)
 
-For deeper due diligence, combine with google-search skill:
+For deeper due diligence, use the **google-search** skill via the Skill tool.
 
 ### When to Enrich
 - High-value prospects (Grade A)
@@ -208,11 +293,22 @@ For deeper due diligence, combine with google-search skill:
 - Unclear company information on website
 
 ### How to Enrich
-1. **Claim Validation:** Search "{company} employees LinkedIn" to verify team size
-2. **Market Coverage:** Search "{company} locations" to verify geographic coverage
-3. **Competitor Relationship:** Search "{company} {competitor} partnership" to verify claims
+
+Use the Skill tool to invoke google-search:
+
+```
+Skill: google-search
+Args: "{company} employees LinkedIn" + locale
+```
+
+**Enrichment searches:**
+1. **Claim Validation:** `Skill: google-search "{company} employees LinkedIn"`
+2. **Market Coverage:** `Skill: google-search "{company} locations"`
+3. **Competitor Relationship:** `Skill: google-search "{company} {competitor} partnership"`
+
+**Important:** Use the Skill tool, NOT built-in web search. The google-search skill uses Bright Data SERP API for localized, reliable results.
 
 ### Example Pipeline
-Search → Filter URLs → Inspect → (optional) Validate claims
+Search (google-search skill) → Filter URLs → Inspect (this skill) → (optional) Enrich (google-search skill)
 
 See CLAUDE.md for full multi-skill workflow examples.

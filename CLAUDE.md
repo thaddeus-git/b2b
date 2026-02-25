@@ -27,6 +27,8 @@ possible_distributor_inspection/
 │   ├── competitor_distributors.csv  # Known competitor distributors (skip)
 │   ├── serp_results.csv      # Search engine results to process
 │   └── possible_distributors.md     # Examples/notes
+├── scripts/
+│   └── release.sh            # Release automation script
 ├── docs/
 │   ├── design.md
 │   └── plans/                # Implementation plans
@@ -181,3 +183,22 @@ Use google-search skill for: "{company} news 2024"
 - google-search uses paid Bright Data API
 - Each search consumes quota
 - Use distributor-inspector first (free), then enrich selectively
+
+## Release Process
+
+Use the release script to create new versions. This ensures `plugin.json` version stays synced with git tags.
+
+```bash
+./scripts/release.sh 1.4.5
+```
+
+The script will:
+1. Update `.claude-plugin/plugin.json` version
+2. Commit the change
+3. Create an annotated git tag
+4. Push to origin (commit + tag)
+5. Create a GitHub release with auto-generated notes
+
+**Prerequisites:**
+- Clean working directory (no uncommitted changes)
+- `gh` CLI authenticated with GitHub
