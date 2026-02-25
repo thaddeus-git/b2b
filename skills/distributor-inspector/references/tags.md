@@ -32,7 +32,7 @@
 | Tag | When to Apply | Action |
 |-----|---------------|--------|
 | competitor-robot-distributor | Sells Pudu/Gausium/LionsBot/etc. | Route to sales team (if not contacted) |
-| pure-2c-retail | Only sells to consumers | Exclude/downgrade |
+| pure-2c-retail | Only sells to consumers (B2C, no ToB channels) | **Exclude** if NO commercial products; **Score normally** if has commercial products |
 
 ## Example Tag Combinations
 
