@@ -34,6 +34,31 @@
 | competitor-robot-distributor | Sells Pudu/Gausium/LionsBot/etc. | Route to sales team (if not contacted) |
 | pure-2c-retail | Only sells to consumers (B2C, no ToB channels) | **Exclude** if NO commercial products; **Score normally** if has commercial products |
 
+## Pure-2C-Retail vs Mixed Retailer Detection
+
+**B2C-only signals (exclude if ALL present):**
+| Signal | Description |
+|--------|-------------|
+| Shopping cart | "Add to cart", checkout flow for consumers |
+| Consumer pricing | Single-unit pricing, no volume/tier pricing |
+| No B2B section | No "Become a dealer", "Wholesale", or "Trade" pages |
+| Product focus | Home/consumer products only (e.g., robot vacuums for home) |
+| No business info | No company registration, tax ID, or trade account options |
+
+**Commercial product signals (score normally if ANY present):**
+| Signal | Description |
+|--------|-------------|
+| Commercial equipment | Floor scrubbers, sweepers, industrial cleaning machines |
+| B2B language | "Professional", "Commercial", "Industrial", "B2B" |
+| Volume pricing | Tier pricing, bulk discounts, quote requests |
+| Trade accounts | Business registration, tax ID required for purchase |
+| Facility management | Products for property management, janitorial supplies |
+| Warehouse/industrial | Products for warehouses, factories, commercial spaces |
+
+**Decision:**
+- ALL B2C signals + NO commercial signals → `pure-2c-retail ONLY` → exclude
+- B2C signals + ANY commercial signal → `pure-2c-retail` + relevant commercial tag → score normally
+
 ## Example Tag Combinations
 
 - `cleaning-equipment-distributor` (primary target)
