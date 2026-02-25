@@ -1,6 +1,6 @@
 ---
 name: distributor-inspector
-description: Use when evaluating websites as potential distributors for OrientStar Robotics (cleaning robots). Scores based on verifiable website evidence only (facts-only), categorizes by niche market tags, and identifies competitor distributors for sales outreach.
+description: Use when evaluating websites as potential distributors for OrientStar Robotics (cleaning robots). Use when needing to score companies against ICP criteria, categorize by niche market, or identify competitor distributors for sales outreach.
 ---
 
 # Distributor Inspector
@@ -10,14 +10,6 @@ Inspect and score potential distributor websites for OrientStar Robotics (cleani
 ## Overview
 
 Evaluates websites against ICP criteria, categorizes by niche market using standardized tags, and routes to appropriate action (prioritize/standard/explore/exclude/route-to-sales).
-
-## Evidence Policy (Facts-Only)
-
-**Hard rule:** Only include claims and scoring evidence that are explicitly supported by website content.
-
-- If a capability is not explicitly stated, mark it as **Unknown** — do not infer.
-- Do not write implied statements like "trained teams", "after-sales established", "customer base" unless the site explicitly states it.
-- Indirect hints go in **Observations**, not capability claims or scoring.
 
 ## When to Use
 
@@ -56,7 +48,7 @@ See `references/tags.md` for complete taxonomy.
 |-----------|--------|
 | Required: Sells as expected | PASS/FAIL |
 | Bonus: Cleaning equipment | +30 to +90 |
-| Bonus: Competitor footprint | +0 to +20 |
+| Bonus: Competitor footprint | +30 to +90 |
 | Bonus: Channel capability | +0 to +20 |
 
 > **Total score capped at 100.**
@@ -82,7 +74,6 @@ See `references/tags.md` for complete taxonomy.
 
 **URL:** {url}
 **Tags:** {tag1}, {tag2}
-**Confidence:** {high|medium|low}
 **Action:** {action}
 **Play:** {play} (optional - only if competitor footprint detected)
 
@@ -94,31 +85,20 @@ See `references/tags.md` for complete taxonomy.
 - **Team:** {team_presence}
 - **SLA:** {sla_mentions}
 
-### Verified Evidence (quotes/snippets)
-- {verbatim or close paraphrase + page context}
+### Key Signals
+{signals_list}
 
-### Observations (non-interpretive)
-- {objective observation without capability inference}
+### Scoring Details
 
-### Scoring Breakdown
-
-| Component | Points | Evidence |
-|-----------|--------|----------|
-| Required: Sells as expected | {PASS/FAIL} | {what they sell} |
-| Cleaning equipment bonus | +{0-90} | {level}: {specific evidence from site} |
-| Competitor footprint bonus | +{0-20} | {Tier X}: {competitor brand + evidence} |
-| Channel capability bonus | +{0-20} | {count} signals: {specific signals found} |
-| **Total** | **{score}** | (capped at 100) |
-
-**Score calculation:**
-- Base: {PASS = continue | FAIL = exclude}
-- Cleaning equipment: {reasoning for level chosen}
-- Competitor footprint: {reasoning for tier chosen}
-- Channel capability: {list each signal with evidence}
+| Component | Result | Points |
+|-----------|--------|--------|
+| Sells as expected | {pass/fail with reason} | — |
+| Cleaning equipment bonus | {level with evidence} | +{bonus} |
+| Competitor footprint bonus | {tier with evidence} | +{bonus} |
+| Channel capability bonus | {signals detected} | +{bonus} |
+| **Total** | (capped at 100) | **{total}** |
 
 ### Sales Play (if applicable)
-- Cite only explicitly verified evidence.
-- Do not include assumptions like "trained teams" or "after-sales capability" unless the site explicitly states training/service/repair.
 {play_name}: {play_description}
 ```
 
@@ -151,71 +131,48 @@ See `references/tags.md` for complete taxonomy.
 3. **Score**: Run required checks + apply bonuses (cleaning equipment + competitor footprint + channel capability)
 4. **Route**: Return action + play recommendation (if competitor footprint)
 
-**Routing precedence:** Competitor footprint Tier 1–2 overrides score-based action.
-
-## Exclusion Rules
-
-**Exclude only:**
-
-| Category | Criteria | Example |
-|----------|----------|---------|
-| Competitor manufacturer | Makes autonomous cleaning robots AND is in `references/competing-brands.md` | Nilfisk (Liberty SC50) |
-| Wrong segment | Core business is outside cleaning equipment entirely | Municipal road equipment, construction machinery |
-
-**Do NOT exclude:**
-
-| Category | Why | Example |
-|----------|-----|---------|
-| Traditional equipment manufacturer | Could add robot distribution; has customers, service, market presence | Comac, Dulevo, Fimap |
-| Any company NOT in competing-brands.md | Not a direct competitor | — |
-
-**Key distinction:** A manufacturer of traditional scrubbers/sweepers is NOT a competitor. Only manufacturers of autonomous cleaning robots (listed in competing-brands.md) are competitors.
-
 ## Cleaning Equipment Bonus
 
 | Level | Evidence | Points |
 |-------|----------|--------|
-| Light | Mentions cleaning equipment, informational only | +30 |
-| Moderate | Active in market: product catalog OR rental services OR Devis fulfillment | +50 |
-| Strong | Core business: multiple products/rentals with pricing, established operations | +70 |
-| Dominant | Primary business: extensive catalog/inventory, major distributor | +90 |
-
-**Key insight:** Rental businesses are valid distributors. If they can survive renting/selling cleaning equipment, they can survive with cleaning robots.
+| Light | Mentions cleaning equipment | +30 |
+| Moderate | Has product category | +50 |
+| Strong | Core offering, multiple products | +70 |
+| Dominant | Primary business, extensive catalog | +90 |
 
 ## Competitor Footprint Bonus
 
 | Tier | Evidence | Points | Example |
 |------|----------|--------|---------|
-| Tier 1 | Official distributor / Authorized partner language | +20 | "Official distributor of PUDU", "Authorized Gausium partner" |
-| Tier 2 | Product pages / Sales evidence | +10 | Product listings, competitor SKU/model names from `references/competing-brands.md` |
-| Tier 3 | Mentions only | +0 | Blog posts, comparisons, "compatible with..." |
+| Tier 1 | Official distributor / Authorized partner language | +90 | "Official distributor of PUDU", "Authorized Gausium partner" |
+| Tier 2 | Product pages / Sales evidence | +60 | Product listings, competitor SKU/model names from `references/competing-brands.md` |
+| Tier 3 | Mentions only | +30 | Blog posts, comparisons, "compatible with..." |
 
-**Why this is a bonus, not a blocker:** Competitor distributors are often high-value because they:
-- Are already selling comparable products in the category (explicit competitor evidence)
-- May already have channel motion for robots (distribution language, partner programs, pricing pages)
-- Are typically open to multi-brand portfolios (if the site explicitly mentions multiple brands)
+**Why competitor footprint is a TOP signal:** Competitor distributors are the BEST prospects because they already have:
+- Customer base in cleaning robotics
+- Sales and deployment teams trained on robots
+- After-sales service capability
+- Market knowledge and relationships
+- Proven willingness to invest in robot inventory
 
-> Note: These are general patterns — do not claim capabilities about a specific company unless explicitly stated.
+**This is MORE valuable than generic cleaning equipment sales** because the jump from cleaning equipment to robots is harder than switching robot brands.
 
-## Channel Capability Bonus (Facts-Only)
+## Channel Capability Bonus
 
-Award points **only** when the website explicitly shows these signals:
+Use bonus signals from `references/keywords.md`:
 
-| Signal Type | Examples of Explicit Evidence |
-|------------|-------------------------------|
-| After-sales support | "Service", "Repair", "Spare parts", "Wartung", "Support center", "ticket system" |
-| Demo / trial / rental | "Demo", "Vorführung", "Teststellung", "Pilot", "free trial", "Location", "rental", "leasing" |
-| Multiple brands | Brand pages, logos, "We distribute X, Y, Z" |
-| Multiple categories | Separate product categories (e.g., cleaning robots + reception robots + industrial robots) |
-| SLA / response times | "SLA", "response within 24h", "Supportzeiten", "Service Level" |
+| Points | Evidence |
+|--------|----------|
+| +5 | 1 capability signal |
+| +10 | 2 capability signals |
+| +20 | 3+ signals OR explicit service/repair/spare parts/training page |
 
-**Scoring:**
-- +5 = 1 explicit signal
-- +10 = 2 explicit signals
-- +20 = 3+ explicit signals **OR** explicit service/repair/training infrastructure page
-
-**Not scored (record as Observation only):**
-- Partner portal, warehouse/logistics, quiz — useful signals but not counted for points
+**Signals to detect:**
+- **After-sales**: spare parts, maintenance, technical support, repair
+- **Showroom/Demo**: showroom, demonstration, test drive, trial
+- **Multiple brands**: "brands", "distributors of", "authorized dealer"
+- **Multiple categories**: equipment + supplies + accessories
+- **Clear SLA**: 24/48h response time, service guarantee
 
 ## Competitor Detection
 
@@ -224,14 +181,14 @@ Check `references/competing-brands.md` for brands to detect:
 
 **When competitor products found:**
 1. Apply `competitor-robot-distributor` tag
-2. Score competitor footprint tier (+0 to +20 bonus)
+2. Score competitor footprint tier (+30 to +90 bonus)
 3. Route to sales with play label:
 
-| Tier | Action | Play | Sales Approach |
-|------|------|------|----------------|
-| Tier 1 | route-to-sales | `competitive-conversion` | "You already know robot distribution. Here's why adding OrientStar grows your margin..." |
-| Tier 2 | route-to-sales | `competitive-conversion` | "You're selling [competitor]. Here's what OrientStar does better for [specific use case]..." |
-| Tier 3 | Score-based | — | Standard approach based on score |
+| Tier | Bonus | Action | Play | Sales Approach |
+|------|-------|--------|------|----------------|
+| Tier 1 | +90 | route-to-sales | `competitive-conversion` | "You're already a robot distributor. Here's why adding OrientStar grows your margin and de-risks your supply chain..." |
+| Tier 2 | +60 | route-to-sales | `competitive-conversion` | "You're selling [competitor]. Here's what OrientStar does better for [specific use case]..." |
+| Tier 3 | +30 | route-to-sales or prioritize | `competitive-conversion` | "You mentioned [competitor]. Let's discuss how OrientStar complements or replaces that..." |
 
 ## Configuration Files
 
