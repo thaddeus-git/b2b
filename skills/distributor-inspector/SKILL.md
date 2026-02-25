@@ -71,8 +71,10 @@ See `references/tags.md` for complete taxonomy.
 | A | 90+ | prioritize |
 | B | 70-89 | standard |
 | C | 50-69 | explore |
-| D/F | <50 | exclude |
+| D/F | <50 | exclude (or non-distributor routing) |
 | Tier 1-2 competitor footprint | — | route-to-sales + play |
+| cleaning-services-provider tag | — | service-provider-prospect |
+| hospitality-service-provider tag | — | route-to-ka |
 
 **Competitor footprint triggers special routing:**
 - If Tier 1-2 competitor evidence → Action: `route-to-sales`, Play: `competitive-conversion`
