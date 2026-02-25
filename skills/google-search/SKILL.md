@@ -5,7 +5,67 @@ description: Google search functionality using Bright Data SERP API. Use when th
 
 # Google Search with Bright Data SERP API
 
+## Getting Bright Data Credentials
+
+### Step 1: Create a Bright Data Account
+
+1. Go to [Bright Data](https://brightdata.com/)
+2. Click "Start Free Trial" or "Sign Up"
+3. Complete registration (they offer a free tier with trial credits)
+
+### Step 2: Get Your API Token
+
+1. Log in to [Bright Data Dashboard](https://brightdata.com/cp/api_tokens)
+2. Navigate to **API Tokens** (or go to Settings > API Tokens)
+3. Click **"Add new token"** if needed
+4. Copy your token (format: `abc123def456...`)
+
+> **Note:** The token looks like a long alphanumeric string. Keep it secure - it provides access to your Bright Data account.
+
+### Step 3: Configure the Skill
+
+Option A - Config file (recommended):
+```bash
+# Run setup first
+python scripts/setup.py
+
+# Edit the config file
+open ~/.claude/google-search/config.json
+
+# Replace empty string with your token:
+{
+  "api_key": "your-bright-data-token-here"
+}
+```
+
+Option B - Environment variable:
+```bash
+export BRIGHTDATA_SERP_API_KEY="your-bright-data-token-here"
+```
+
+### Step 4: Verify Setup
+
+```bash
+python scripts/search.py "test search" "US" "en" "5"
+```
+
+Expected output with valid credentials:
+```json
+{
+  "success": true,
+  "query": "test search",
+  "count": 5,
+  "results": [...]
+}
+```
+
+If you see `"success": false` with an API key error, double-check your token.
+
+---
+
 ## Quick Start
+
+> **First time?** Follow the [Getting Bright Data Credentials](#getting-bright-data-credentials) guide above.
 
 1. Run setup to install SDK and create config:
    ```bash
