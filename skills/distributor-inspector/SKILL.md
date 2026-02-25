@@ -11,6 +11,82 @@ Inspect and score potential distributor websites for OrientStar Robotics (cleani
 
 Evaluates websites against ICP criteria, categorizes by niche market using standardized tags, and routes to appropriate action (prioritize/standard/explore/exclude/route-to-sales).
 
+## Installation
+
+Before using this skill, you must have the crawl4ai server running.
+
+### Pre-Installation Check
+
+Check if crawl4ai is already running:
+
+```bash
+./scripts/crawl4ai-server.sh status
+```
+
+If it shows "✓ crawl4ai server running on port 11235", you're ready to use the skill.
+
+If it shows "✗ crawl4ai server not running", continue with installation below.
+
+### Step 1: Install Docker
+
+If you don't have Docker installed:
+
+**macOS:**
+```bash
+brew install docker
+```
+
+**Linux:**
+```bash
+curl -fsSL https://get.docker.com | sh
+```
+
+**Windows:** Download Docker Desktop from https://www.docker.com/products/docker-desktop
+
+### Step 2: Start the crawl4ai Server
+
+From the b2b repository root, run:
+
+```bash
+./scripts/crawl4ai-server.sh start
+```
+
+This will:
+1. Pull the crawl4ai Docker image (first time only, ~1-2 minutes)
+2. Start the container on port 11235
+3. Verify the server is responding
+
+### Step 3: Verify Installation
+
+Check that the server is running:
+
+```bash
+./scripts/crawl4ai-server.sh status
+```
+
+Expected output:
+```
+✓ crawl4ai server running on port 11235
+  Container: crawl4ai
+  API endpoint: http://localhost:11235/crawl
+```
+
+You can now use the distributor-inspector skill.
+
+### Troubleshooting
+
+**Issue: "Cannot connect to the Docker daemon"**
+- **Solution:** Make sure Docker is running. On macOS/Windows, start Docker Desktop. On Linux: `sudo systemctl start docker`
+
+**Issue: "port 11235 is already allocated"**
+- **Solution:** Another service is using port 11235. Stop it with: `docker stop crawl4ai` then try again.
+
+**Issue: Container starts but status shows "not running"**
+- **Solution:** Check container logs: `docker logs crawl4ai`. Look for error messages.
+
+**Issue: "command not found: ./scripts/crawl4ai-server.sh"**
+- **Solution:** Make sure you're running from the repository root directory (`/Users/thaddeus/skills/b2b` or wherever you cloned it).
+
 ## Prerequisites
 
 This skill requires **crawl4ai** for website content extraction.
