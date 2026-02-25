@@ -1,6 +1,6 @@
 ---
 name: distributor-inspector
-description: Use when evaluating websites as potential distributors for OrientStar Robotics (cleaning robots). Requires Chrome DevTools MCP. Use when needing to score companies against ICP criteria, categorize by niche market, or identify competitor distributors for sales outreach.
+description: Use when evaluating websites as potential distributors for OrientStar Robotics (cleaning robots). Requires crawl4ai Docker server. Use when needing to score companies against ICP criteria, categorize by niche market, or identify competitor distributors for sales outreach. Supports batch processing.
 ---
 
 # Distributor Inspector
