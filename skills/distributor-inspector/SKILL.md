@@ -1,6 +1,6 @@
 ---
 name: distributor-inspector
-description: Use when evaluating websites as potential distributors for OrientStar Robotics (cleaning robots). Requires Chrome DevTools MCP. Use when needing to score companies against ICP criteria, categorize by niche market, or identify competitor distributors for sales outreach.
+description: Use when evaluating websites as potential distributors for OrientStar Robotics (cleaning robots). Requires crawl4ai Docker server. Use when needing to score companies against ICP criteria, categorize by niche market, or identify competitor distributors for sales outreach. Supports batch processing.
 ---
 
 # Distributor Inspector
@@ -13,14 +13,27 @@ Evaluates websites against ICP criteria, categorizes by niche market using stand
 
 ## Prerequisites
 
-This skill requires **Chrome DevTools MCP** for website inspection.
+This skill requires **crawl4ai** for website content extraction.
 
-Install it first:
+### Quick Start
+
+1. Ensure Docker is installed and running
+2. Start the crawl4ai server:
+   ```bash
+   ./scripts/crawl4ai-server.sh start
+   ```
+3. Verify the server is running:
+   ```bash
+   ./scripts/crawl4ai-server.sh status
+   ```
+
+### Manual Setup (Alternative)
+
 ```bash
-claude mcp add chrome-devtools --scope user npx chrome-devtools-mcp@latest
+docker run -d --name crawl4ai -p 11235:11235 unclecode/crawl4ai:latest
 ```
 
-Then restart Claude Code.
+The server runs on `http://localhost:11235` with the `/crawl` endpoint.
 
 For enrichment searches, this skill uses the **google-search** skill (Bright Data SERP API). Ensure it's configured with valid API credentials.
 
@@ -187,23 +200,92 @@ This is a potential Key Account (end customer), not a distributor.
 
 ## Process
 
-### Step 1: Navigate to Website
+### Step 1: Ensure crawl4ai Server Running
 
-Use Chrome DevTools MCP:
-```
-mcp__chrome_devtools__navigate_page(url)
-```
+Check if the crawl4ai server is running:
 
-If navigation fails, return error with URL for manual review.
-
-### Step 2: Extract Content
-
-Use Chrome DevTools MCP:
-```
-mcp__chrome_devtools__take_snapshot()
+```bash
+./scripts/crawl4ai-server.sh status
 ```
 
-Parse the accessibility tree output for:
+If not running, start it:
+
+```bash
+./scripts/crawl4ai-server.sh start
+```
+
+If the server is unavailable, fail with:
+
+```
+Error: crawl4ai server not running.
+
+Start with: ./scripts/crawl4ai-server.sh start
+
+Or manually: docker run -d --name crawl4ai -p 11235:11235 unclecode/crawl4ai:latest
+```
+
+### Step 2: Crawl URL(s)
+
+**Single URL:**
+
+POST to `http://localhost:11235/crawl` with this payload:
+
+```json
+{
+  "urls": ["https://example.com"],
+  "browser_config": {
+    "type": "BrowserConfig",
+    "params": {
+      "headless": true,
+      "viewport": {"width": 1200, "height": 800}
+    }
+  },
+  "crawler_config": {
+    "type": "CrawlerRunConfig",
+    "params": {
+      "markdown_generator": {
+        "type": "DefaultMarkdownGenerator",
+        "params": {
+          "content_filter": {
+            "type": "PruningContentFilter",
+            "params": {"threshold": 0.6}
+          }
+        }
+      },
+      "page_timeout": 60000,
+      "delay_before_return_html": 2.0
+    }
+  }
+}
+```
+
+**Batch URLs (5-10 concurrent):**
+
+```json
+{
+  "urls": ["https://url1.com", "https://url2.com", "https://url3.com"],
+  "browser_config": { ... },
+  "crawler_config": { ... }
+}
+```
+
+**Response format:**
+
+```json
+[
+  {
+    "url": "https://example.com",
+    "success": true,
+    "markdown": {
+      "fit_markdown": "Company Name\n\nProducts and services..."
+    }
+  }
+]
+```
+
+### Step 3: Extract Structured Data from Markdown
+
+Parse the `fit_markdown` content for:
 - Company name
 - Products and services
 - Brands carried
@@ -211,13 +293,13 @@ Parse the accessibility tree output for:
 - SLA/service mentions
 - Geographic coverage
 
-If `take_snapshot` returns empty, try `mcp__chrome_devtools__take_screenshot()` as fallback for visual inspection.
+If `success: false` or empty markdown, return error with URL for manual review.
 
-### Step 3: Categorize
+### Step 4: Categorize
 
 Apply niche market tags from `references/tags.md` (multiple tags allowed).
 
-### Step 4: Score
+### Step 5: Score
 
 Apply all bonuses (even if "sells as expected" fails):
 - Required: Sells as expected (PASS/FAIL - informational)
@@ -228,7 +310,7 @@ Apply all bonuses (even if "sells as expected" fails):
 
 Total score capped at 100.
 
-### Step 5: Route
+### Step 6: Route
 
 Return action + play recommendation based on score:
 
@@ -248,31 +330,31 @@ Return action + play recommendation based on score:
 
 ## Error Handling
 
-### Chrome DevTools MCP Not Available
+### crawl4ai Server Not Running
 
-If Chrome DevTools MCP tools are not available, fail with:
+If the crawl4ai server is not running:
 
 ```
-Error: Chrome DevTools MCP required for website inspection.
+Error: crawl4ai server not running.
 
-Install with:
-claude mcp add chrome-devtools --scope user npx chrome-devtools-mcp@latest
+Start with: ./scripts/crawl4ai-server.sh start
 
-Then restart Claude Code.
+Or manually: docker run -d --name crawl4ai -p 11235:11235 unclecode/crawl4ai:latest
 ```
 
-### Navigation Failure
+### Crawl Failure
 
-If `navigate_page` fails:
+If the crawl request fails:
 1. Return error with the URL
 2. Suggest manual review
 3. Do NOT fall back to WebFetch
 
-### Empty Snapshot
+### Empty Markdown
 
-If `take_snapshot` returns empty content:
-1. Try `take_screenshot` for visual inspection
-2. Note in output that content extraction was limited
+If `fit_markdown` is empty or `success: false`:
+1. Check the URL manually
+2. Note in output that content extraction failed
+3. Include URL in error for manual review
 
 ## Cleaning Equipment Bonus
 
