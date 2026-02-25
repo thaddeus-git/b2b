@@ -181,6 +181,30 @@ This is a potential Key Account (end customer), not a distributor.
 **Next step:** Use `KA-inspector` skill to evaluate as Key Account.
 ```
 
+**For pure-2c-retail ONLY (no commercial products):**
+
+```markdown
+## {company_name} - exclude
+
+**URL:** {url}
+**Tags:** pure-2c-retail
+**Action:** exclude
+
+### Note
+This is a B2C retailer selling only to consumers with no B2B distribution channels.
+
+**Products observed:** {consumer_products}
+
+**Exclusion reason:** No commercial/industrial products or B2B channels detected.
+
+**Next step:** Do not pursue as distributor prospect.
+```
+
+**For pure-2c-retail WITH commercial products:**
+
+Score and route normally based on commercial product lines. The `pure-2c-retail` tag is informational only.
+```
+
 **For batch results**, compile into summary table:
 
 ```markdown
