@@ -197,3 +197,22 @@ Check `references/competing-brands.md` for brands to detect:
 | `references/keywords.md` | Product/service keywords by industry |
 | `references/tags.md` | Niche market tag taxonomy |
 | `references/competing-brands.md` | Competitor brands to detect |
+
+## Enrichment Workflow (Optional)
+
+For deeper due diligence, combine with google-search skill:
+
+### When to Enrich
+- High-value prospects (Grade A)
+- Competitor distributors (route-to-sales)
+- Unclear company information on website
+
+### How to Enrich
+1. **Claim Validation:** Search "{company} employees LinkedIn" to verify team size
+2. **Market Coverage:** Search "{company} locations" to verify geographic coverage
+3. **Competitor Relationship:** Search "{company} {competitor} partnership" to verify claims
+
+### Example Pipeline
+Search → Filter URLs → Inspect → (optional) Validate claims
+
+See CLAUDE.md for full multi-skill workflow examples.

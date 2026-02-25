@@ -161,3 +161,23 @@ When evaluating a website as a potential distributor:
 3. **Exclusion Screening**: Ensure they are not renovation-focused, pure retail, or too small
 4. **Value Proposition Fit**: Assess if they can benefit from RaaS model, fast deployment, and after-sales support
 5. **Country Context**: Consider strategic priorities and local market conditions (France/Spain/Germany/Hungary/Switzerland/Greece)
+
+## Multi-Skill Workflows
+
+### Full Pipeline: Search + Inspect
+
+```
+# Step 1: Search for distributors
+Use google-search skill with: "cleaning robot distributor France"
+
+# Step 2: Batch inspect
+Use distributor-inspector skill on each URL
+
+# Step 3: Validate top prospects (optional)
+Use google-search skill for: "{company} news 2024"
+```
+
+### API Cost Awareness
+- google-search uses paid Bright Data API
+- Each search consumes quota
+- Use distributor-inspector first (free), then enrich selectively

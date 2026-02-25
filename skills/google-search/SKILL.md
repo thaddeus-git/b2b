@@ -75,3 +75,21 @@ When users don't specify country/language, use context clues:
 - Non-English queries → detect language, default to US or likely origin
 
 For detailed API documentation and country codes, see [references/api.md](references/api.md).
+
+## Distributor Research Integration
+
+When used with distributor-inspector skill:
+
+### Search Patterns for Distributor Discovery
+```bash
+# By country and language
+python scripts/search.py "Reinigungsroboter Händler" "DE" "de" "20"
+python scripts/search.py "robot nettoyage distributeur" "FR" "fr" "20"
+python scripts/search.py "limpiadora robot distribuidor" "ES" "es" "20"
+
+# By competitor (competitive conversion)
+python scripts/search.py "Pudu distributor" "DE" "en" "20"
+python scripts/search.py "Gausium partner" "FR" "en" "20"
+```
+
+After search, use distributor-inspector to evaluate found URLs.
