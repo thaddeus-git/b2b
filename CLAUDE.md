@@ -113,6 +113,8 @@ cp -r skills/distributor-inspector ~/.claude/skills/
 
 - **Renovation/decoration companies**: Core business is renovation, weak relevance to robotics business
 - **Pure 2C retail-oriented**: No ToB channels or B2B delivery capability
+  - **Exception:** If they ALSO sell commercial/industrial products → NOT excluded, score normally
+  - Example: A shop selling home robot vacuums AND warehouse scrubbers is a valid prospect
 - **Too small or no team**: <20 employees, no delivery/after-sales teams ("shell companies")
 - **Learning-oriented individuals/sole operators**: Cannot commit to delivery and after-sales short-term
 - **Free sample seekers**: Unwilling to invest in demos/trials
