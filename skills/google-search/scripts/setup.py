@@ -59,10 +59,24 @@ def main():
     installed_sdk = install_sdk()
 
     if installed_sdk and created_config:
-        print("\n✅ Setup complete!")
-        print(f"Next step: Edit {CONFIG_FILE} and add your API key.")
+        print("\n" + "=" * 60)
+        print("Setup complete!")
+        print("=" * 60)
+        print(f"\nNext step: Add your Bright Data API key to:")
+        print(f"  {CONFIG_FILE}")
+        print("\nHow to get your API key:")
+        print("  1. Go to https://brightdata.com/cp/api_tokens")
+        print("  2. Log in or create a free account")
+        print("  3. Copy your API token")
+        print("  4. Paste it in the config file as 'api_key' value")
+        print("\nVerify with: python scripts/search.py 'test' 'US' 'en' '5'")
     elif installed_sdk:
-        print("\n✅ Setup complete!")
+        print("\n" + "=" * 60)
+        print("Setup complete!")
+        print("=" * 60)
+        if CONFIG_FILE.exists():
+            print(f"\nConfig file: {CONFIG_FILE}")
+            print("Make sure your API key is configured.")
     else:
         sys.exit(1)
 
