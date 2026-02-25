@@ -188,6 +188,34 @@ Return action + play recommendation:
 - Grade D/F (<50): `exclude`
 - Tier 1-2 competitor footprint: `route-to-sales` + `competitive-conversion` play
 
+## Error Handling
+
+### Chrome DevTools MCP Not Available
+
+If Chrome DevTools MCP tools are not available, fail with:
+
+```
+Error: Chrome DevTools MCP required for website inspection.
+
+Install with:
+claude mcp add chrome-devtools --scope user npx chrome-devtools-mcp@latest
+
+Then restart Claude Code.
+```
+
+### Navigation Failure
+
+If `navigate_page` fails:
+1. Return error with the URL
+2. Suggest manual review
+3. Do NOT fall back to WebFetch
+
+### Empty Snapshot
+
+If `take_snapshot` returns empty content:
+1. Try `take_screenshot` for visual inspection
+2. Note in output that content extraction was limited
+
 ## Cleaning Equipment Bonus
 
 | Level | Evidence | Points |
