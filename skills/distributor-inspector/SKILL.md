@@ -11,6 +11,19 @@ Inspect and score potential distributor websites for OrientStar Robotics (cleani
 
 Evaluates websites against ICP criteria, categorizes by niche market using standardized tags, and routes to appropriate action (prioritize/standard/explore/exclude/route-to-sales).
 
+## Prerequisites
+
+This skill requires **Chrome DevTools MCP** for website inspection.
+
+Install it first:
+```bash
+claude mcp add chrome-devtools --scope user npx chrome-devtools-mcp@latest
+```
+
+Then restart Claude Code.
+
+For enrichment searches, this skill uses the **google-search** skill (Bright Data SERP API). Ensure it's configured with valid API credentials.
+
 ## When to Use
 
 ```dot
