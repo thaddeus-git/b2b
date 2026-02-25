@@ -60,12 +60,23 @@ Input: URL to inspect
 Output: Markdown report with company profile, tags, score, and action recommendation
 ```
 
+**Scoring System:**
+
+| Component | Points |
+|-----------|--------|
+| Required: Sells as expected | PASS/FAIL |
+| Bonus: Cleaning equipment | +30 to +90 |
+| Bonus: Competitor footprint | +30 to +90 |
+| Bonus: Channel capability | +0 to +20 |
+
+> **Competitor distributors are TOP prospects** - they already have the infrastructure, training, and customer base.
+
 **Actions returned:**
 - `prioritize` (90+): High-potential distributor, contact first
 - `standard` (70-89): Good fit, normal outreach
 - `explore` (50-69): Potential but needs research
 - `exclude` (<50): Does not meet criteria
-- `route-to-sales`: Competitor distributor (Pudu, Gausium, etc.)
+- `route-to-sales` + `competitive-conversion`: Competitor distributor (Pudu, Gausium, etc.)
 
 ### Google Search
 
