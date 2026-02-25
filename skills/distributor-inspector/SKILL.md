@@ -139,10 +139,54 @@ See `references/tags.md` for complete taxonomy.
 
 ## Process
 
-1. **Digest**: Fetch website, extract key info (company, products, services, brands, team, SLA)
-2. **Categorize**: Apply niche market tags (multiple allowed)
-3. **Score**: Run required checks + apply bonuses (cleaning equipment + competitor footprint + channel capability)
-4. **Route**: Return action + play recommendation (if competitor footprint)
+### Step 1: Navigate to Website
+
+Use Chrome DevTools MCP:
+```
+mcp__chrome_devtools__navigate_page(url)
+```
+
+If navigation fails, return error with URL for manual review.
+
+### Step 2: Extract Content
+
+Use Chrome DevTools MCP:
+```
+mcp__chrome_devtools__take_snapshot()
+```
+
+Parse the accessibility tree output for:
+- Company name
+- Products and services
+- Brands carried
+- Team/employee indicators
+- SLA/service mentions
+- Geographic coverage
+
+If `take_snapshot` returns empty, try `mcp__chrome_devtools__take_screenshot()` as fallback for visual inspection.
+
+### Step 3: Categorize
+
+Apply niche market tags from `references/tags.md` (multiple tags allowed).
+
+### Step 4: Score
+
+Run required gate check + apply bonuses:
+- Required: Sells as expected (PASS/FAIL)
+- Bonus: Cleaning equipment level (+30 to +90)
+- Bonus: Competitor footprint tier (+30 to +90)
+- Bonus: Channel capability signals (+0 to +20)
+
+Total score capped at 100.
+
+### Step 5: Route
+
+Return action + play recommendation:
+- Grade A (90+): `prioritize`
+- Grade B (70-89): `standard`
+- Grade C (50-69): `explore`
+- Grade D/F (<50): `exclude`
+- Tier 1-2 competitor footprint: `route-to-sales` + `competitive-conversion` play
 
 ## Cleaning Equipment Bonus
 
