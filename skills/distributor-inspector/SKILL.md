@@ -117,6 +117,28 @@ See `references/tags.md` for complete taxonomy.
 {play_name}: {play_description}
 ```
 
+**For service-provider-prospect (cleaning services):**
+
+```markdown
+## {company_name} - service-provider-prospect
+
+**URL:** {url}
+**Tags:** cleaning-services-provider
+**Action:** service-provider-prospect
+
+### Company Profile
+- **Services:** {services}
+- **Equipment used:** {equipment_brands_if_known}
+- **Team:** {team_size}
+- **Geography:** {geography}
+
+### Note
+This is a cleaning SERVICE provider, not an equipment distributor. They may be interested in:
+- Purchasing robots for their own operations
+- Becoming a referral partner
+- Insights into local cleaning market
+```
+
 **For batch results**, compile into summary table:
 
 ```markdown
