@@ -60,21 +60,22 @@ See `references/tags.md` for complete taxonomy.
 | Component | Points |
 |-----------|--------|
 | Required: Sells as expected | PASS/FAIL |
+| Bonus: Customer overlap | +0 to +50 |
 | Bonus: Cleaning equipment | +30 to +90 |
 | Bonus: Competitor footprint | +30 to +90 |
 | Bonus: Channel capability | +0 to +20 |
 
 > **Total score capped at 100.**
 
-| Grade | Score | Action |
-|-------|-------|--------|
-| A | 90+ | prioritize |
-| B | 70-89 | standard |
-| C | 50-69 | explore |
-| D/F | <50 | exclude (or non-distributor routing) |
-| Tier 1-2 competitor footprint | — | route-to-sales + play |
-| cleaning-services-provider tag | — | service-provider-prospect |
-| hospitality-service-provider tag | — | route-to-ka |
+| Grade | Score | Condition | Action |
+|-------|-------|-----------|--------|
+| A | 90+ | PASS gate | prioritize |
+| B | 70-89 | PASS gate | standard |
+| C | 50-69 | Any | explore |
+| D/F | <50 | Any | exclude |
+| — | — | Tier 1-2 competitor | route-to-sales |
+| — | — | cleaning-services-provider | service-provider-prospect |
+| — | — | hospitality-service-provider | route-to-ka |
 
 **Competitor footprint triggers special routing:**
 - If Tier 1-2 competitor evidence → Action: `route-to-sales`, Play: `competitive-conversion`
@@ -108,6 +109,7 @@ See `references/tags.md` for complete taxonomy.
 | Component | Result | Points |
 |-----------|--------|--------|
 | Sells as expected | {pass/fail with reason} | — |
+| Customer overlap bonus | {level with evidence} | +{bonus} |
 | Cleaning equipment bonus | {level with evidence} | +{bonus} |
 | Competitor footprint bonus | {tier with evidence} | +{bonus} |
 | Channel capability bonus | {signals detected} | +{bonus} |
@@ -217,8 +219,9 @@ Apply niche market tags from `references/tags.md` (multiple tags allowed).
 
 ### Step 4: Score
 
-Run required gate check + apply bonuses:
-- Required: Sells as expected (PASS/FAIL)
+Apply all bonuses (even if "sells as expected" fails):
+- Required: Sells as expected (PASS/FAIL - informational)
+- Bonus: Customer overlap (+0 to +50)
 - Bonus: Cleaning equipment level (+30 to +90)
 - Bonus: Competitor footprint tier (+30 to +90)
 - Bonus: Channel capability signals (+0 to +20)
@@ -227,18 +230,21 @@ Total score capped at 100.
 
 ### Step 5: Route
 
-Return action + play recommendation:
+Return action + play recommendation based on score:
 
-**For distributors (PASS required gate):**
-- Grade A (90+): `prioritize`
-- Grade B (70-89): `standard`
-- Grade C (50-69): `explore`
+| Score | Gate | Action |
+|-------|------|--------|
+| 90+ | PASS | `prioritize` |
+| 70-89 | PASS | `standard` |
+| 50-69 | Any | `explore` |
+| <50 | Any | `exclude` |
+
+**Special routing (overrides score):**
 - Tier 1-2 competitor footprint: `route-to-sales` + `competitive-conversion` play
-
-**For non-distributors (FAIL required gate):**
 - Tagged `cleaning-services-provider`: `service-provider-prospect`
-- Tagged `hospitality-service-provider`: `route-to-ka` + note "Use KA-inspector for Key Account evaluation"
-- All others: `exclude`
+- Tagged `hospitality-service-provider`: `route-to-ka`
+
+**Note:** Companies that FAIL the gate but score 50+ via customer overlap + channel capability route to `explore`.
 
 ## Error Handling
 
@@ -310,6 +316,30 @@ Use bonus signals from `references/keywords.md`:
 - **Multiple brands**: "brands", "distributors of", "authorized dealer"
 - **Multiple categories**: equipment + supplies + accessories
 - **Clear SLA**: 24/48h response time, service guarantee
+
+## Customer Overlap Bonus
+
+Award points for serving target customers that OrientStar robots would clean. This bonus recognizes that distributors in adjacent industries (e.g., forklifts, material handling) may have valuable customer relationships and channel capabilities.
+
+| Level | Evidence | Points |
+|-------|----------|--------|
+| None | No target customer mentions | +0 |
+| Light | One target customer type mentioned | +20 |
+| Moderate | 2+ types OR recurring focus | +35 |
+| Strong | Core customer base is target sectors | +50 |
+
+**Target customer categories:**
+- **Warehouses/Logistics:** warehouse, logistics, distribution center, fulfillment, storage, depot
+- **Factories/Industrial:** factory, manufacturing, industrial, production, plant
+- **Property/FM:** property management, facility management, building services, real estate
+- **Retail chains:** supermarket, retail chain, stores, multi-site
+
+**Detection approach:**
+- Look for customer testimonials, case studies, "our clients" sections
+- Check service descriptions for target industries
+- Identify mentions of warehouse/logistics/factory/retail customers
+
+**Important:** This bonus applies regardless of whether "sells as expected" passes or fails. A forklift distributor serving warehouses can score 50+ through customer overlap + channel capability alone.
 
 ## Competitor Detection
 

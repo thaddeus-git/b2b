@@ -118,3 +118,20 @@
 | After-sales | spare parts, maintenance, technical support, repair |
 | Showroom/Demo | showroom, demonstration, test drive, trial |
 | FM focus | facility management, IFM, building services |
+
+---
+
+## Target Customer Keywords (for Customer Overlap Bonus)
+
+Detect if the company serves the same customers OrientStar robots would clean.
+
+| Category | Keywords |
+|----------|----------|
+| Warehouses/Logistics | warehouse, logistics, distribution center, fulfillment, storage, depot, almacén, logística, entrepôt, logistique, magazzino, logistica |
+| Factories/Industrial | factory, manufacturing, industrial, production, plant, fábrica, fabricante, industrial, usine, fabrication, fabbrica, produzione |
+| Property/FM | property management, facility management, building services, real estate, gestión inmobiliaria, gestión de instalaciones, gestion immobilière, facility management |
+| Retail chains | supermarket, retail chain, stores, multi-site, supermercado, cadena, tiendas, supermarché, chaîne, magasins |
+
+**Detection approach:**
+- Look for these keywords in product descriptions, services, customer testimonials, case studies
+- Spanish/German/French/Italian variants included for European market coverage
