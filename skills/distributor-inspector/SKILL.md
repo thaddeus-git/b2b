@@ -257,7 +257,7 @@ Check `references/competing-brands.md` for brands to detect:
 
 ## Enrichment Workflow (Optional)
 
-For deeper due diligence, combine with google-search skill:
+For deeper due diligence, use the **google-search** skill via the Skill tool.
 
 ### When to Enrich
 - High-value prospects (Grade A)
@@ -265,11 +265,22 @@ For deeper due diligence, combine with google-search skill:
 - Unclear company information on website
 
 ### How to Enrich
-1. **Claim Validation:** Search "{company} employees LinkedIn" to verify team size
-2. **Market Coverage:** Search "{company} locations" to verify geographic coverage
-3. **Competitor Relationship:** Search "{company} {competitor} partnership" to verify claims
+
+Use the Skill tool to invoke google-search:
+
+```
+Skill: google-search
+Args: "{company} employees LinkedIn" + locale
+```
+
+**Enrichment searches:**
+1. **Claim Validation:** `Skill: google-search "{company} employees LinkedIn"`
+2. **Market Coverage:** `Skill: google-search "{company} locations"`
+3. **Competitor Relationship:** `Skill: google-search "{company} {competitor} partnership"`
+
+**Important:** Use the Skill tool, NOT built-in web search. The google-search skill uses Bright Data SERP API for localized, reliable results.
 
 ### Example Pipeline
-Search → Filter URLs → Inspect → (optional) Validate claims
+Search (google-search skill) → Filter URLs → Inspect (this skill) → (optional) Enrich (google-search skill)
 
 See CLAUDE.md for full multi-skill workflow examples.
