@@ -89,10 +89,17 @@ See `references/tags.md` for complete taxonomy.
 | — | — | Tier 1-2 competitor | route-to-sales |
 | — | — | cleaning-services-provider | service-provider-prospect |
 | — | — | hospitality-service-provider | route-to-ka |
+| — | — | pure-2c-retail ONLY | exclude |
 
-**Competitor footprint triggers special routing:**
-- If Tier 1-2 competitor evidence → Action: `route-to-sales`, Play: `competitive-conversion`
-- If no/minimal competitor footprint → Action based on score above
+**Special routing (overrides score):**
+- Tagged `pure-2c-retail` with NO commercial products: `exclude` - B2C only, no ToB channels
+- Tier 1-2 competitor footprint: `route-to-sales` + `competitive-conversion` play
+- Tagged `cleaning-services-provider`: `service-provider-prospect`
+- Tagged `hospitality-service-provider`: `route-to-ka`
+
+**Note:**
+- Companies tagged `pure-2c-retail` that ALSO sell commercial/industrial products should be scored normally
+- Companies that FAIL the gate but score 50+ via customer overlap + channel capability route to `explore`
 
 ## Output Format
 
