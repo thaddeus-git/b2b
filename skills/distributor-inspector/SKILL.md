@@ -332,7 +332,18 @@ Apply niche market tags from `references/tags.md` (multiple tags allowed).
 
 ### Step 5: Score
 
-Apply all bonuses (even if "sells as expected" fails):
+**Check for commercial products:**
+- If tagged `pure-2c-retail` AND NO commercial/industrial products detected → Skip scoring, route to `exclude`
+- If tagged `pure-2c-retail` BUT has commercial products → Continue scoring (valid prospect)
+
+**Commercial product signals:**
+- Cleaning equipment (commercial scrubbers, sweepers, industrial vacuums)
+- Facility management products
+- Janitorial supplies
+- Robotics/automation equipment
+- Any B2B/wholesale product lines
+
+Otherwise, apply all bonuses (even if "sells as expected" fails):
 - Required: Sells as expected (PASS/FAIL - informational)
 - Bonus: Customer overlap (+0 to +50)
 - Bonus: Cleaning equipment level (+30 to +90)
