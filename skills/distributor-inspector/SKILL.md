@@ -1,6 +1,6 @@
 ---
 name: distributor-inspector
-description: Use when evaluating websites as potential distributors for OrientStar Robotics (cleaning robots). Requires crawl4ai Docker server. Use when needing to score companies against ICP criteria, categorize by niche market, or identify competitor distributors for sales outreach. Supports batch processing.
+description: Use when evaluating websites as potential distributors for OrientStar Robotics (cleaning robots). Use when needing to score companies against ICP criteria, categorize by niche market, or identify competitor distributors for sales outreach.
 ---
 
 # Distributor Inspector
@@ -13,29 +13,19 @@ Evaluates websites against ICP criteria, categorizes by niche market using stand
 
 ## Prerequisites
 
-This skill requires **crawl4ai** for website content extraction.
+This skill uses **Playwright MCP** for website content extraction.
 
-### Quick Start
+### Setup
 
-1. Ensure Docker is installed and running
-2. Start the crawl4ai server:
-   ```bash
-   ./scripts/crawl4ai-server.sh start
-   ```
-3. Verify the server is running:
-   ```bash
-   ./scripts/crawl4ai-server.sh status
-   ```
+Playwright MCP comes pre-installed with Claude Code. No additional setup required.
 
-### Manual Setup (Alternative)
+If you need to install it manually:
 
 ```bash
-docker run -d --name crawl4ai -p 11235:11235 unclecode/crawl4ai:latest
+claude mcp add playwright npx @anthropic-ai/playwright-mcp
 ```
 
-The server runs on `http://localhost:11235` with the `/crawl` endpoint.
-
-For enrichment searches, this skill uses the **google-search** skill (Bright Data SERP API). Ensure it's configured with valid API credentials.
+Then restart Claude Code.
 
 ## When to Use
 
@@ -231,92 +221,17 @@ Score and route normally based on commercial product lines. The `pure-2c-retail`
 
 ## Process
 
-### Step 1: Ensure crawl4ai Server Running
+Use Playwright MCP for website content extraction.
 
-Check if the crawl4ai server is running:
+### Step 1: Navigate and Capture
 
-```bash
-./scripts/crawl4ai-server.sh status
-```
+Use Playwright MCP tools:
+1. `browser_navigate` - load the website URL
+2. `browser_snapshot` - capture accessibility tree content
 
-If not running, start it:
+### Step 2: Extract Company Profile
 
-```bash
-./scripts/crawl4ai-server.sh start
-```
-
-If the server is unavailable, fail with:
-
-```
-Error: crawl4ai server not running.
-
-Start with: ./scripts/crawl4ai-server.sh start
-
-Or manually: docker run -d --name crawl4ai -p 11235:11235 unclecode/crawl4ai:latest
-```
-
-### Step 2: Crawl URL(s)
-
-**Single URL:**
-
-POST to `http://localhost:11235/crawl` with this payload:
-
-```json
-{
-  "urls": ["https://example.com"],
-  "browser_config": {
-    "type": "BrowserConfig",
-    "params": {
-      "headless": true,
-      "viewport": {"width": 1200, "height": 800}
-    }
-  },
-  "crawler_config": {
-    "type": "CrawlerRunConfig",
-    "params": {
-      "markdown_generator": {
-        "type": "DefaultMarkdownGenerator",
-        "params": {
-          "content_filter": {
-            "type": "PruningContentFilter",
-            "params": {"threshold": 0.6}
-          }
-        }
-      },
-      "page_timeout": 60000,
-      "delay_before_return_html": 2.0
-    }
-  }
-}
-```
-
-**Batch URLs (5-10 concurrent):**
-
-```json
-{
-  "urls": ["https://url1.com", "https://url2.com", "https://url3.com"],
-  "browser_config": { ... },
-  "crawler_config": { ... }
-}
-```
-
-**Response format:**
-
-```json
-[
-  {
-    "url": "https://example.com",
-    "success": true,
-    "markdown": {
-      "fit_markdown": "Company Name\n\nProducts and services..."
-    }
-  }
-]
-```
-
-### Step 3: Extract Structured Data from Markdown
-
-Parse the `fit_markdown` content for:
+Parse the accessibility snapshot for:
 - Company name
 - Products and services
 - Brands carried
@@ -324,26 +239,26 @@ Parse the `fit_markdown` content for:
 - SLA/service mentions
 - Geographic coverage
 
-If `success: false` or empty markdown, return error with URL for manual review.
+If navigation fails or snapshot is empty, return error with URL for manual review.
 
-### Step 4: Categorize
+### Step 3: Categorize
 
 Apply niche market tags from `references/tags.md` (multiple tags allowed).
 
-### Step 5: Score
+### Step 4: Score
 
-**Check for commercial products:**
-- If tagged `pure-2c-retail` AND NO commercial/industrial products detected → Skip scoring, route to `exclude`
+Check for commercial products first:
+- If tagged `pure-2c-retail` AND NO commercial products detected → Skip scoring, route to `exclude`
 - If tagged `pure-2c-retail` BUT has commercial products → Continue scoring (valid prospect)
 
-**Commercial product signals:**
+Commercial product signals:
 - Cleaning equipment (commercial scrubbers, sweepers, industrial vacuums)
 - Facility management products
 - Janitorial supplies
 - Robotics/automation equipment
 - Any B2B/wholesale product lines
 
-Otherwise, apply all bonuses (even if "sells as expected" fails):
+Apply all bonuses (even if "sells as expected" fails):
 - Required: Sells as expected (PASS/FAIL - informational)
 - Bonus: Customer overlap (+0 to +50)
 - Bonus: Cleaning equipment level (+30 to +90)
@@ -352,7 +267,7 @@ Otherwise, apply all bonuses (even if "sells as expected" fails):
 
 Total score capped at 100.
 
-### Step 6: Route
+### Step 5: Route
 
 Return action + play recommendation based on score:
 
@@ -372,31 +287,19 @@ Return action + play recommendation based on score:
 
 ## Error Handling
 
-### crawl4ai Server Not Running
+### Navigation Failure
 
-If the crawl4ai server is not running:
+If the website cannot be accessed:
+1. Check the URL is correct and accessible
+2. Verify the website is not blocking automated access
+3. Return error with the URL for manual review
 
-```
-Error: crawl4ai server not running.
+### Empty Content
 
-Start with: ./scripts/crawl4ai-server.sh start
-
-Or manually: docker run -d --name crawl4ai -p 11235:11235 unclecode/crawl4ai:latest
-```
-
-### Crawl Failure
-
-If the crawl request fails:
-1. Return error with the URL
-2. Suggest manual review
-3. Do NOT fall back to WebFetch
-
-### Empty Markdown
-
-If `fit_markdown` is empty or `success: false`:
-1. Check the URL manually
-2. Note in output that content extraction failed
-3. Include URL in error for manual review
+If the accessibility snapshot is empty or missing key information:
+1. Try scrolling the page with `browser_press_key` to load lazy content
+2. Check if the page requires JavaScript interaction
+3. Return error with URL for manual review
 
 ## Cleaning Equipment Bonus
 
