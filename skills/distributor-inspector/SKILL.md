@@ -13,14 +13,27 @@ Evaluates websites against ICP criteria, categorizes by niche market using stand
 
 ## Prerequisites
 
-This skill requires **Chrome DevTools MCP** for website inspection.
+This skill requires **crawl4ai** for website content extraction.
 
-Install it first:
+### Quick Start
+
+1. Ensure Docker is installed and running
+2. Start the crawl4ai server:
+   ```bash
+   ./scripts/crawl4ai-server.sh start
+   ```
+3. Verify the server is running:
+   ```bash
+   ./scripts/crawl4ai-server.sh status
+   ```
+
+### Manual Setup (Alternative)
+
 ```bash
-claude mcp add chrome-devtools --scope user npx chrome-devtools-mcp@latest
+docker run -d --name crawl4ai -p 11235:11235 unclecode/crawl4ai:latest
 ```
 
-Then restart Claude Code.
+The server runs on `http://localhost:11235` with the `/crawl` endpoint.
 
 For enrichment searches, this skill uses the **google-search** skill (Bright Data SERP API). Ensure it's configured with valid API credentials.
 
