@@ -139,6 +139,26 @@ This is a cleaning SERVICE provider, not an equipment distributor. They may be i
 - Insights into local cleaning market
 ```
 
+**For route-to-ka (hotel chains / Key Accounts):**
+
+```markdown
+## {company_name} - route-to-ka
+
+**URL:** {url}
+**Tags:** hospitality-service-provider
+**Action:** route-to-ka
+
+### Company Profile
+- **Type:** Hotel chain / hospitality group
+- **Locations:** {number_of_properties}
+- **Geography:** {geography}
+
+### Key Account Potential
+This is a potential Key Account (end customer), not a distributor.
+
+**Next step:** Use `KA-inspector` skill to evaluate as Key Account.
+```
+
 **For batch results**, compile into summary table:
 
 ```markdown
