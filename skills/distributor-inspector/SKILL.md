@@ -172,6 +172,8 @@ This is a potential Key Account (end customer), not a distributor.
 | standard | X | {list} |
 | explore | X | {list} |
 | route-to-sales | X | {list} |
+| service-provider-prospect | X | {list} |
+| route-to-ka | X | {list} |
 | exclude | X | {list} |
 
 ## Top Prospects
