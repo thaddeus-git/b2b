@@ -45,7 +45,15 @@ digraph workflow {
 
 Use Playwright MCP tools:
 1. `browser_navigate` - load the website URL
-2. `browser_snapshot` - capture accessibility tree content
+2. Wait for page load + network idle
+3. **Detect modal dialogs** - scan for cookie/consent popups using selectors:
+   - `[data-testid="cookie-modal"]`, `.cookie-consent`, `#onetrust`, `.cookie-banner`
+   - Buttons containing: "accept", "agree", "reject", "close", "ablehnen", "akzeptieren"
+4. **If modal found**: Click "Accept All" (or best available option)
+5. **Wait** for modal to close (max 2 seconds)
+6. `browser_snapshot` - capture accessibility tree content
+
+**Note:** If modal dismissal fails, proceed with snapshot and log exception in output.
 
 ### Step 2: Extract Company Profile
 
@@ -162,6 +170,29 @@ See full templates in original SKILL.md backup if needed.
 **Navigation Failure:** Return error with URL for manual review
 
 **Empty Content:** Try scrolling page, then return error if still empty
+
+**Modal Dismissal Failure:** Proceed with snapshot and add warning to output:
+- `**Warning:** Cookie popup present - could not dismiss`
+- `**Warning:** Modal dismissal timed out`
+
+## Modal Handling
+
+**Detection Selectors**:
+- Cookie modals: `[data-testid="cookie-modal"]`, `.cookie-consent`, `#onetrust`, `.cookie-banner`
+- Dismiss buttons: `button:has-text("Accept all")`, `button:has-text("Alle akzeptieren")`, `button:has-text("Tout accepter")`, `[aria-label="close"]`, `.close-btn`, `button:has-text("Agree")`
+
+**Dismissal Priority**:
+1. "Accept All" / "Alle akzeptieren" / "Tout accepter" (cleanest view)
+2. "Reject" / "Ablehnen" / "Tout refuser"
+3. Close button (X icon, `[aria-label="close"]`)
+4. "Settings" (last resort, may not dismiss modal)
+
+**Timeout**: 2 seconds per dismissal attempt
+**Max Attempts**: 2 per page
+
+**Exception Reporting** (add to output when applicable):
+- `**Warning:** Cookie popup present - could not find dismiss button`
+- `**Warning:** Modal dismissal timed out after 2s`
 
 ## Configuration Files
 
