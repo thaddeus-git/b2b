@@ -45,6 +45,37 @@ Input: URL to inspect
 Output: Markdown report with company profile, tags, score, and action recommendation
 ```
 
+**Prerequisites:**
+```bash
+# Install Playwright CLI (one-time, required for distributor-inspector)
+npm install -g @playwright/cli@latest
+```
+
+**Manual Inspection:**
+```bash
+# Navigate to URL
+playwright-cli open {url} --persistent -s=inspector
+
+# Capture snapshot (YAML appears in stdout)
+playwright-cli snapshot -s=inspector
+
+# Claude extracts, scores, and outputs full report
+```
+
+**Batch Inspection (50 URLs):**
+```bash
+# Initialize persistent session
+playwright-cli open about:blank --persistent -s=inspector
+
+# For each URL:
+playwright-cli goto {url} -s=inspector
+playwright-cli snapshot -s=inspector
+# Claude processes each snapshot inline
+
+# Cleanup (optional)
+playwright-cli close-all -s=inspector
+```
+
 **Run localized web search:**
 ```
 Use the Skill tool with: google-search

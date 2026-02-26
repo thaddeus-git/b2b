@@ -1,81 +1,93 @@
 ---
 name: distributor-inspector
-description: Use when evaluating websites as potential distributors for OrientStar Robotics (cleaning robots). Use when needing to score companies against ICP criteria, categorize by niche market, or identify competitor distributors for sales outreach.
+description: Use when evaluating websites as potential distributors for OrientStar Robotics (cleaning robots). Uses Playwright CLI for navigation. Same extraction/scoring as MCP version.
 ---
 
-# Distributor Inspector (Orchestrator)
+# Distributor Inspector (Primary Implementation)
 
-Inspect and score potential distributor websites for OrientStar Robotics (cleaning robot sales).
+Inspect and score potential distributor websites using Playwright CLI for navigation.
 
 ## Overview
 
-This skill evaluates websites against ICP criteria, categorizes by niche market using standardized tags, and routes to appropriate action (prioritize/standard/explore/exclude/route-to-sales).
+This skill is **functionally identical** to `distributor-inspector` (MCP version), but uses `playwright-cli` commands instead of MCP tools for website navigation. Same extraction, same scoring, same report format.
 
 ## Prerequisites
 
-This skill uses **Playwright MCP** for website content extraction (pre-installed with Claude Code).
-
-## When to Use
-
-- Evaluating potential distributors from search results
-- Qualifying websites for sales outreach
-- Identifying competitor distributors (Pudu, Gausium, LionsBot, etc.)
-- Categorizing companies by niche market
-
-## Workflow
-
-```dot
-digraph workflow {
-    "Navigate & Capture" [shape=box];
-    "Extract Company Profile" [shape=box];
-    "Extract Contact Info" [shape=box];
-    "Categorize (tags)" [shape=box];
-    "Score" [shape=box];
-    "Route" [shape=box];
-
-    "Navigate & Capture" -> "Extract Company Profile";
-    "Extract Company Profile" -> "Extract Contact Info";
-    "Extract Contact Info" -> "Categorize (tags)";
-    "Categorize (tags)" -> "Score";
-    "Score" -> "Route";
-}
+```bash
+# Install Playwright CLI (one-time)
+npm install -g @playwright/cli@latest
 ```
+
+## Process
 
 ### Step 1: Navigate and Capture
 
-Use Playwright MCP tools:
-1. `browser_navigate` - load the website URL
-2. Wait for page load + network idle
-3. **Detect modal dialogs** - scan for cookie/consent popups using selectors:
-   - `[data-testid="cookie-modal"]`, `.cookie-consent`, `#onetrust`, `.cookie-banner`
-   - Buttons containing: "accept", "agree", "reject", "close", "ablehnen", "akzeptieren"
-4. **If modal found**: Click "Accept All" (or best available option)
-5. **Wait** for modal to close (max 2 seconds)
-6. `browser_snapshot` - capture accessibility tree content
+**For single URL:**
+```bash
+# Open browser and navigate
+playwright-cli open {url} --persistent -s=inspector
 
-**Note:** If modal dismissal fails, proceed with snapshot and log exception in output.
+# Capture snapshot (YAML appears in stdout)
+playwright-cli snapshot -s=inspector
+```
+
+**For batch (persistent session):**
+```bash
+# Initialize session
+playwright-cli open about:blank --persistent -s=inspector
+
+# For each URL:
+playwright-cli goto {url} -s=inspector
+playwright-cli snapshot -s=inspector
+```
 
 ### Step 2: Extract Company Profile
 
 **Delegate to:** `references/company-profiler.md`
 
-Extract: Products, Services, Brands, Geography, Team, SLA
+From the snapshot YAML, extract:
+- Company name (page title, headers, Impressum)
+- Products (product pages, catalog mentions)
+- Services (service offerings, maintenance, support)
+- Brands carried (brand logos, "our partners", "distributors of")
+- Geography (coverage area, customer locations, HQ address)
+- Team (employee count, team structure mentions)
+- SLA (response times, service commitments)
 
 ### Step 3: Extract Contact Information
 
 **Delegate to:** `references/contact-extractor.md`
 
-Extract: Phone, Email, Address, WhatsApp, LinkedIn, Additional Channels
+Extract:
+- Phone numbers (all formats: +49, 0049, local)
+- Email addresses (including obfuscated)
+- Physical address (structured address blocks)
+- WhatsApp (wa.me links or labeled numbers)
+- LinkedIn company page URL
+- Additional channels (Facebook, Instagram, YouTube, X)
 
-**Mandatory:** If LinkedIn not found on website, use the Skill tool to invoke `google-search` and search: `"{company_name}" linkedin` in the detected country/locale.
+**Mandatory LinkedIn Search:**
+
+If LinkedIn not found on website, use the Skill tool to invoke `google-search`:
+```
+Search: "{company_name} linkedin" in detected country/language
+```
+
+Report: URL if found, or "Not found (searched)"
 
 ### Step 4: Categorize
 
 **Delegate to:** `references/tags.md`
 
-Apply niche market tags using format: `{primary-product-category}-{business-model}`
+Apply tags using format: `{category}-{business-model}`
 
-Multiple tags allowed. Special tags: `competitor-robot-distributor`, `pure-2c-retail`
+Multiple tags allowed per company.
+
+**Special tags:**
+- `competitor-robot-distributor` - Sells Pudu/Gausium/LionsBot/etc.
+- `pure-2c-retail` - B2C only (check for commercial products exception)
+- `cleaning-services-provider` - Contract cleaning services
+- `hospitality-service-provider` - Hotel chains, hospitality groups
 
 ### Step 5: Score
 
@@ -83,13 +95,21 @@ Multiple tags allowed. Special tags: `competitor-robot-distributor`, `pure-2c-re
 
 | Component | Points |
 |-----------|--------|
-| Required: Sells as expected | PASS/FAIL |
+| Required: Sells as expected | PASS/FAIL (informational) |
 | Bonus: Customer overlap | +0 to +50 |
 | Bonus: Cleaning equipment | +30 to +90 |
 | Bonus: Competitor footprint | +30 to +90 |
 | Bonus: Channel capability | +0 to +20 |
 
-> Total score capped at 100.
+**Total capped at 100**
+
+**Commercial Products Pre-Check:**
+
+Before scoring, check if company has commercial products:
+- If tagged `pure-2c-retail` AND NO commercial products → Route to `exclude`
+- If tagged `pure-2c-retail` BUT has commercial products → Score normally
+
+Commercial product signals: cleaning equipment, facility management, janitorial supplies, robotics/automation, B2B/wholesale.
 
 ### Step 6: Route
 
@@ -122,26 +142,40 @@ Multiple tags allowed. Special tags: `competitor-robot-distributor`, `pure-2c-re
 **Play:** {play} (optional - only if competitor footprint detected)
 
 ### Company Profile
-- **Products:** {products}
-- **Services:** {services}
-- **Brands:** {brands}
-- **Geography:** {geography}
-- **Team:** {team_presence}
-- **SLA:** {sla_mentions}
+
+**Products:**
+{list of products}
+
+**Services:**
+{list of services}
+
+**Brands:**
+{brands carried}
+
+**Geography:**
+{geographic coverage}
+
+**Team:**
+{team info}
+
+**SLA:**
+{SLA mentions or "None detected"}
 
 ### Contact
-- **Phone:** {phone} or "Not found"
-- **Email:** {email} or "Not found"
-- **Headquarters:** {city}, {region}, {country} (or full address if single location)
-- **Address:** {full_address} or "Not found"
-- **Additional Locations:** {count} offices/branches (list if found) or "Single location"
-- **WhatsApp:** {whatsapp_number} or "Not found"
-- **Website:** {main_website} or "Same as URL"
-- **LinkedIn:** {company_linkedin_url} or "Not found (searched)"
-- **Additional Channels:** {youtube}, {twitter}, {facebook}, {instagram}, etc. or "None detected"
+
+**Phone:** {phone}
+**Email:** {email}
+**Headquarters:** {city}, {region}, {country}
+**Address:** {full address or "Not found"}
+**Additional Locations:** {count} offices/branches (list if found) or "Single location"
+**WhatsApp:** {whatsapp_number or "Not found"}
+**Website:** {main website or "Same as URL"}
+**LinkedIn:** {linkedin_url or "Not found (searched)"}
+**Additional Channels:** {youtube, twitter, facebook, instagram, etc. or "None detected"}
 
 ### Key Signals
-{signals_list}
+
+{bullet list of notable signals}
 
 ### Scoring Details
 
@@ -155,44 +189,54 @@ Multiple tags allowed. Special tags: `competitor-robot-distributor`, `pure-2c-re
 | **Total** | (capped at 100) | **{total}** |
 
 ### Sales Play (if applicable)
+
 {play_name}: {play_description}
+
+### Summary
+
+{2-3 sentence summary}
 ```
-
-**Special output formats:**
-- `service-provider-prospect` - for cleaning service companies
-- `route-to-ka` - for hotel chains / hospitality groups
-- `exclude` - for pure-2c-retail with no commercial products
-
-See full templates in original SKILL.md backup if needed.
 
 ## Error Handling
 
-**Navigation Failure:** Return error with URL for manual review
+### Navigation Failure
 
-**Empty Content:** Try scrolling page, then return error if still empty
+If the website cannot be accessed:
+1. Retry navigation once
+2. Check if URL is correct and accessible
+3. Return error with URL for manual review
 
-**Modal Dismissal Failure:** Proceed with snapshot and add warning to output:
-- `**Warning:** Cookie popup present - could not dismiss`
-- `**Warning:** Modal dismissal timed out`
+**Report format:**
+```markdown
+## {url} - ERROR
 
-## Modal Handling
+**Error:** Navigation failed - {reason}
 
-**Detection Selectors**:
-- Cookie modals: `[data-testid="cookie-modal"]`, `.cookie-consent`, `#onetrust`, `.cookie-banner`
-- Dismiss buttons: `button:has-text("Accept all")`, `button:has-text("Alle akzeptieren")`, `button:has-text("Tout accepter")`, `[aria-label="close"]`, `.close-btn`, `button:has-text("Agree")`
+**Action:** Manual review required
+```
 
-**Dismissal Priority**:
-1. "Accept All" / "Alle akzeptieren" / "Tout accepter" (cleanest view)
+### Empty Snapshot
+
+If the snapshot is empty or missing key information:
+1. Try scrolling: `playwright-cli press End -s=inspector`
+2. Wait 2 seconds, retry snapshot
+3. If still empty, return error for manual review
+
+### Cookie Modal Handling
+
+**Detection Selectors:**
+- `[data-testid="cookie-modal"]`, `.cookie-consent`, `#onetrust`, `.cookie-banner`
+- Buttons: "Accept all", "Alle akzeptieren", "Tout accepter", "Reject", "Ablehnen"
+
+**Dismissal Priority:**
+1. "Accept All" / "Alle akzeptieren" / "Tout accepter"
 2. "Reject" / "Ablehnen" / "Tout refuser"
-3. Close button (X icon, `[aria-label="close"]`)
-4. "Settings" (last resort, may not dismiss modal)
+3. Close button (`[aria-label="close"]`, `.close-btn`)
+4. "Settings" (last resort)
 
-**Timeout**: 2 seconds per dismissal attempt
-**Max Attempts**: 2 per page
-
-**Exception Reporting** (add to output when applicable):
-- `**Warning:** Cookie popup present - could not find dismiss button`
-- `**Warning:** Modal dismissal timed out after 2s`
+**If modal dismissal fails:**
+- Proceed with available snapshot
+- Add warning to output: `**Warning:** Cookie popup present - could not dismiss`
 
 ## Configuration Files
 
@@ -201,13 +245,55 @@ See full templates in original SKILL.md backup if needed.
 | `references/keywords.md` | Product/service keywords by industry |
 | `references/tags.md` | Niche market tag taxonomy |
 | `references/competing-brands.md` | Competitor brands to detect |
-| `references/company-profiler.md` | Company profile extraction sub-skill |
-| `references/contact-extractor.md` | Contact information extraction sub-skill |
+| `references/company-profiler.md` | Company profile extraction |
+| `references/contact-extractor.md` | Contact information extraction |
 | `references/scoring-rules.md` | Scoring rules and bonus calculations |
 
-## Enrichment Workflow (Optional)
+## Example Usage
 
-For high-value prospects or competitor distributors, use the Skill tool to invoke `google-search`:
-- Claim Validation: `"{company} employees LinkedIn"`
-- Market Coverage: `"{company} locations"`
-- Competitor Relationship: `"{company} {competitor} partnership"`
+**Single URL:**
+```bash
+# Navigate
+playwright-cli open https://lan-security.de --persistent -s=inspector
+
+# Snapshot output appears in Claude's context
+playwright-cli snapshot -s=inspector
+
+# Claude extracts, scores, and outputs full report
+```
+
+**Batch (optional):**
+```bash
+# Initialize session once
+playwright-cli open about:blank --persistent -s=inspector
+
+# Process each URL
+playwright-cli goto https://example1.de -s=inspector
+playwright-cli snapshot -s=inspector
+
+playwright-cli goto https://example2.de -s=inspector
+playwright-cli snapshot -s=inspector
+
+# Cleanup (optional)
+playwright-cli close-all -s=inspector
+```
+
+## Comparison: CLI vs MCP
+
+| Aspect | MCP Version | Primary Implementation |
+|--------|-------------|-------------|
+| Navigation | `browser_navigate` | `playwright-cli goto` |
+| Snapshot | `browser_snapshot` | `playwright-cli snapshot` |
+| Extraction | Same (Claude reads YAML) | Same (Claude reads YAML) |
+| Scoring | Same rules | Same rules |
+| Output | Same format | Same format |
+| Session | Per-call | Persistent (optional) |
+
+**Use CLI when:**
+- Processing multiple URLs in one session
+- Need visual monitoring (`playwright-cli show`)
+- Prefer CLI-based workflow
+
+**Use MCP when:**
+- Single URL inspection
+- Prefer MCP tool integration

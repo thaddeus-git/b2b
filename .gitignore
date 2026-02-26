@@ -6,3 +6,4 @@ workspace/
 
 # macOS
 .DS_Store
+.playwright-cli/
