@@ -204,3 +204,30 @@ The script will:
 **Prerequisites:**
 - Clean working directory (no uncommitted changes)
 - `gh` CLI authenticated with GitHub
+
+## Release Workflow (Correct Order)
+
+**Important:** Stage your feature changes but do NOT commit them before releasing.
+
+```bash
+# 1. Make your changes and stage them
+git add skills/distributor-inspector/SKILL.md
+
+# 2. Create release (script commits version bump + creates tag)
+./scripts/release.sh 1.8.0
+
+# 3. Push everything (main branch + tag)
+git push origin main && git push origin v1.8.0
+```
+
+**Why this order matters:**
+
+The pre-push hook prevents pushing if `plugin.json` version matches the latest released tag. The release script bundles your staged changes into the version bump commit, keeping history clean and satisfying the hook.
+
+**If you already committed features:**
+
+```bash
+git reset --soft HEAD~1             # Uncommit, keep changes staged
+./scripts/release.sh 1.8.0          # Now works correctly
+git push origin main && git push origin v1.8.0
+```

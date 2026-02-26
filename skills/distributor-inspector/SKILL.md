@@ -67,7 +67,7 @@ Extract: Products, Services, Brands, Geography, Team, SLA
 
 Extract: Phone, Email, Address, WhatsApp, LinkedIn, Additional Channels
 
-**Mandatory:** If LinkedIn not found on website, use google-search skill to search for it.
+**Mandatory:** If LinkedIn not found on website, use the Skill tool to invoke `google-search` and search: `"{company_name}" linkedin` in the detected country/locale.
 
 ### Step 4: Categorize
 
@@ -207,7 +207,7 @@ See full templates in original SKILL.md backup if needed.
 
 ## Enrichment Workflow (Optional)
 
-For high-value prospects or competitor distributors, use google-search skill:
+For high-value prospects or competitor distributors, use the Skill tool to invoke `google-search`:
 - Claim Validation: `"{company} employees LinkedIn"`
 - Market Coverage: `"{company} locations"`
 - Competitor Relationship: `"{company} {competitor} partnership"`
