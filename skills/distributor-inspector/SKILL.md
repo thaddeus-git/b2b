@@ -99,6 +99,8 @@ See `references/tags.md` for complete taxonomy.
 ## {company_name} - {grade} ({score}/100)
 
 **URL:** {url}
+**Country:** {country} (detected from TLD/address/content)
+**Language:** {language} (detected from content)
 **Tags:** {tag1}, {tag2}
 **Action:** {action}
 **Play:** {play} (optional - only if competitor footprint detected)
@@ -110,6 +112,15 @@ See `references/tags.md` for complete taxonomy.
 - **Geography:** {geography}
 - **Team:** {team_presence}
 - **SLA:** {sla_mentions}
+
+### Contact
+- **Phone:** {phone} or "Not found"
+- **Email:** {email} or "Not found"
+- **Address:** {full_address} or "Not found"
+- **WhatsApp:** {whatsapp_number} or "Not found"
+- **Website:** {main_website} or "Same as URL"
+- **LinkedIn:** {company_linkedin_url} or "Not found"
+- **Additional Channels:** {youtube}, {twitter}, {facebook}, {instagram}, etc. or "None detected"
 
 ### Key Signals
 {signals_list}
@@ -135,6 +146,8 @@ See `references/tags.md` for complete taxonomy.
 ## {company_name} - service-provider-prospect
 
 **URL:** {url}
+**Country:** {country}
+**Language:** {language}
 **Tags:** cleaning-services-provider
 **Action:** service-provider-prospect
 
@@ -143,6 +156,15 @@ See `references/tags.md` for complete taxonomy.
 - **Equipment used:** {equipment_brands_if_known}
 - **Team:** {team_size}
 - **Geography:** {geography}
+
+### Contact
+- **Phone:** {phone} or "Not found"
+- **Email:** {email} or "Not found"
+- **Address:** {full_address} or "Not found"
+- **WhatsApp:** {whatsapp_number} or "Not found"
+- **Website:** {main_website} or "Same as URL"
+- **LinkedIn:** {company_linkedin_url} or "Not found"
+- **Additional Channels:** {youtube}, {twitter}, {facebook}, {instagram}, etc. or "None detected"
 
 ### Note
 This is a cleaning SERVICE provider, not an equipment distributor. They may be interested in:
@@ -157,6 +179,8 @@ This is a cleaning SERVICE provider, not an equipment distributor. They may be i
 ## {company_name} - route-to-ka
 
 **URL:** {url}
+**Country:** {country}
+**Language:** {language}
 **Tags:** hospitality-service-provider
 **Action:** route-to-ka
 
@@ -164,6 +188,15 @@ This is a cleaning SERVICE provider, not an equipment distributor. They may be i
 - **Type:** Hotel chain / hospitality group
 - **Locations:** {number_of_properties}
 - **Geography:** {geography}
+
+### Contact
+- **Phone:** {phone} or "Not found"
+- **Email:** {email} or "Not found"
+- **Address:** {full_address} or "Not found"
+- **WhatsApp:** {whatsapp_number} or "Not found"
+- **Website:** {main_website} or "Same as URL"
+- **LinkedIn:** {company_linkedin_url} or "Not found"
+- **Additional Channels:** {youtube}, {twitter}, {facebook}, {instagram}, etc. or "None detected"
 
 ### Key Account Potential
 This is a potential Key Account (end customer), not a distributor.
@@ -177,13 +210,26 @@ This is a potential Key Account (end customer), not a distributor.
 ## {company_name} - exclude
 
 **URL:** {url}
+**Country:** {country}
+**Language:** {language}
 **Tags:** pure-2c-retail
 **Action:** exclude
 
+### Company Profile
+- **Products:** {consumer_products}
+- **Geography:** {geography}
+
+### Contact
+- **Phone:** {phone} or "Not found"
+- **Email:** {email} or "Not found"
+- **Address:** {full_address} or "Not found"
+- **WhatsApp:** {whatsapp_number} or "Not found"
+- **Website:** {main_website} or "Same as URL"
+- **LinkedIn:** {company_linkedin_url} or "Not found"
+- **Additional Channels:** {youtube}, {twitter}, {facebook}, {instagram}, etc. or "None detected"
+
 ### Note
 This is a B2C retailer selling only to consumers with no B2B distribution channels.
-
-**Products observed:** {consumer_products}
 
 **Exclusion reason:** No commercial/industrial products or B2B channels detected.
 
@@ -241,11 +287,40 @@ Parse the accessibility snapshot for:
 
 If navigation fails or snapshot is empty, return error with URL for manual review.
 
-### Step 3: Categorize
+### Step 3: Extract Contact Information
+
+From the page content, extract contact details:
+
+**Standard fields to look for:**
+- Phone numbers (including international formats)
+- Email addresses
+- Physical address (street, city, postal code, country)
+- WhatsApp contact (wa.me links or phone numbers labeled for WhatsApp)
+- Website (if different from the URL being inspected)
+- Company LinkedIn page
+
+**Country and language:**
+- Infer from URL TLD, page language attribute, and address
+- Report detected country and language in output header
+
+**Additional channels to detect:**
+- YouTube, Twitter/X, Facebook, Instagram, Telegram, WeChat, Line, KakaoTalk
+- Any other social or messaging platforms used for contact
+- Report as "Additional Channels" if found
+
+**If LinkedIn not found on website:**
+- Use google-search skill to search `"{domain}" linkedin` in the detected country/locale
+- Add result to Contact section if found
+
+**Common contact page locations:**
+- Check footer, "Contact", "Impressum", "About" sections
+- Many EU sites have legal pages with complete contact info
+
+### Step 4: Categorize
 
 Apply niche market tags from `references/tags.md` (multiple tags allowed).
 
-### Step 4: Score
+### Step 5: Score
 
 Check for commercial products first:
 - If tagged `pure-2c-retail` AND NO commercial products detected → Skip scoring, route to `exclude`
@@ -267,7 +342,7 @@ Apply all bonuses (even if "sells as expected" fails):
 
 Total score capped at 100.
 
-### Step 5: Route
+### Step 6: Route
 
 Return action + play recommendation based on score:
 
