@@ -44,7 +44,7 @@ arguments:
 Option A - Config file (recommended):
 ```bash
 # Run setup first
-python scripts/setup.py
+python3 scripts/setup.py
 
 # Edit the config file
 open ~/.claude/google-search/config.json
@@ -63,7 +63,7 @@ export BRIGHTDATA_SERP_API_KEY="your-bright-data-token-here"
 ### Step 4: Verify Setup
 
 ```bash
-python scripts/search.py "test search" "US" "en" "5"
+python3 scripts/search.py "test search" "US" "en" "5"
 ```
 
 Expected output with valid credentials:
@@ -86,7 +86,7 @@ If you see `"success": false` with an API key error, double-check your token.
 
 1. Run setup to install SDK and create config:
    ```bash
-   python scripts/setup.py
+   python3 scripts/setup.py
    ```
 
 2. Add your API key to the config file:
@@ -99,19 +99,19 @@ If you see `"success": false` with an API key error, double-check your token.
 
 3. Use the search script:
    ```bash
-   python scripts/search.py <query> [country] [language] [num_results]
+   python3 scripts/search.py <query> [country] [language] [num_results]
    ```
 
 ## Usage Patterns
 
 ### Single Search
 ```bash
-python scripts/search.py "Gausium Deutschland" "DE" "de" "10"
+python3 scripts/search.py "Gausium Deutschland" "DE" "de" "10"
 ```
 
 ### Batch Search
 ```bash
-python scripts/search.py --batch '["Gausium Deutschland", "Reinigungsroboter Händler Deutschland"]' "DE" "de" "10"
+python3 scripts/search.py --batch '["Gausium Deutschland", "Reinigungsroboter Händler Deutschland"]' "DE" "de" "10"
 ```
 
 ## Parameters
@@ -160,13 +160,13 @@ When used with distributor-inspector skill:
 ### Search Patterns for Distributor Discovery
 ```bash
 # By country and language
-python scripts/search.py "Reinigungsroboter Händler" "DE" "de" "20"
-python scripts/search.py "robot nettoyage distributeur" "FR" "fr" "20"
-python scripts/search.py "limpiadora robot distribuidor" "ES" "es" "20"
+python3 scripts/search.py "Reinigungsroboter Händler" "DE" "de" "20"
+python3 scripts/search.py "robot nettoyage distributeur" "FR" "fr" "20"
+python3 scripts/search.py "limpiadora robot distribuidor" "ES" "es" "20"
 
 # By competitor (competitive conversion)
-python scripts/search.py "Pudu distributor" "DE" "en" "20"
-python scripts/search.py "Gausium partner" "FR" "en" "20"
+python3 scripts/search.py "Pudu distributor" "DE" "en" "20"
+python3 scripts/search.py "Gausium partner" "FR" "en" "20"
 ```
 
 After search, use distributor-inspector to evaluate found URLs.

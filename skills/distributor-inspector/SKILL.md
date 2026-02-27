@@ -21,6 +21,11 @@ This skill is **functionally identical** to `distributor-inspector` (MCP version
 ```bash
 # Install Playwright CLI (one-time)
 npm install -g @playwright/cli@latest
+
+# Configure google-search skill (required for LinkedIn lookup)
+# Run from the google-search skill directory:
+python3 scripts/setup.py
+# Then edit ~/.claude/google-search/config.json and add your Bright Data API key
 ```
 
 ## Process
@@ -73,18 +78,17 @@ Extract:
 
 **Mandatory LinkedIn Search:**
 
-If LinkedIn not found on website:
-1. Use the Skill tool to invoke `google-search` skill with:
-   - `query`: "{company_name} linkedin"
-   - `country`: {detected country code}
-   - `language`: {detected language code}
-   - `num_results`: 5
-2. Parse the JSON results from the skill output
-3. Extract LinkedIn URL from first matching result, or note "Not found (searched)"
+If LinkedIn not found on website, run the google-search script directly:
 
-Example invocation pattern:
-- Invoke Skill tool with: `google-search`
-- Arguments: `query="{company_name} linkedin"`, `country="{CC}"`, `language="{lang}"`, `num_results=5`
+```bash
+# Navigate to distributor-inspector skill directory, then run google-search script via relative path
+cd <distributor-inspector-skill-dir>
+python3 ../google-search/scripts/search.py "{company_name} linkedin" "{country}" "{language}" "5"
+```
+
+Parse the JSON output and extract the LinkedIn URL from the first matching result.
+
+If the script fails (missing dependency, API key error, etc.), report "Not found (searched)" and continue.
 
 ### Step 4: Categorize
 
