@@ -2,7 +2,7 @@
 
 ## Overview
 
-A Claude skill that inspects potential distributor websites for OrientStar Robotics, evaluates them against ICP criteria, and outputs structured scoring with niche market categorization.
+A Claude skill that inspects potential distributor websites for OrionStar Robotics, evaluates them against ICP criteria, and outputs structured scoring with niche market categorization.
 
 ## Core Workflow
 

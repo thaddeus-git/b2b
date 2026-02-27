@@ -123,7 +123,7 @@
 
 ## Target Customer Keywords (for Customer Overlap Bonus)
 
-Detect if the company serves the same customers OrientStar robots would clean.
+Detect if the company serves the same customers OrionStar robots would clean.
 
 | Category | Keywords |
 |----------|----------|

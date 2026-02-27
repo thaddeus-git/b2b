@@ -8,7 +8,7 @@ Tomi Maquinaria (forklift distributor) was scored 0/100 despite having:
 - Multi-location presence in Spain
 - Customer base of warehouses and factories
 
-The sales team considers them valuable because they **serve the same customers** OrientStar robots would clean.
+The sales team considers them valuable because they **serve the same customers** OrionStar robots would clean.
 
 The current scoring model has a hard PASS/FAIL gate on "sells as expected" (cleaning equipment). If a company fails this gate, score = 0 regardless of other strengths.
 
@@ -20,7 +20,7 @@ Change scoring so bonuses apply even when "sells as expected" FAILs. A company c
 
 ### 2. Add New "Customer Overlap" Bonus
 
-Award points for serving target customers that OrientStar robots would clean:
+Award points for serving target customers that OrionStar robots would clean:
 
 | Level | Evidence | Points |
 |-------|----------|--------|
@@ -140,7 +140,7 @@ Add new section:
 ```markdown
 ## Customer Overlap Bonus
 
-Award points for serving target customers that OrientStar robots would clean.
+Award points for serving target customers that OrionStar robots would clean.
 
 | Level | Evidence | Points |
 |-------|----------|--------|

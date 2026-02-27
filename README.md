@@ -1,6 +1,6 @@
 # B2B Distributor Skills
 
-Agent skills for B2B distributor inspection and qualification for **OrientStar Robotics** (cleaning robots).
+Agent skills for B2B distributor inspection and qualification for **OrionStar Robotics** (cleaning robots).
 
 These skills follow the [Agent Skills specification](https://agentskills.io/specification) and are compatible with Claude Code and Codex CLI.
 
@@ -52,7 +52,7 @@ cp -r b2b/skills/distributor-inspector ~/.codex/skills/
 
 ### Distributor Inspector
 
-Use when evaluating websites as potential distributors for OrientStar Robotics:
+Use when evaluating websites as potential distributors for OrionStar Robotics:
 
 ```
 Use the Skill tool with: distributor-inspector
@@ -102,7 +102,7 @@ To customize, edit these files directly in your installed skill folder.
 
 ## ICP Criteria
 
-The skill evaluates distributors against OrientStar Robotics' Ideal Customer Profile:
+The skill evaluates distributors against OrionStar Robotics' Ideal Customer Profile:
 
 **Must-Have:**
 - 20-500 employees, ~€10M revenue

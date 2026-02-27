@@ -1,6 +1,6 @@
 # Customer Overlap Scoring Rules
 
-> **Purpose:** Explicit rules for scoring customer overlap between prospect's clients and OrientStar's target end-users
+> **Purpose:** Explicit rules for scoring customer overlap between prospect's clients and OrionStar's target end-users
 > **Updated:** 2026-02-27
 
 ---
@@ -20,8 +20,64 @@ This is a **bonus criterion** - it adds points but cannot rescue a company that 
 | End-user customer in case study | +10 | +50 |
 | Channel partner serving customers | +15 | +50 |
 | Multiple customers in same segment | +5 additional | +50 |
+| **Named enterprise client** | **+10 per client** | **+30** |
+
+**Maximum Total:** +50 (all bonuses capped)
 
 ---
+
+## Named Enterprise Client Bonus
+
+**Why this matters:** A company with DB Schenker, BMW, or Schneider Electric as named clients has verified relationships with enterprises that could buy cleaning robots. Even if the company fails hard gates (too small, no SLA), their client relationships have value.
+
+**Definition of Enterprise Client:**
+- Recognizable brand names (Fortune 500, DAX 40, CAC 40, FTSE 100)
+- Companies with 1000+ employees
+- Industry leaders in their sector (e.g., DB Schenker in logistics, Siemens in manufacturing)
+
+**Scoring:**
+| Evidence | Points |
+|----------|--------|
+| Named enterprise client in target segment | +10 per client |
+| Maximum | +30 |
+
+**Target Segments for Enterprise Clients:**
+- Logistics/Warehousing (DB Schenker, DHL, Kuehne+Nagel, Amazon)
+- Manufacturing (BMW, Siemens, Schneider Electric, Bosch)
+- Retail (Carrefour, Tesco, Aldi, Edeka)
+- Property/FM (CBRE, JLL, ISS)
+- Hospitality (Marriott, Hilton, Accor)
+
+**Example:**
+- Company serves DB Schenker (logistics) + Siemens (manufacturing) = +20
+- Capped at +30
+
+---
+
+## Manual Review Flag for Excluded Companies
+
+**Rule:** If a company routes to `exclude` due to hard gate failures BUT has named enterprise clients in target segments, flag for manual review.
+
+**Output format:**
+
+```markdown
+### ⚠️ Manual Review Suggested
+
+Although this company routes to `exclude` due to hard gate failures, the following signals may warrant offline verification:
+
+**Named Enterprise Clients:**
+- {Client Name} ({segment}) - Target segment
+- {Client Name} ({segment}) - Target segment
+
+**Potential Value:** This company has relationships with enterprises in your target segments. Consider manual outreach to explore referral partnership opportunities.
+
+**Gate Failure Summary:** Excluded due to: {failed gates}
+```
+
+**Rationale:**
+- Small companies with enterprise clients could be **referral partners** even if they can't be distributors
+- A 5-person company serving DB Schenker knows someone who makes purchasing decisions
+- Sales team can verify offline: "Can you introduce us to your contact at DB Schenker?"
 
 ## Customer Categories (Non-Overlapping)
 

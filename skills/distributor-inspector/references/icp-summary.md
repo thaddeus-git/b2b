@@ -65,6 +65,22 @@
 
 **Scoring:** +10 per category with evidence, capped at +50
 
+### Named Enterprise Client Bonus
+
+| Signal | Points | Max |
+|--------|--------|-----|
+| Named enterprise client in target segment (Fortune 500, DAX 40, etc.) | +10 per client | +30 |
+
+**Examples:** DB Schenker, BMW, Siemens, Schneider Electric, Carrefour
+
+---
+
+## Manual Review Flag
+
+**Rule:** If company routes to `exclude` BUT has named enterprise clients → Flag for human verification
+
+**Output:** Add "⚠️ Manual Review Suggested" section with client names and potential value
+
 ---
 
 ## Exclude Criteria

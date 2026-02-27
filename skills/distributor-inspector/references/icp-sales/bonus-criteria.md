@@ -214,7 +214,7 @@ See `competing-brands.md` for full brand list.
 ## Bonus 9: Customer Overlap (+0 to +50)
 
 ### ICP Rationale
-Companies serving OrientStar's target end-users have existing relationships and can cross-sell.
+Companies serving OrionStar's target end-users have existing relationships and can cross-sell.
 
 **See:** `icp-skill/customer-overlap-rules.md` for detailed scoring logic.
 

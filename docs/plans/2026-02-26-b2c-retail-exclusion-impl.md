@@ -9,7 +9,7 @@
 - If ONLY B2C products → no score, exclude with explanation
 - If B2C + B2B products → score normally (they may be valid prospects)
 
-**Key insight:** A retailer selling home robot vacuums AND warehouse cleaning equipment could be a valid distributor for OrientStar's commercial robots.
+**Key insight:** A retailer selling home robot vacuums AND warehouse cleaning equipment could be a valid distributor for OrionStar's commercial robots.
 
 **Tech Stack:** SKILL.md (distributor-inspector skill), tags.md (reference file)
 

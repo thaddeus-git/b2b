@@ -278,12 +278,12 @@ Update line 3 to mention Chrome DevTools MCP:
 
 **Old:**
 ```yaml
-description: Use when evaluating websites as potential distributors for OrientStar Robotics (cleaning robots). Use when needing to score companies against ICP criteria, categorize by niche market, or identify competitor distributors for sales outreach.
+description: Use when evaluating websites as potential distributors for OrionStar Robotics (cleaning robots). Use when needing to score companies against ICP criteria, categorize by niche market, or identify competitor distributors for sales outreach.
 ```
 
 **New:**
 ```yaml
-description: Use when evaluating websites as potential distributors for OrientStar Robotics (cleaning robots). Requires Chrome DevTools MCP. Use when needing to score companies against ICP criteria, categorize by niche market, or identify competitor distributors for sales outreach.
+description: Use when evaluating websites as potential distributors for OrionStar Robotics (cleaning robots). Requires Chrome DevTools MCP. Use when needing to score companies against ICP criteria, categorize by niche market, or identify competitor distributors for sales outreach.
 ```
 
 **Step 2: Verify the edit**

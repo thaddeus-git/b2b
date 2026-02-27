@@ -31,8 +31,10 @@
 
 | Tag | When to Apply | Action |
 |-----|---------------|--------|
-| competitor-robot-distributor | Sells Pudu/Gausium/LionsBot/etc. | Route to sales team (if not contacted) |
+| competitor-robot-distributor | Sells Pudu/Gausium/LionsBot/etc. | `route-to-sales` + `competitive-conversion` play |
 | pure-2c-retail | Only sells to consumers (B2C, no ToB channels) | **Exclude** if NO commercial products; **Score normally** if has commercial products |
+| cleaning-services-provider | Contract cleaning, janitorial services | `service-provider-prospect` |
+| hospitality-service-provider | Hotel chains, hospitality groups | `route-to-ka` |
 
 ## Pure-2C-Retail vs Mixed Retailer Detection
 

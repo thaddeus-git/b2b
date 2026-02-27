@@ -17,7 +17,7 @@ Each country has distinct market characteristics, distributor expectations, and 
 **Highest priority market** - Mature cleaning robot market, strong distributor ecosystem.
 
 ### Target Profile
-- **Competitor distributors** (especially Pudu/Gausium) → Convert to OrientStar
+- **Competitor distributors** (especially Pudu/Gausium) → Convert to OrionStar
 - **3C/IT channels** with China brand cooperation experience
 - Companies open to **RaaS/leasing models** (strong demand in France)
 
@@ -46,7 +46,7 @@ Each country has distinct market characteristics, distributor expectations, and 
 
 ### Messaging Priorities
 
-1. **Supply chain diversification** - "Add OrientStar to de-risk your China supply chain"
+1. **Supply chain diversification** - "Add OrionStar to de-risk your China supply chain"
 2. **Margin improvement** - "Better margins than [competitor] with same customer base"
 3. **RaaS model support** - "We support your leasing offers with flexible terms"
 

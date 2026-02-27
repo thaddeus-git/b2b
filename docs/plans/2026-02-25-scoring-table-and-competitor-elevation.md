@@ -128,9 +128,9 @@ Replace lines 178-187 with:
 
 | Tier | Bonus | Action | Play | Sales Approach |
 |------|-------|--------|------|----------------|
-| Tier 1 | +90 | route-to-sales | `competitive-conversion` | "You're already a robot distributor. Here's why adding OrientStar grows your margin and de-risks your supply chain..." |
-| Tier 2 | +60 | route-to-sales | `competitive-conversion` | "You're selling [competitor]. Here's what OrientStar does better for [specific use case]..." |
-| Tier 3 | +30 | route-to-sales or prioritize | `competitive-conversion` | "You mentioned [competitor]. Let's discuss how OrientStar complements or replaces that..." |
+| Tier 1 | +90 | route-to-sales | `competitive-conversion` | "You're already a robot distributor. Here's why adding OrionStar grows your margin and de-risks your supply chain..." |
+| Tier 2 | +60 | route-to-sales | `competitive-conversion` | "You're selling [competitor]. Here's what OrionStar does better for [specific use case]..." |
+| Tier 3 | +30 | route-to-sales or prioritize | `competitive-conversion` | "You mentioned [competitor]. Let's discuss how OrionStar complements or replaces that..." |
 ```
 
 **Step 2: Verify the change**
@@ -210,4 +210,4 @@ git commit -m "feat: elevate competitor footprint scoring and add table format
 | Scoring Details format | Bullet list | Table |
 | Rationale | Competitor = bonus | Competitor = BEST signal |
 
-**Why this matters:** A company selling Pudu robots is more valuable than a company selling floor scrubbers. The robot distributor already knows how to sell, deploy, and service autonomous cleaning equipment. The jump from "knows Pudu" to "knows OrientStar" is much smaller than from "knows cleaning supplies" to "knows robots".
+**Why this matters:** A company selling Pudu robots is more valuable than a company selling floor scrubbers. The robot distributor already knows how to sell, deploy, and service autonomous cleaning equipment. The jump from "knows Pudu" to "knows OrionStar" is much smaller than from "knows cleaning supplies" to "knows robots".

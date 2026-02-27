@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Purpose
 
-This project is for inspecting and evaluating websites as potential distributors for **OrientStar Robotics**, which sells cleaning robots. The goal is to qualify distributors based on specific criteria before sales outreach.
+This project is for inspecting and evaluating websites as potential distributors for **OrionStar Robotics**, which sells cleaning robots. The goal is to qualify distributors based on specific criteria before sales outreach.
 
 ## Project Structure
 

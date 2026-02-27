@@ -1,6 +1,6 @@
 ---
 name: distributor-inspector
-description: Use when evaluating websites as potential distributors for OrientStar Robotics (cleaning robots). Uses Playwright CLI for navigation. Same extraction/scoring as MCP version.
+description: Use when evaluating websites as potential distributors for OrionStar Robotics (cleaning robots). Uses Playwright CLI for navigation. Same extraction/scoring as MCP version.
 arguments:
   url:
     description: The URL of the website to inspect (e.g., "frigosystem.de" or "https://frigosystem.de")
@@ -257,6 +257,19 @@ Commercial product signals: cleaning equipment, facility management, janitorial 
 ### Summary
 
 {2-3 sentence summary}
+
+### ⚠️ Manual Review Suggested (if applicable)
+
+**Only include this section if:** Company routes to `exclude` BUT has named enterprise clients in target segments.
+
+```markdown
+**Named Enterprise Clients:**
+- {Client Name} ({segment}) - Target segment
+- {Client Name} ({segment}) - Target segment
+
+**Potential Value:** This company has relationships with enterprises in your target segments. Consider manual outreach to explore referral partnership opportunities.
+
+**Gate Failure Summary:** Excluded due to: {failed gates}
 ```
 
 ## Error Handling

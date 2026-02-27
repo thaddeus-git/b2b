@@ -361,13 +361,13 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 Replace line 3:
 
 ```markdown
-description: Use when evaluating websites as potential distributors for OrientStar Robotics (cleaning robots). Requires Chrome DevTools MCP. Use when needing to score companies against ICP criteria, categorize by niche market, or identify competitor distributors for sales outreach.
+description: Use when evaluating websites as potential distributors for OrionStar Robotics (cleaning robots). Requires Chrome DevTools MCP. Use when needing to score companies against ICP criteria, categorize by niche market, or identify competitor distributors for sales outreach.
 ```
 
 With:
 
 ```markdown
-description: Use when evaluating websites as potential distributors for OrientStar Robotics (cleaning robots). Requires crawl4ai Docker server. Use when needing to score companies against ICP criteria, categorize by niche market, or identify competitor distributors for sales outreach. Supports batch processing.
+description: Use when evaluating websites as potential distributors for OrionStar Robotics (cleaning robots). Requires crawl4ai Docker server. Use when needing to score companies against ICP criteria, categorize by niche market, or identify competitor distributors for sales outreach. Supports batch processing.
 ```
 
 **Step 2: Verify the change**

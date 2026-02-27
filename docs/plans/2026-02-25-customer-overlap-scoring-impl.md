@@ -21,7 +21,7 @@ Add a new "Customer Overlap" bonus component to the distributor-inspector scorin
 
 ## Target Customer Keywords (for Customer Overlap Bonus)
 
-Detect if the company serves the same customers OrientStar robots would clean.
+Detect if the company serves the same customers OrionStar robots would clean.
 
 | Category | Keywords |
 |----------|----------|
@@ -125,7 +125,7 @@ Detect if the company serves the same customers OrientStar robots would clean.
 ```markdown
 ## Customer Overlap Bonus
 
-Award points for serving target customers that OrientStar robots would clean. This bonus recognizes that distributors in adjacent industries (e.g., forklifts, material handling) may have valuable customer relationships and channel capabilities.
+Award points for serving target customers that OrionStar robots would clean. This bonus recognizes that distributors in adjacent industries (e.g., forklifts, material handling) may have valuable customer relationships and channel capabilities.
 
 | Level | Evidence | Points |
 |-------|----------|--------|
