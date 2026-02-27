@@ -1,21 +1,36 @@
 # Scoring Matrix - Distributor Qualification
 
 > **Purpose:** Complete bonus scoring matrix with all ICP criteria
-> **Application:** Applied AFTER hard gates are evaluated
-> **Total:** Capped at 100 points
+> **Application:** Applied AFTER hard gates AND classification are evaluated
+> **Total:** Capped at 100 points (or lower based on classification/gates)
 > **Updated:** 2026-02-27
 
 ---
 
 ## Overview
 
-This document provides the **complete scoring matrix** for the distributor-inspector skill. All bonus points are accumulated and capped at 100.
+This document provides the **complete scoring matrix** for the distributor-inspector skill. All bonus points are accumulated and capped based on classification and gate results.
 
 **Scoring Flow:**
-1. Check hard gates → Determine max eligible grade
-2. Apply bonus scoring → Calculate raw score
-3. Cap at 100 → Final score
-4. Map score + gates to action
+1. **Classification** (Step 3) → Determine score cap (SMB=50, MID-MARKET=75, KA=100)
+2. **Hard gates** (Step 4) → Determine base score and additional caps
+3. **Apply bonus scoring** → Calculate raw score
+4. **Apply final cap** → Lower of classification cap or gate cap
+5. **Map score + gates to action**
+
+---
+
+## Score Caps by Classification + Gate Result
+
+| Classification | Gate Result | Max Score | Max Grade | Typical Action |
+|----------------|-------------|-----------|-----------|----------------|
+| **SMB** | Any | 50 | C | nurture / explore |
+| **MID-MARKET** | ALL_PASS | 75 | A | prioritize |
+| **MID-MARKET** | SOME_FAIL | 50 | C | explore |
+| **MID-MARKET** | MOST_FAIL | 0 | F | exclude |
+| **KA** | ALL_PASS | 100 | A | prioritize |
+| **KA** | SOME_FAIL | 50 | C | explore |
+| **KA** | MOST_FAIL | 0 | F | exclude |
 
 ---
 
@@ -23,9 +38,11 @@ This document provides the **complete scoring matrix** for the distributor-inspe
 
 | Component | Points | Condition |
 |-----------|--------|-----------|
-| Base for qualified B2B company | 60 | Passes hard gates (all or most) |
-| Base for partially qualified | 40 | 1-2 gate fails (explore tier) |
-| Base for unqualified | 0 | 3+ gate fails (exclude) |
+| Base for qualified B2B company | 60 | ALL_PASS hard gates |
+| Base for partially qualified | 40 | SOME_FAIL (1-2 gate fails) |
+| Base for unqualified | 0 | MOST_FAIL (3+ gate fails) |
+
+**Note:** Base score is then capped by classification + gate result matrix above.
 
 ---
 
@@ -293,15 +310,29 @@ def calculate_score(company_profile, country):
     # Step 1: Check hard gates
     gate_result = check_hard_gates(company_profile)
 
+    # Step 1.5: Check classification
+    classification = classify_company_scale(company_profile)
+
     # Step 2: Determine base score and max cap
     if gate_result == 'ALL_PASS':
         base_score = 60
-        max_cap = 100
+        gate_cap = 100
     elif gate_result == 'SOME_FAIL':  # 1-2 fails
         base_score = 40
-        max_cap = 50  # Cap at explore tier
+        gate_cap = 50  # Cap at explore tier
     else:  # 3+ fails
         return 0, 'exclude'
+
+    # Apply classification cap
+    if classification == 'SMB':
+        classification_cap = 50
+    elif classification == 'MID-MARKET':
+        classification_cap = 75
+    else:  # KA
+        classification_cap = 100
+
+    # Final cap is the LOWER of gate cap and classification cap
+    max_cap = min(gate_cap, classification_cap)
 
     # Step 3: Calculate bonuses
     bonuses = {
@@ -351,4 +382,45 @@ def calculate_score(company_profile, country):
 | Customer overlap | +50 | Target customers |
 
 **Base:** 60 (qualified) or 40 (partial)
+
+---
+
+## CRITICAL: Invalid Bonus Signals (SMB Trap)
+
+**Do NOT award points** for these SMB-typical signals. These are common mistakes that led to incorrect scoring (e.g., Gasthof Pendl pattern):
+
+| Bonus | INVALID Signal (DO NOT SCORE) | VALID Signal (Required) |
+|-------|-------------------------------|------------------------|
+| **Digital maturity** | Has website, Facebook page, online booking | B2B portal, tender/RFP page, procurement system |
+| **Cross-team coordination** | "Family operation", team photo | Org chart, 3+ named departments, team structure page |
+| **Marketing investment** | Social media activity, Facebook posts | Trade fair participation, marketing budget mentioned, B2B content marketing |
+| **After-sales maturity** | "We provide service", generic service language | Specific SLA (24h/48h), spare parts inventory, ticketing portal |
+| **Demo capability** | "Contact us for demo" | Dedicated showroom, demo policy page, training center |
+| **FM customers** | Single end-user (one hotel, one office) | Multiple named customers in target segments |
+
+### Why These Are Invalid
+
+1. **Every business has a website** - This is table stakes, not a differentiator
+2. **Family operations lack department structure** - No specialized teams for sales/service/deployment
+3. **Social media ≠ B2B marketing** - Facebook posts don't indicate B2B demand generation capability
+4. **Single property ≠ multi-site capability** - No scaling opportunity
+
+### The Gasthof Pendl Pattern (Example of Wrong Scoring)
+
+**What went wrong:**
+```
+- Digital maturity: +10 (had website + Facebook) ← WRONG
+- Cross-team: +10 ("family operation") ← WRONG
+- Base score: 25 despite UNCLEAR gates ← WRONG
+Final: 45/100 (should have been 0-25, exclude)
+```
+
+**Correct scoring:**
+```
+- Classification: SMB (single property, family, <20 emp)
+- Gates: MOST_FAIL (3+ fails)
+- Base: 0 (MOST_FAIL = exclude tier)
+- Bonuses: None eligible (exclude tier)
+Final: 0/100, Action: exclude
+```
 **Cap:** 100 (or 50 for explore tier)

@@ -152,11 +152,34 @@ Multiple tags allowed per company.
 - `cleaning-services-provider` - Contract cleaning services
 - `hospitality-service-provider` - Hotel chains, hospitality groups
 
-### Step 4.5: Check Hard Gates (NEW - CRITICAL)
+### Step 4.5: Classify Company Scale (NEW - CRITICAL)
+
+**Delegate to:** `references/smb-classifier.md`
+
+Before evaluating hard gates, classify the company by scale:
+
+| Classification | Employee Range | Locations | Score Cap | Max Grade |
+|----------------|----------------|-----------|-----------|-----------|
+| **SMB** | <20 or unknown | Single property | 50 | C |
+| **MID-MARKET** | 20-500 | 2-5 branches | 75 | B |
+| **KA** | 500+ or sophisticated | 6+ branches | 100 | A |
+
+**SMB Detection Signals:**
+- Single property/location (e.g., one hotel, one shop)
+- "Family business", "Familienbetrieb", no department structure
+- Employee count not stated or <20
+- No procurement function visible
+- Hospitality single-property pattern (Gasthof, Pension)
+
+**Output:** Add "Classification" section to report with rationale.
+
+---
+
+### Step 4.6: Check Hard Gates (CRITICAL)
 
 **Delegate to:** `references/icp-sales/hard-gates.md` and `references/icp-skill/gate-translation.md`
 
-Before applying bonus scoring, evaluate all 6 hard gates:
+After classification, evaluate all 6 hard gates:
 
 | Gate | Requirement | Detection |
 |------|-------------|-----------|
@@ -168,9 +191,20 @@ Before applying bonus scoring, evaluate all 6 hard gates:
 | Price Discipline | MSRP/authorized dealer | Brand partnership language |
 
 **Gate Logic:**
-- **ALL PASS** → Eligible for A/B grade (proceed to full scoring)
+
+| Classification | Gate Result | Max Score | Eligible Grades |
+|----------------|-------------|-----------|-----------------|
+| **SMB** | Any | 50 | C / D / F |
+| **MID-MARKET** | ALL_PASS | 75 | A / B / C |
+| **MID-MARKET** | SOME_FAIL | 50 | C only |
+| **MID-MARKET** | MOST_FAIL | 0 | exclude |
+| **KA** | ALL_PASS | 100 | A / B / C |
+| **KA** | SOME_FAIL | 50 | C only |
+| **KA** | MOST_FAIL | 0 | exclude |
+
+- **ALL PASS** → Eligible for A/B grade (subject to classification cap)
 - **1-2 FAIL** → Cap max score at 50 (explore tier only)
-- **3+ FAIL** → Route to `exclude` regardless of bonus points
+- **3+ FAIL** → Route to `exclude` regardless of classification
 
 **Document evidence for each gate** in the report.
 
@@ -178,20 +212,47 @@ Before applying bonus scoring, evaluate all 6 hard gates:
 
 **Delegate to:** `references/icp-skill/scoring-matrix.md`
 
-| Component | Max Points |
-|-----------|------------|
-| Base score (qualified B2B) | 60 |
-| Cleaning equipment focus | +90 |
-| Competitor footprint | +90 |
-| Distribution network | +20 |
-| System integration capability | +20 |
-| Existing FM/property customers | +15 |
-| After-sales maturity | +15 |
-| Demo/showroom capability | +10 |
-| Marketing investment | +10 |
-| Customer overlap | +50 |
+**Scoring Order:**
+1. Determine base score from hard gates result
+2. Apply classification cap (SMB=50, MID-MARKET=75, KA=100)
+3. Calculate bonuses
+4. Apply final cap (whichever is lower: classification or gates)
 
-**Total capped at 100** (or 50 if 1-2 gates fail)
+| Component | Max Points | Notes |
+|-----------|------------|-------|
+| Base score (qualified B2B) | 60 | ALL_PASS gates |
+| Base score (partial) | 40 | SOME_FAIL (1-2 gates) |
+| Base score (unqualified) | 0 | MOST_FAIL (3+ gates) |
+| Cleaning equipment focus | +90 | Core business = +90 |
+| Competitor footprint | +90 | Official distributor = +90 |
+| Distribution network | +20 | Reseller program |
+| System integration capability | +20 | API/customization |
+| Existing FM/property customers | +15 | Per category (+5 each) |
+| After-sales maturity | +15 | SLA/spare parts/ticketing |
+| Demo/showroom capability | +10 | Showroom + demo policy |
+| Marketing investment | +10 | Exhibitions/social |
+| Customer overlap | +50 | Target segment overlap |
+
+**Total capped at:**
+- 100 for KA with ALL_PASS gates
+- 75 for MID-MARKET with ALL_PASS gates
+- 50 for SMB or ANY with SOME_FAIL gates
+- 0 for MOST_FAIL gates (exclude)
+
+**CRITICAL: Do NOT award bonuses for SMB-typical signals:**
+- ~~"Has website"~~ → Not digital maturity (must have B2B procurement signals)
+- ~~"Family operation"~~ → Not cross-team coordination (must have explicit departments)
+- ~~"Facebook page"~~ → Not marketing investment (must have exhibitions/trade budget)
+- ~~"Online booking"~~ → Not pilot KPI (must have cleaning/service KPIs)
+
+**Valid Bonus Signals:**
+
+| Bonus | Valid Signals Only |
+|-------|-------------------|
+| Digital maturity | B2B portal, tender/RFP page, procurement system |
+| Cross-team coordination | Org chart, 3+ named departments, team structure page |
+| Marketing investment | Trade fair participation, marketing budget mentioned, B2B content |
+| Pilot KPI | Cleaning SLA mentions, performance metrics, service KPIs |
 
 **Commercial Products Pre-Check:**
 
@@ -208,18 +269,28 @@ Commercial product signals: cleaning equipment, facility management, janitorial 
 
 ### Step 6: Route
 
-| Grade | Score | Gates Met | Action |
-|-------|-------|-----------|--------|
-| A | 90-100 | All | prioritize |
-| B | 70-89 | All | standard |
-| C | 50-69 | Any | explore |
-| D/F | <50 | Any | exclude |
+**Final action is determined by:** Classification + Gate Result + Score
 
-**Special routing (overrides score):**
+| Classification | Gate Result | Score Range | Grade | Action |
+|----------------|-------------|-------------|-------|--------|
+| **SMB** | Any | 0-50 | C/D/F | nurture or exclude |
+| **MID-MARKET** | ALL_PASS | 70-75 | A | prioritize |
+| **MID-MARKET** | ALL_PASS | 50-69 | B | standard |
+| **MID-MARKET** | ALL_PASS | <50 | C | explore |
+| **MID-MARKET** | SOME_FAIL | Any | C | explore |
+| **MID-MARKET** | MOST_FAIL | 0 | F | exclude |
+| **KA** | ALL_PASS | 90-100 | A | prioritize |
+| **KA** | ALL_PASS | 70-89 | B | standard |
+| **KA** | ALL_PASS | 50-69 | C | explore |
+| **KA** | SOME_FAIL | Any | C | explore |
+| **KA** | MOST_FAIL | 0 | F | exclude |
+
+**Special routing (overrides score + classification):**
 - Tier 1-2 competitor footprint: `route-to-sales` + `competitive-conversion` play
 - Tagged `cleaning-services-provider`: `service-provider-prospect`
-- Tagged `hospitality-service-provider`: `route-to-ka`
+- Tagged `hospitality-service-provider` (chain/hotel group): `route-to-ka`
 - Tagged `pure-2c-retail` with NO commercial products: `exclude`
+- Tagged `hospitality-single-property` (Gasthof, Pension): `nurture` or `exclude`
 
 ## Output Format
 
@@ -230,6 +301,7 @@ Commercial product signals: cleaning equipment, facility management, janitorial 
 **Country:** {country} (detected from TLD/address/content)
 **Language:** {language} (detected from content)
 **Tags:** {tag1}, {tag2}
+**Classification:** {SMB | MID-MARKET | KA}
 **Action:** {action}
 **Play:** {play} (optional - only if competitor footprint detected)
 
@@ -280,6 +352,19 @@ Commercial product signals: cleaning equipment, facility management, janitorial 
 
 {bullet list of notable signals}
 
+### Classification
+
+| Criterion | Value | Signal |
+|-----------|-------|--------|
+| Employees | {count or "Unknown"} | {SMB/MID-MARKET/KA signal} |
+| Locations | {count} | {SMB/MID-MARKET/KA signal} |
+| Structure | {description} | {SMB/MID-MARKET/KA signal} |
+
+**Classification:** {SMB | MID-MARKET | KA}
+**Confidence:** {HIGH | MEDIUM | LOW}
+**Score Cap:** {50 | 75 | 100}
+**Rationale:** {brief explanation of classification decision}
+
 ### Hard Gates Evaluation
 
 | Gate | Result | Evidence |
@@ -308,7 +393,9 @@ Commercial product signals: cleaning equipment, facility management, janitorial 
 | Marketing investment | {signals} | +{bonus} |
 | Customer overlap | {categories} | +{bonus} |
 | Country adjustment | {country} | +{adjustment} |
-| **Total** | (capped at {100/50}) | **{total}** |
+| **Raw Total** | | **{raw_total}** |
+| **Cap Applied** | ({classification} + {gate_result}) | **{cap}** |
+| **Final Score** | (capped at {cap}) | **{total}** |
 
 ### Sales Play (if applicable)
 
