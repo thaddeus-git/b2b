@@ -1,6 +1,11 @@
 ---
 name: distributor-inspector
 description: Use when evaluating websites as potential distributors for OrientStar Robotics (cleaning robots). Uses Playwright CLI for navigation. Same extraction/scoring as MCP version.
+arguments:
+  url:
+    description: The URL of the website to inspect (e.g., "frigosystem.de" or "https://frigosystem.de")
+    required: true
+    type: string
 ---
 
 # Distributor Inspector (Primary Implementation)

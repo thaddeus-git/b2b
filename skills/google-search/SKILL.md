@@ -1,6 +1,23 @@
 ---
 name: google-search
 description: Google search functionality using Bright Data SERP API. Use when the user asks to search the web, perform online research, look up information online, find current information, or get search results. Supports single and batch search with configurable country, language, and result count.
+arguments:
+  query:
+    description: The search query string (e.g., "cleaning robot distributor France")
+    required: true
+    type: string
+  country:
+    description: 2-letter country code for search localization (default: "US")
+    required: false
+    type: string
+  language:
+    description: Language code for search results (default: "en")
+    required: false
+    type: string
+  num_results:
+    description: Number of search results to return (default: 20)
+    required: false
+    type: number
 ---
 
 # Google Search with Bright Data SERP API

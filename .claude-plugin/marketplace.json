@@ -9,7 +9,7 @@
       "name": "b2b",
       "source": "./",
       "description": "Claude Skills for B2B distributor qualification and web research",
-      "version": "1.4.0"
+      "version": "1.10.0"
     }
   ]
 }
