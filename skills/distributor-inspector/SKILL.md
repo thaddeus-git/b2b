@@ -73,12 +73,18 @@ Extract:
 
 **Mandatory LinkedIn Search:**
 
-If LinkedIn not found on website, use the Skill tool to invoke `google-search`:
-```
-Search: "{company_name} linkedin" in detected country/language
-```
+If LinkedIn not found on website:
+1. Use the Skill tool to invoke `google-search` skill with:
+   - `query`: "{company_name} linkedin"
+   - `country`: {detected country code}
+   - `language`: {detected language code}
+   - `num_results`: 5
+2. Parse the JSON results from the skill output
+3. Extract LinkedIn URL from first matching result, or note "Not found (searched)"
 
-Report: URL if found, or "Not found (searched)"
+Example invocation pattern:
+- Invoke Skill tool with: `google-search`
+- Arguments: `query="{company_name} linkedin"`, `country="{CC}"`, `language="{lang}"`, `num_results=5`
 
 ### Step 4: Categorize
 
