@@ -10,10 +10,14 @@ if [ -z "$VERSION" ]; then
   exit 1
 fi
 
-# Check for uncommitted changes
-if ! git diff-index --quiet HEAD --; then
-  echo "Error: You have uncommitted changes. Please commit or stash them first."
-  exit 1
+# Check for UNSTAGED changes only (staged changes are OK - they get bundled)
+if ! git diff-index --quiet --cached HEAD --; then
+  echo "Note: Staged changes will be bundled into the version commit."
+else
+  if ! git diff-index --quiet HEAD --; then
+    echo "Error: You have unstaged changes. Please stage, commit, or stash them first."
+    exit 1
+  fi
 fi
 
 echo "Releasing version $VERSION..."

@@ -237,24 +237,40 @@ The script will:
 **Important:** Stage your feature changes but do NOT commit them before releasing.
 
 ```bash
-# 1. Make your changes and stage them
+# 1. Make your changes and stage them (DO NOT COMMIT)
 git add skills/distributor-inspector/SKILL.md
 
-# 2. Create release (script commits version bump + creates tag)
+# 2. Create release (script bundles staged changes + version bump)
 ./scripts/release.sh 1.8.0
 
-# 3. Push everything (main branch + tag)
-git push origin main && git push origin v1.8.0
+# 3. Script auto-pushes (main + tag) - done!
 ```
 
 **Why this order matters:**
 
-The pre-push hook prevents pushing if `plugin.json` version matches the latest released tag. The release script bundles your staged changes into the version bump commit, keeping history clean and satisfying the hook.
+The release script bundles your staged changes into the version bump commit, keeping history clean and satisfying the pre-push hook.
 
-**If you already committed features:**
+**Common Issues:**
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| "Uncommitted changes" | Unstaged modifications | `git add .` to stage, then run release |
+| "Unstaged changes" | Files modified but not staged | `git add .` or `git stash` |
+| Version already released | Tag exists for current version | Bump version: `./scripts/release.sh 1.4.9` |
+| `.DS_Store` blocking | macOS system file tracked | Run once: `git rm --cached .DS_Store && git commit -m "chore: untrack DS_Store"` |
+
+**If you already committed features (wrong order):**
 
 ```bash
 git reset --soft HEAD~1             # Uncommit, keep changes staged
 ./scripts/release.sh 1.8.0          # Now works correctly
-git push origin main && git push origin v1.8.0
+# Script auto-pushes
+```
+
+**To untrack `.DS_Store` permanently (run once):**
+
+```bash
+git rm --cached .DS_Store
+git commit -m "chore: stop tracking .DS_Store"
+git push origin main
 ```
