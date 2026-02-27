@@ -31,6 +31,7 @@ Or copy to your global skills folder:
 
 ```bash
 cp -r b2b/skills/distributor-inspector ~/.claude/skills/
+cp -r b2b/scripts ~/.claude/skills/distributor-inspector/scripts/
 ```
 
 #### Codex CLI
@@ -45,8 +46,7 @@ cp -r b2b/skills/distributor-inspector ~/.codex/skills/
 
 | Skill | Description |
 |-------|-------------|
-| [distributor-inspector](skills/distributor-inspector) | Inspect and score potential distributor websites against ICP criteria, categorize by niche market, and route to appropriate sales action |
-| [google-search](skills/google-search) | Run localized Google searches via Bright Data SERP API with country/language controls and batch mode |
+| [distributor-inspector](skills/distributor-inspector) | Inspect and score potential distributor websites against ICP criteria, categorize by niche market, and route to appropriate sales action. Includes built-in search script for LinkedIn lookup via Bright Data SERP API. |
 
 ## Usage
 
@@ -78,17 +78,19 @@ Output: Markdown report with company profile, tags, score, and action recommenda
 - `exclude` (<50): Does not meet criteria
 - `route-to-sales` + `competitive-conversion`: Competitor distributor (Pudu, Gausium, etc.)
 
-### Google Search
-
-Use when you need localized search results for distributor research:
-
-```bash
-python skills/google-search/scripts/search.py "Gausium Deutschland" "DE" "de" "10"
-```
-
 ## Configuration
 
-The skill includes bundled reference files:
+**Bright Data SERP API (required for LinkedIn lookup):**
+
+```bash
+# Run setup from the distributor-inspector skill directory
+python3 scripts/setup.py
+
+# Edit the config file and add your API key
+open ~/.claude/distributor-inspector/config.json
+```
+
+**Reference files** (bundled with the skill):
 
 | File | Purpose |
 |------|---------|

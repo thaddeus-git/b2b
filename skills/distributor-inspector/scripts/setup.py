@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Setup script for google-search skill.
+Setup script for distributor-inspector skill.
 
 Installs the required brightdata-sdk package and creates config template.
 """
@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 
-CONFIG_DIR = Path.home() / ".claude" / "google-search"
+CONFIG_DIR = Path.home() / ".claude" / "distributor-inspector"
 CONFIG_FILE = CONFIG_DIR / "config.json"
 CONFIG_TEMPLATE = {
     "api_key": "",
@@ -69,7 +69,7 @@ def main():
         print("  2. Log in or create a free account")
         print("  3. Copy your API token")
         print("  4. Paste it in the config file as 'api_key' value")
-        print("\nVerify with: python scripts/search.py 'test' 'US' 'en' '5'")
+        print("\nVerify with: python3 scripts/search.py 'test' 'US' 'en' '5'")
     elif installed_sdk:
         print("\n" + "=" * 60)
         print("Setup complete!")

@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 """
-Bright Data SERP API search script for google-search skill.
+Bright Data SERP API search script for distributor-inspector skill.
 
 API Key Configuration:
   1. Set BRIGHTDATA_SERP_API_KEY environment variable, or
-  2. Edit ~/.claude/google-search/config.json and add your API key
+  2. Edit ~/.claude/distributor-inspector/config.json and add your API key
 
 Requirements:
-  - brightdata-sdk (auto-installed by skill)
+  - brightdata-sdk (auto-installed by setup.py)
 
 Usage (from skill):
-  python scripts/search.py <query> <country> <language> <num_results>
+  python3 scripts/search.py <query> <country> <language> <num_results>
 
 Example:
-  python scripts/search.py "best restaurants" "US" "en" "10"
+  python3 scripts/search.py "best restaurants" "US" "en" "10"
 """
 
 import asyncio
@@ -23,7 +23,7 @@ import sys
 from pathlib import Path
 
 
-CONFIG_DIR = Path.home() / ".claude" / "google-search"
+CONFIG_DIR = Path.home() / ".claude" / "distributor-inspector"
 CONFIG_FILE = CONFIG_DIR / "config.json"
 
 
@@ -33,7 +33,7 @@ def get_api_key() -> str:
 
     Priority:
     1. BRIGHTDATA_SERP_API_KEY environment variable
-    2. ~/.claude/google-search/config.json
+    2. ~/.claude/distributor-inspector/config.json
     """
     # Check environment variable first
     api_key = os.environ.get("BRIGHTDATA_SERP_API_KEY", "")

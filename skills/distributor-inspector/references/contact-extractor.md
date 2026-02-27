@@ -62,9 +62,13 @@ Extract contact information from website content with precision and completeness
 
 **If LinkedIn not found on website, you MUST search for it:**
 
-1. Use the google-search skill (via Skill tool) to search: `"{company_name}" linkedin` in the detected country/locale
-2. If found, add the LinkedIn URL to the Contact section
-3. If not found after search, report: "Not found (searched)"
+1. Run the search script from the distributor-inspector skill directory:
+   ```bash
+   python3 scripts/search.py "{company_name} linkedin" "{country}" "{language}" "5"
+   ```
+2. Parse the JSON output and extract the LinkedIn URL from the first matching result
+3. If found, add the LinkedIn URL to the Contact section
+4. If not found after search, report: "Not found (searched)"
 
 **This step is mandatory** - do not skip it. LinkedIn is critical for sales outreach preparation.
 

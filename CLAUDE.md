@@ -15,14 +15,11 @@ possible_distributor_inspection/
 ├── skills/
 │   └── distributor-inspector/
 │       ├── SKILL.md          # Main skill for inspecting and scoring websites
+│       ├── scripts/          # setup.py, search.py (Bright Data SERP API)
 │       └── references/       # Bundled reference files
 │           ├── keywords.md   # Product/service keywords by target industry
 │           ├── tags.md       # Niche market tag taxonomy
 │           └── competing-brands.md  # Competitor brands to detect
-│   └── google-search/
-│       ├── SKILL.md          # Localized Google search via Bright Data SERP API
-│       ├── scripts/          # setup.py, search.py, test_search.py
-│       └── references/api.md # API and country/language reference
 ├── workspace/                # Your private working data (gitignored)
 │   ├── competitor_distributors.csv  # Known competitor distributors (skip)
 │   ├── serp_results.csv      # Search engine results to process
@@ -49,6 +46,11 @@ Output: Markdown report with company profile, tags, score, and action recommenda
 ```bash
 # Install Playwright CLI (one-time, required for distributor-inspector)
 npm install -g @playwright/cli@latest
+
+# Configure Bright Data SERP API (required for LinkedIn lookup)
+# Run from the distributor-inspector skill directory:
+python3 scripts/setup.py
+# Then edit ~/.claude/distributor-inspector/config.json and add your API key
 ```
 
 **Manual Inspection:**
@@ -76,13 +78,6 @@ playwright-cli snapshot -s=inspector
 playwright-cli close-all -s=inspector
 ```
 
-**Run localized web search:**
-```
-Use the Skill tool with: google-search
-Input: query + locale (country/language)
-Output: JSON search results with title/url/snippet
-```
-
 **Installation (Marketplace):**
 ```bash
 /plugin marketplace add thaddeus-git/b2b
@@ -92,7 +87,7 @@ Output: JSON search results with title/url/snippet
 **Manual Installation:**
 ```bash
 # Copy to project
-cp -r skills/distributor-inspector /path/to/project/.claude/
+cp -r skills/distributor-inspector /path/to/project/.claude/skills/
 
 # Or copy globally
 cp -r skills/distributor-inspector ~/.claude/skills/
@@ -202,18 +197,19 @@ When evaluating a website as a potential distributor:
 ### Full Pipeline: Search + Inspect
 
 ```
-# Step 1: Search for distributors
-Use google-search skill with: "cleaning robot distributor France"
+# Step 1: Search for distributors (using your preferred method)
+# e.g., manual search, or use the Bright Data SERP API script directly:
+python3 skills/distributor-inspector/scripts/search.py "cleaning robot distributor France" "FR" "fr" "20"
 
 # Step 2: Batch inspect
 Use distributor-inspector skill on each URL
 
 # Step 3: Validate top prospects (optional)
-Use google-search skill for: "{company} news 2024"
+python3 skills/distributor-inspector/scripts/search.py "{company} news 2024" "FR" "fr" "5"
 ```
 
 ### API Cost Awareness
-- google-search uses paid Bright Data API
+- Search script uses paid Bright Data API
 - Each search consumes quota
 - Use distributor-inspector first (free), then enrich selectively
 
