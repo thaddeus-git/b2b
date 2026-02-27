@@ -1,6 +1,9 @@
 # User working data - keep private
 workspace/
 
+# Human input - reference data for AI (not tracked)
+human_input/
+
 # Playwright MCP logs
 .playwright-mcp/
 
