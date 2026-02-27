@@ -46,7 +46,8 @@ cp -r b2b/skills/distributor-inspector ~/.codex/skills/
 
 | Skill | Description |
 |-------|-------------|
-| [distributor-inspector](skills/distributor-inspector) | Inspect and score potential distributor websites against ICP criteria, categorize by niche market, and route to appropriate sales action. Includes built-in search script for LinkedIn lookup via Bright Data SERP API. |
+| [distributor-inspector](skills/distributor-inspector) | Inspect and score potential distributor websites against ICP criteria. Supports **standard mode** (text-only, fast) and **deep mode** (with image analysis for team photos, logos, certifications). |
+| [ka-inspector](skills/ka-inspector) | Evaluate potential KA (Key Account) end customers for direct robot purchases. Analyzes multi-site potential, digital maturity, and pilot readiness. Also supports standard/deep modes. |
 
 ## Usage
 
@@ -125,6 +126,24 @@ The skill evaluates distributors against OrionStar Robotics' Ideal Customer Prof
 3. Cleaning service contractors
 4. System integrators
 5. B2B-capable consumer electronics distributors
+
+## Deep Mode (Image Analysis)
+
+Both skills support an optional `mode="deep"` argument for enhanced analysis:
+
+```bash
+# Standard mode (default) - text-only, fast (~30 seconds)
+distributor-inspector url="example.de"
+ka-inspector url="example.com"
+
+# Deep mode - includes image analysis (~90 seconds)
+distributor-inspector url="example.de" mode="deep"
+ka-inspector url="example.com" mode="deep"
+```
+
+**Deep mode adds:**
+- **distributor-inspector:** Team photo analysis (employee count), competitor logo detection, certification badges
+- **ka-inspector:** Facility photos, location count verification, partnership/certification detection
 
 ## License
 

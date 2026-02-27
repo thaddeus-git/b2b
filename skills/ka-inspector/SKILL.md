@@ -1,11 +1,16 @@
 ---
 name: ka-inspector
-description: Use when evaluating websites as potential KA (Key Account) end customers for OrionStar Robotics cleaning robots. Identifies companies that BUY and USE robots directly. Uses Playwright CLI for navigation.
+description: Use when evaluating websites as potential KA (Key Account) end customers for OrionStar Robotics cleaning robots. Identifies companies that BUY and USE robots directly. Uses Playwright CLI for navigation. Supports standard (text-only) and deep (image analysis) modes.
 arguments:
   url:
     description: The URL of the website to inspect (e.g., "metro.de" or "https://metro.de")
     required: true
     type: string
+  mode:
+    description: Analysis mode: "standard" (text-only, fast) or "deep" (includes image analysis)
+    required: false
+    type: string
+    default: "standard"
 ---
 
 # KA Inspector (Key Account End Customer)
@@ -27,6 +32,23 @@ This skill evaluates companies as **direct customers** (end users) for OrionStar
 npm install -g @playwright/cli@latest
 ```
 
+## Deep Mode (Image Analysis)
+
+When `mode="deep"` is specified, additional image analysis is performed:
+
+1. **Facility Photos** - Verify facility type and scale (retail stores, hotels, offices, warehouses)
+2. **Location Count** - Visual confirmation of multi-site presence from location pages
+3. **Brand/Partnership Logos** - Identify technology partners, certifications, industry associations
+4. **Digital Systems** - Detect IoT, building management system mentions in imagery
+
+**Processing time:** ~90 seconds (vs ~30 seconds standard mode)
+
+**Additional files created in deep mode:**
+- `home.png` - Full homepage screenshot
+- `locations.png` - Locations/About page screenshot (if available)
+
+**Image analysis delegation:** `references/image-analyzer.md`
+
 ## Process
 
 ### Step 1: Navigate and Capture
@@ -35,6 +57,12 @@ npm install -g @playwright/cli@latest
 ```bash
 playwright-cli open {url} --persistent -s=ka-inspector
 playwright-cli snapshot -s=ka-inspector
+
+# Deep mode: Capture screenshots for image analysis
+if mode == "deep":
+  playwright-cli screenshot -s=ka-inspector --full-page home.png
+  playwright-cli goto {url}/locations -s=ka-inspector 2>/dev/null || playwright-cli goto {url}/about -s=ka-inspector 2>/dev/null
+  playwright-cli screenshot -s=ka-inspector --full-page locations.png
 ```
 
 **For batch (persistent session):**
@@ -42,6 +70,12 @@ playwright-cli snapshot -s=ka-inspector
 playwright-cli open about:blank --persistent -s=ka-inspector
 playwright-cli goto {url} -s=ka-inspector
 playwright-cli snapshot -s=ka-inspector
+
+# Deep mode: capture screenshots after each snapshot
+if mode == "deep":
+  playwright-cli screenshot -s=ka-inspector --full-page home.png
+  playwright-cli goto {url}/locations -s=ka-inspector 2>/dev/null || playwright-cli goto {url}/about -s=ka-inspector 2>/dev/null
+  playwright-cli screenshot -s=ka-inspector --full-page locations.png
 ```
 
 ### Step 2: Extract Company Profile
@@ -57,6 +91,21 @@ From the snapshot YAML, extract:
 | Scale | Company size indicators | "X employees", "Y locations", revenue |
 | Budget signals | Procurement/function indicators | Careers (hiring), CapEx mentions, investor relations |
 | Contacts | Decision-maker info | Leadership, management, facilities team |
+
+### Step 2.5: Analyze Images (Deep Mode Only)
+
+**Only if mode="deep":**
+
+**Delegate to:** `references/image-analyzer.md`
+
+From captured screenshots (`home.png`, `locations.png`):
+1. **Facility photos** - Verify facility type (retail stores, hotels, offices, warehouses, hospitals)
+2. **Location count** - Count locations from location page or map visualization
+3. **Partnership/certification logos** - Detect technology partners, industry certifications, associations
+
+Add findings to the report under "### Deep Mode Analysis" section.
+
+**If no images captured or analysis fails:** Include "Not analyzed (image capture failed)" in Deep Mode Analysis section.
 
 ### Step 3: Extract Contact Information
 
@@ -148,6 +197,19 @@ Action: {action}
 
 ---
 
+### Deep Mode Analysis (if mode="deep")
+
+**Facility Photos:**
+{analysis results or "Not analyzed (standard mode)"}
+
+**Location Count:**
+{analysis results or "Not analyzed (standard mode)"}
+
+**Partnerships/Certifications:**
+{analysis results or "Not analyzed (standard mode)"}
+
+---
+
 ### Hard Gates Evaluation
 
 | Gate | Result | Evidence |
@@ -199,14 +261,25 @@ Action: {action}
 ## Example Usage
 
 ```bash
-# Single URL
+# Single URL - Standard mode (text-only, fast)
 playwright-cli open https://metro.de --persistent -s=ka-inspector
 playwright-cli snapshot -s=ka-inspector
 
-# Batch
+# Single URL - Deep mode (includes image analysis)
+playwright-cli open https://metro.de --persistent -s=ka-inspector
+playwright-cli snapshot -s=ka-inspector
+# Claude will automatically capture screenshots and analyze images
+
+# Batch - Standard mode
 playwright-cli open about:blank --persistent -s=ka-inspector
 playwright-cli goto https://example-retail.com -s=ka-inspector
 playwright-cli snapshot -s=ka-inspector
+
+# Batch - Deep mode
+playwright-cli open about:blank --persistent -s=ka-inspector
+playwright-cli goto https://example-retail.com -s=ka-inspector
+playwright-cli snapshot -s=ka-inspector
+# Claude will automatically capture screenshots after each snapshot
 ```
 
 ---

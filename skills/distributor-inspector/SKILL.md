@@ -1,11 +1,16 @@
 ---
 name: distributor-inspector
-description: Use when evaluating websites as potential distributors for OrionStar Robotics (cleaning robots). Uses Playwright CLI for navigation. Same extraction/scoring as MCP version.
+description: Use when evaluating websites as potential distributors for OrionStar Robotics (cleaning robots). Uses Playwright CLI for navigation. Same extraction/scoring as MCP version. Supports standard (text-only) and deep (image analysis) modes.
 arguments:
   url:
     description: The URL of the website to inspect (e.g., "frigosystem.de" or "https://frigosystem.de")
     required: true
     type: string
+  mode:
+    description: Analysis mode: "standard" (text-only, fast) or "deep" (includes image analysis)
+    required: false
+    type: string
+    default: "standard"
 ---
 
 # Distributor Inspector (Primary Implementation)
@@ -28,6 +33,23 @@ python3 scripts/setup.py
 # Then edit ~/.claude/distributor-inspector/config.json and add your Bright Data API key
 ```
 
+## Deep Mode (Image Analysis)
+
+When `mode="deep"` is specified, additional image analysis is performed:
+
+1. **Team Photo Analysis** - Count faces to verify employee count (hard gate validation)
+2. **Logo Detection** - Identify competitor brand logos in footer/partners sections
+3. **Certification Badges** - Detect ISO, authorized dealer badges
+4. **Product Images** - Visual confirmation of product types
+
+**Processing time:** ~90 seconds (vs ~30 seconds standard mode)
+
+**Additional files created in deep mode:**
+- `home.png` - Full homepage screenshot
+- `team.png` - Team/About page screenshot (if available)
+
+**Image analysis delegation:** `references/image-analyzer.md`
+
 ## Process
 
 ### Step 1: Navigate and Capture
@@ -39,6 +61,12 @@ playwright-cli open {url} --persistent -s=inspector
 
 # Capture snapshot (YAML appears in stdout)
 playwright-cli snapshot -s=inspector
+
+# Deep mode: Capture screenshots for image analysis
+if mode == "deep":
+  playwright-cli screenshot -s=inspector --full-page home.png
+  playwright-cli goto {url}/team -s=inspector 2>/dev/null || playwright-cli goto {url}/about -s=inspector 2>/dev/null
+  playwright-cli screenshot -s=inspector --full-page team.png
 ```
 
 **For batch (persistent session):**
@@ -49,6 +77,12 @@ playwright-cli open about:blank --persistent -s=inspector
 # For each URL:
 playwright-cli goto {url} -s=inspector
 playwright-cli snapshot -s=inspector
+
+# Deep mode: capture screenshots after each snapshot
+if mode == "deep":
+  playwright-cli screenshot -s=inspector --full-page home.png
+  playwright-cli goto {url}/team -s=inspector 2>/dev/null || playwright-cli goto {url}/about -s=inspector 2>/dev/null
+  playwright-cli screenshot -s=inspector --full-page team.png
 ```
 
 ### Step 2: Extract Company Profile
@@ -63,6 +97,21 @@ From the snapshot YAML, extract:
 - Geography (coverage area, customer locations, HQ address)
 - Team (employee count, team structure mentions)
 - SLA (response times, service commitments)
+
+### Step 2.5: Analyze Images (Deep Mode Only)
+
+**Only if mode="deep":**
+
+**Delegate to:** `references/image-analyzer.md`
+
+From captured screenshots (`home.png`, `team.png`):
+1. **Team photos** - Count faces, estimate employee count
+2. **Brand logos** - Detect Pudu, Gausium, LionsBot, Tennant, etc.
+3. **Certifications** - Detect ISO badges, "Authorized Dealer" badges
+
+Add findings to the report under "### Deep Mode Analysis" section.
+
+**If no images captured or analysis fails:** Include "Not analyzed (image capture failed)" in Deep Mode Analysis section.
 
 ### Step 3: Extract Contact Information
 
@@ -203,6 +252,17 @@ Commercial product signals: cleaning equipment, facility management, janitorial 
 
 **SLA:**
 {SLA mentions or "None detected"}
+
+### Deep Mode Analysis (if mode="deep")
+
+**Team Photos:**
+{analysis results or "Not analyzed (standard mode)"}
+
+**Logo Detection:**
+{analysis results or "Not analyzed (standard mode)"}
+
+**Certifications:**
+{analysis results or "Not analyzed (standard mode)"}
 
 ### Contact
 
