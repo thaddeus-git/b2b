@@ -103,19 +103,46 @@ Multiple tags allowed per company.
 - `cleaning-services-provider` - Contract cleaning services
 - `hospitality-service-provider` - Hotel chains, hospitality groups
 
+### Step 4.5: Check Hard Gates (NEW - CRITICAL)
+
+**Delegate to:** `references/icp-sales/hard-gates.md` and `references/icp-skill/gate-translation.md`
+
+Before applying bonus scoring, evaluate all 6 hard gates:
+
+| Gate | Requirement | Detection |
+|------|-------------|-----------|
+| Company Size | 20-500 employees, ~€10M revenue | About/Impressum, team count, revenue mentions |
+| Team Capability | Sales + Deployment + After-sales | Team page, service sections |
+| SLA Capability | Quantifiable response times | "24h", "48h", "SLA" mentions |
+| PoC Capability | Demo/trial support | "Demo", "showroom", "trial" |
+| Market Coverage | 1-3 cities, cross-city service | Multiple locations, service area |
+| Price Discipline | MSRP/authorized dealer | Brand partnership language |
+
+**Gate Logic:**
+- **ALL PASS** → Eligible for A/B grade (proceed to full scoring)
+- **1-2 FAIL** → Cap max score at 50 (explore tier only)
+- **3+ FAIL** → Route to `exclude` regardless of bonus points
+
+**Document evidence for each gate** in the report.
+
 ### Step 5: Score
 
-**Delegate to:** `references/scoring-rules.md`
+**Delegate to:** `references/icp-skill/scoring-matrix.md`
 
-| Component | Points |
-|-----------|--------|
-| Required: Sells as expected | PASS/FAIL (informational) |
-| Bonus: Customer overlap | +0 to +50 |
-| Bonus: Cleaning equipment | +30 to +90 |
-| Bonus: Competitor footprint | +30 to +90 |
-| Bonus: Channel capability | +0 to +20 |
+| Component | Max Points |
+|-----------|------------|
+| Base score (qualified B2B) | 60 |
+| Cleaning equipment focus | +90 |
+| Competitor footprint | +90 |
+| Distribution network | +20 |
+| System integration capability | +20 |
+| Existing FM/property customers | +15 |
+| After-sales maturity | +15 |
+| Demo/showroom capability | +10 |
+| Marketing investment | +10 |
+| Customer overlap | +50 |
 
-**Total capped at 100**
+**Total capped at 100** (or 50 if 1-2 gates fail)
 
 **Commercial Products Pre-Check:**
 
@@ -125,23 +152,25 @@ Before scoring, check if company has commercial products:
 
 Commercial product signals: cleaning equipment, facility management, janitorial supplies, robotics/automation, B2B/wholesale.
 
+**Country Adjustments:**
+- France (FR): Competitor footprint +10 bonus
+- Spain (ES): After-sales maturity +10 bonus
+- Germany (DE): System integration +10 bonus
+
 ### Step 6: Route
 
-| Grade | Score | Condition | Action |
+| Grade | Score | Gates Met | Action |
 |-------|-------|-----------|--------|
-| A | 90+ | PASS gate | prioritize |
-| B | 70-89 | PASS gate | standard |
+| A | 90-100 | All | prioritize |
+| B | 70-89 | All | standard |
 | C | 50-69 | Any | explore |
 | D/F | <50 | Any | exclude |
-| — | — | Tier 1-2 competitor | route-to-sales |
-| — | — | cleaning-services-provider | service-provider-prospect |
-| — | — | hospitality-service-provider | route-to-ka |
 
 **Special routing (overrides score):**
-- Tagged `pure-2c-retail` with NO commercial products: `exclude`
 - Tier 1-2 competitor footprint: `route-to-sales` + `competitive-conversion` play
 - Tagged `cleaning-services-provider`: `service-provider-prospect`
 - Tagged `hospitality-service-provider`: `route-to-ka`
+- Tagged `pure-2c-retail` with NO commercial products: `exclude`
 
 ## Output Format
 
@@ -191,16 +220,35 @@ Commercial product signals: cleaning equipment, facility management, janitorial 
 
 {bullet list of notable signals}
 
+### Hard Gates Evaluation
+
+| Gate | Result | Evidence |
+|------|--------|----------|
+| Company Size (20-500 emp) | {PASS/FAIL/UNCLEAR} | {evidence} |
+| Team Capability (3 functions) | {PASS/FAIL/UNCLEAR} | {evidence} |
+| SLA Capability | {PASS/FAIL/UNCLEAR} | {evidence} |
+| PoC Capability | {PASS/FAIL/UNCLEAR} | {evidence} |
+| Market Coverage | {PASS/FAIL/UNCLEAR} | {evidence} |
+| Price Discipline | {PASS/FAIL/UNCLEAR} | {evidence} |
+
+**Gate Result:** {ALL_PASS / SOME_FAIL (1-2) / MOST_FAIL (3+)} → {Eligible for A/B / Capped at 50 / Exclude}
+
 ### Scoring Details
 
 | Component | Result | Points |
 |-----------|--------|--------|
-| Sells as expected | {pass/fail with reason} | — |
-| Customer overlap bonus | {level with evidence} | +{bonus} |
-| Cleaning equipment bonus | {level with evidence} | +{bonus} |
-| Competitor footprint bonus | {tier with evidence} | +{bonus} |
-| Channel capability bonus | {signals detected} | +{bonus} |
-| **Total** | (capped at 100) | **{total}** |
+| Base score | {qualified/partial/unqualified} | {base} |
+| Cleaning equipment | {level with evidence} | +{bonus} |
+| Competitor footprint | {tier with evidence} | +{bonus} |
+| Distribution network | {signals} | +{bonus} |
+| System integration | {signals} | +{bonus} |
+| FM/property customers | {categories} | +{bonus} |
+| After-sales maturity | {signals} | +{bonus} |
+| Demo capability | {signals} | +{bonus} |
+| Marketing investment | {signals} | +{bonus} |
+| Customer overlap | {categories} | +{bonus} |
+| Country adjustment | {country} | +{adjustment} |
+| **Total** | (capped at {100/50}) | **{total}** |
 
 ### Sales Play (if applicable)
 
@@ -254,14 +302,30 @@ If the snapshot is empty or missing key information:
 
 ## Configuration Files
 
+### ICP Reference Files (New Structure)
+
 | File | Purpose |
 |------|---------|
-| `references/keywords.md` | Product/service keywords by industry |
+| `references/icp-summary.md` | Quick reference for sales team + AI |
+| `references/icp-sales/hard-gates.md` | Hard qualification gates |
+| `references/icp-sales/bonus-criteria.md` | Bonus criteria from sales ICP |
+| `references/icp-sales/target-industries.md` | Target industry list |
+| `references/icp-sales/exclusion-rules.md` | Exclusion criteria |
+| `references/icp-sales/country-strategies.md` | FR/ES/DE/HU/CH/GR strategies |
+| `references/icp-skill/gate-translation.md` | How AI interprets each gate |
+| `references/icp-skill/scoring-matrix.md` | Complete bonus scoring matrix |
+| `references/icp-skill/customer-overlap-rules.md` | Explicit customer overlap scoring |
+
+### Legacy Files (Preserved)
+
+| File | Purpose |
+|------|---------|
 | `references/tags.md` | Niche market tag taxonomy |
+| `references/scoring-rules.md` | Legacy scoring rules (superseded) |
+| `references/keywords.md` | Product/service keywords by industry |
 | `references/competing-brands.md` | Competitor brands to detect |
 | `references/company-profiler.md` | Company profile extraction |
 | `references/contact-extractor.md` | Contact information extraction |
-| `references/scoring-rules.md` | Scoring rules and bonus calculations |
 
 ## Example Usage
 
