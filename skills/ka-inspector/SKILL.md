@@ -92,6 +92,24 @@ From the snapshot YAML, extract:
 | Budget signals | Procurement/function indicators | Careers (hiring), CapEx mentions, investor relations |
 | Contacts | Decision-maker info | Leadership, management, facilities team |
 
+### Step 2.1: Classify Industry
+
+Using the Industry Taxonomy below, select the most appropriate industry and sub-industry:
+
+1. **Identify facility type** - What kind of facilities/properties do they operate?
+2. **Determine scale** - Individual location or KA (chain/large enterprise)?
+3. **Match to taxonomy** - Find the closest match from the Industry Taxonomy table
+
+**For KA inspector, prefer "终端方向-KA" for chains and "终端方向-个体" for single locations.**
+
+**Format:** `{Industry Chinese} ({Industry English}) → {Sub-industry}`
+
+**Examples:**
+- Retail chain (Metro, Carrefour) → `商超 (Retail) → 商超终端方向-KA`
+- Single hotel → `酒店 (Hospitality) → 酒店终端方向-个体`
+- Hospital network → `医疗 (Healthcare) → 医疗终端方向-KA`
+- Unrelated business → `弱相关 /不相关 (Unrelated) → 无二级行业`
+
 ### Step 2.5: Analyze Images (Deep Mode Only)
 
 **Only if mode="deep":**
@@ -165,6 +183,7 @@ Extract:
 URL: {url}
 Country: {country}
 Industry: {industry}
+**Industry Classification:** {Industry Chinese} ({Industry English}) → {Sub-industry}
 Action: {action}
 
 ---
@@ -239,6 +258,40 @@ Action: {action}
 
 {2-3 sentence summary of the company and why they are/aren't a good KA prospect}
 ```
+
+---
+
+## Industry Classification
+
+Classify each company into the most relevant industry and sub-industry from the taxonomy below.
+
+**Classification criteria:**
+- Primary business activity (what facilities/properties do they operate?)
+- End user type (retail, hospitality, healthcare, etc.)
+- Scale indicator (individual vs. KA)
+
+**Format:** `{Industry Chinese} ({Industry English}) → {Sub-industry}`
+
+**Example:** `商超 (Retail) → 商超终端方向-KA`
+
+### Industry Taxonomy
+
+| Industry (行业) | English | Sub-industries |
+|-----------------|---------|----------------|
+| 餐饮 | F&B | 餐饮代理商-供应链方向, 餐饮代理商-食品类方向, 餐饮终端方向-个体, 餐厅终端方向-KA |
+| 医疗 | Healthcare | 医疗代理商-设备方向, 医疗终端方向-个体, 医疗终端方向-KA |
+| 商超 | Retail | 商超终端方向-个体, 商超终端方向-KA |
+| 酒店 | Hospitality | 酒店代理商-供应链方向, 酒店终端方向-个体, 酒店终端方向-KA |
+| 机器人代理商 | Robot Distributor | 机器人业务代理商 |
+| 工厂物流 | Factory/Logistics | 工厂代理商-自动化类, 工厂终端-小型物件, 工厂终端-大型物件, 工厂终端-物流方向 |
+| IT信息技术 | IT | IT代理商-餐饮酒店方向, IT代理商-医疗方向, IT代理商-营销方向 |
+| 贸易商/批发/零售 | Trading | 贸易代理商 |
+| 金融 | Finance | 金融代理商 |
+| 娱乐 | Entertainment | 娱乐终端方向-个体 |
+| 服务行业 | Services | 服务代理商 |
+| 其他行业 | Other | 其他行业代理商 |
+| 弱相关 /不相关 | Unrelated | 无二级行业 |
+| 清洁 | Cleaning | 清洁终端, 清洁代理商-能源类, 清洁代理商-其他相关类, 清洁代理商-清洁公司, 清洁代理商-建材类, 清洁代理商-机械类 |
 
 ---
 
