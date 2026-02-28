@@ -168,7 +168,42 @@ async def try_direct_website(domain: str, timeout: float = 5.0) -> tuple[Optiona
     return None, False
 
 
-# (Append to enrich.py)
+def validate_linkedin_result(
+    company_name: str,
+    result_url: str,
+    result_title: str,
+    min_similarity: float = 0.6,
+) -> bool:
+    """
+    Validate that a LinkedIn result matches the company.
+
+    Returns: True if result is valid, False if it should be skipped
+    """
+    if not company_name or not result_url:
+        return False
+
+    company_lower = company_name.lower().strip()
+
+    # Check 1: Company name in title (fuzzy match)
+    if result_title:
+        similarity = fuzzy_similarity(company_name, result_title)
+        if similarity >= min_similarity:
+            return True
+
+    # Check 2: Company slug in URL
+    # Extract slug from URL (e.g., "reha360" from /company/reha360)
+    url_lower = result_url.lower()
+    if "linkedin.com/company/" in url_lower:
+        # Get the slug part
+        parts = url_lower.split("/company/")[-1].split("/")
+        if parts:
+            slug = parts[0].replace("-", "").replace("_", "")
+            company_nospace = company_lower.replace(" ", "").replace("-", "")
+            if company_nospace in slug or slug in company_nospace:
+                return True
+
+    return False
+
 
 async def search_company(
     company_name: str,
