@@ -129,3 +129,173 @@ def detect_country(lead: dict) -> str:
             return "ES"
 
     return "DE"  # Default to Germany for German leads
+
+
+# (Append to enrich.py)
+
+async def search_company(
+    company_name: str,
+    country_code: str = "DE",
+    num_results: int = 10,
+) -> dict:
+    """
+    Search for company using Bright Data SERP API.
+
+    Returns dict with results or error.
+    """
+    try:
+        from brightdata import BrightDataClient
+    except ImportError:
+        return {"error": "brightdata-sdk not installed", "success": False}
+
+    try:
+        api_key = get_api_key()
+    except ValueError as e:
+        return {"error": str(e), "success": False}
+
+    # Build search query
+    query = f'"{company_name}"'
+
+    # Country code to location
+    location_map = {
+        "DE": "Germany", "AT": "Austria", "CH": "Switzerland",
+        "FR": "France", "ES": "Spain", "NL": "Netherlands",
+        "BE": "Belgium", "IT": "Italy", "PL": "Poland",
+    }
+    location = location_map.get(country_code, "Germany")
+
+    try:
+        async with BrightDataClient(
+            token=api_key,
+            validate_token=False,
+            auto_create_zones=False,
+        ) as client:
+            results = await client.search.google(
+                query=query,
+                location=location,
+                language="de" if country_code in ("DE", "AT", "CH") else "en",
+                num_results=num_results,
+            )
+
+            if not results.success:
+                return {"error": f"Search failed: {results.error}", "success": False}
+
+            mapped = []
+            for item in results.data:
+                mapped.append({
+                    "title": item.get("title", ""),
+                    "url": item.get("url", ""),
+                    "snippet": item.get("description", ""),
+                })
+
+            return {
+                "success": True,
+                "query": query,
+                "results": mapped
+            }
+
+    except Exception as e:
+        return {"error": str(e), "success": False}
+
+
+async def search_linkedin_person(
+    full_name: str,
+    company_name: str,
+    country_code: str = "DE",
+) -> dict:
+    """Search for person's LinkedIn profile."""
+    try:
+        from brightdata import BrightDataClient
+    except ImportError:
+        return {"error": "brightdata-sdk not installed", "success": False}
+
+    try:
+        api_key = get_api_key()
+    except ValueError as e:
+        return {"error": str(e), "success": False}
+
+    query = f'"{full_name}" "{company_name}" site:linkedin.com/in'
+
+    location_map = {"DE": "Germany", "AT": "Austria", "CH": "Switzerland"}
+    location = location_map.get(country_code, "Germany")
+
+    try:
+        async with BrightDataClient(
+            token=api_key,
+            validate_token=False,
+            auto_create_zones=False,
+        ) as client:
+            results = await client.search.google(
+                query=query,
+                location=location,
+                language="en",
+                num_results=5,
+            )
+
+            if not results.success:
+                return {"error": f"Search failed", "success": False}
+
+            for item in results.data:
+                url = item.get("url", "")
+                if "linkedin.com/in" in url:
+                    return {
+                        "success": True,
+                        "url": url,
+                        "title": item.get("title", ""),
+                    }
+
+            return {"success": True, "url": None}
+
+    except Exception as e:
+        return {"error": str(e), "success": False}
+
+
+async def search_linkedin_company(
+    company_name: str,
+    country_code: str = "DE",
+) -> dict:
+    """Search for company's LinkedIn page."""
+    try:
+        from brightdata import BrightDataClient
+    except ImportError:
+        return {"error": "brightdata-sdk not installed", "success": False}
+
+    try:
+        api_key = get_api_key()
+    except ValueError as e:
+        return {"error": str(e), "success": False}
+
+    query = f'"{company_name}" site:linkedin.com/company'
+
+    location_map = {"DE": "Germany", "AT": "Austria", "CH": "Switzerland"}
+    location = location_map.get(country_code, "Germany")
+
+    try:
+        async with BrightDataClient(
+            token=api_key,
+            validate_token=False,
+            auto_create_zones=False,
+        ) as client:
+            results = await client.search.google(
+                query=query,
+                location=location,
+                language="en",
+                num_results=5,
+            )
+
+            if not results.success:
+                return {"error": f"Search failed", "success": False}
+
+            for item in results.data:
+                url = item.get("url", "")
+                if "linkedin.com/company" in url:
+                    return {
+                        "success": True,
+                        "url": url,
+                        "title": item.get("title", ""),
+                    }
+
+            return {"success": True, "url": None}
+
+    except Exception as e:
+        return {"error": str(e), "success": False}
