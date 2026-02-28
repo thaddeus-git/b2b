@@ -10,6 +10,7 @@ Example:
 """
 
 import argparse
+import asyncio
 import csv
 import json
 import os
@@ -374,3 +375,163 @@ def find_best_website(
 
     best = candidates[0]
     return best["url"], best["score"], candidates
+
+
+async def enrich_lead(
+    lead: dict,
+    min_confidence: float = 0.8,
+) -> dict:
+    """
+    Enrich a single lead with website and LinkedIn info.
+
+    Returns enriched lead dict.
+    """
+    result = lead.copy()
+
+    # Initialize new fields
+    result["website"] = ""
+    result["website_confidence"] = 0.0
+    result["company_linkedin"] = ""
+    result["person_linkedin"] = ""
+    result["person_verified"] = ""
+    result["employee_count"] = ""
+    result["industry"] = ""
+    result["country"] = detect_country(lead)
+    result["notes"] = ""
+
+    company_name = lead.get("company_name", "").strip()
+    full_name = lead.get("full_name", "").strip()
+
+    # Check for generic company name
+    generic_names = ["selbstständigkeit", "selbstständig", "self-employed",
+                     "freelancer", "privat", "private"]
+    if company_name.lower() in generic_names:
+        result["notes"] = "Generic company name, verify manually"
+        return result
+
+    # Search for company website
+    search_result = await search_company(company_name, result["country"])
+
+    if not search_result.get("success"):
+        result["notes"] = f"Search error: {search_result.get('error', 'Unknown')}"
+        return result
+
+    search_results = search_result.get("results", [])
+    if not search_results:
+        result["notes"] = "No results found"
+        return result
+
+    # Find best website match
+    best_url, confidence, candidates = find_best_website(lead, search_results, min_confidence)
+
+    result["website"] = best_url or ""
+    result["website_confidence"] = confidence
+
+    # Handle confidence levels
+    if confidence >= min_confidence:
+        pass  # Good match, no notes needed
+    elif confidence >= 0.5:
+        # Medium confidence - add candidates to notes
+        top_candidates = candidates[:3]
+        candidate_urls = [c["url"] for c in top_candidates]
+        result["notes"] = f"Medium confidence. Candidates: {', '.join(candidate_urls)}"
+    else:
+        # Low confidence - flag for review
+        result["notes"] = f"Low confidence match ({confidence:.2f}). Manual review needed."
+
+    # Search for LinkedIn profiles
+    if company_name:
+        linkedin_company = await search_linkedin_company(company_name, result["country"])
+        if linkedin_company.get("success") and linkedin_company.get("url"):
+            result["company_linkedin"] = linkedin_company["url"]
+
+    if full_name and company_name:
+        linkedin_person = await search_linkedin_person(full_name, company_name, result["country"])
+        if linkedin_person.get("success") and linkedin_person.get("url"):
+            result["person_linkedin"] = linkedin_person["url"]
+            result["person_verified"] = "true"  # Found on LinkedIn with company
+
+    return result
+
+
+async def enrich_csv(
+    input_path: str,
+    output_path: str,
+    min_confidence: float = 0.8,
+) -> dict:
+    """
+    Enrich all leads in a CSV file.
+
+    Returns summary dict.
+    """
+    input_file = Path(input_path)
+    if not input_file.exists():
+        return {"error": f"Input file not found: {input_path}", "success": False}
+
+    # Read input CSV
+    leads = []
+    with open(input_file, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f, delimiter="\t")  # Tab-delimited
+        leads = list(reader)
+
+    if not leads:
+        return {"error": "No leads found in input file", "success": False}
+
+    print(f"Processing {len(leads)} leads...")
+
+    # Enrich each lead
+    enriched = []
+    high_confidence_count = 0
+    review_count = 0
+
+    for i, lead in enumerate(leads):
+        if (i + 1) % 10 == 0:
+            print(f"  Progress: {i + 1}/{len(leads)}")
+
+        enriched_lead = await enrich_lead(lead, min_confidence)
+        enriched.append(enriched_lead)
+
+        if enriched_lead["website_confidence"] >= min_confidence:
+            high_confidence_count += 1
+        elif enriched_lead["website_confidence"] >= 0.5:
+            review_count += 1
+
+        # Rate limiting
+        time.sleep(1)
+
+    # Write enriched CSV
+    output_file = Path(output_path)
+    fieldnames = list(enriched[0].keys())
+
+    with open(output_file, "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames, delimiter="\t")
+        writer.writeheader()
+        writer.writerows(enriched)
+
+    # Write review-needed CSV
+    review_file = output_file.with_name(
+        output_file.stem + "_review_needed" + output_file.suffix
+    )
+    review_leads = [l for l in enriched if l["website_confidence"] < min_confidence and l["website"]]
+
+    if review_leads:
+        with open(review_file, "w", encoding="utf-8", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames, delimiter="\t")
+            writer.writeheader()
+            writer.writerows(review_leads)
+
+    print(f"\nComplete!")
+    print(f"  Total leads: {len(leads)}")
+    print(f"  High confidence: {high_confidence_count}")
+    print(f"  Needs review: {review_count}")
+    print(f"  Output: {output_file}")
+    if review_leads:
+        print(f"  Review file: {review_file}")
+
+    return {
+        "success": True,
+        "total": len(leads),
+        "high_confidence": high_confidence_count,
+        "review_needed": review_count,
+        "output_file": str(output_file),
+    }
