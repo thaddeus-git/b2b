@@ -561,6 +561,9 @@ async def enrich_lead(
 
     company_name = lead.get("company_name", "").strip()
     full_name = lead.get("full_name", "").strip()
+    email = lead.get("work_email", "").strip()
+    email_domain = extract_email_domain(email)
+    is_generic_email = is_generic_email_domain(email_domain) if email_domain else True
 
     # Check for generic company name
     generic_names = ["selbstständigkeit", "selbstständig", "self-employed",
@@ -569,41 +572,75 @@ async def enrich_lead(
         result["notes"] = "Generic company name, verify manually"
         return result
 
-    # Search for company website
-    search_result = await search_company(company_name, result["country"])
+    # Check if person name equals company name
+    person_is_company = person_equals_company(full_name, company_name)
 
-    if not search_result.get("success"):
-        result["notes"] = f"Search error: {search_result.get('error', 'Unknown')}"
-        return result
+    # Strategy 1: Try direct website from email domain (non-generic emails only)
+    website_found = False
+    if not is_generic_email and email_domain:
+        direct_url, success = await try_direct_website(email_domain)
+        if success:
+            result["website"] = direct_url
+            result["website_confidence"] = 0.7  # Good confidence from direct access
+            website_found = True
 
-    search_results = search_result.get("results", [])
-    if not search_results:
-        result["notes"] = "No results found"
-        return result
+    # Strategy 2: Search by email (non-generic emails only)
+    if not website_found and not is_generic_email and email:
+        email_search = await search_by_email(email, result["country"])
+        if email_search.get("success"):
+            email_results = email_search.get("results", [])
+            if email_results:
+                # Look for website in email search results
+                for item in email_results:
+                    url = item.get("url", "")
+                    # Skip social media
+                    if any(d in url for d in ["linkedin.com", "facebook.com", "instagram.com"]):
+                        continue
+                    # Check if email domain matches
+                    if email_domain and extract_domain(url) == email_domain:
+                        result["website"] = url
+                        result["website_confidence"] = 0.8  # High confidence - email search + domain match
+                        website_found = True
+                        break
 
-    # Find best website match
-    best_url, confidence, candidates = find_best_website(lead, search_results, min_confidence)
+    # Strategy 3: Search by company name (fallback)
+    if not website_found:
+        search_result = await search_company(company_name, result["country"])
 
-    result["website"] = best_url or ""
-    result["website_confidence"] = confidence
+        if search_result.get("success"):
+            search_results = search_result.get("results", [])
+            if search_results:
+                best_url, confidence, candidates = find_best_website(lead, search_results, min_confidence)
+                result["website"] = best_url or ""
+                result["website_confidence"] = confidence
 
-    # Handle confidence levels
-    if confidence >= min_confidence:
-        pass  # Good match, no notes needed
-    elif confidence >= 0.5:
-        # Medium confidence - add candidates to notes
-        top_candidates = candidates[:3]
-        candidate_urls = [c["url"] for c in top_candidates]
-        result["notes"] = f"Medium confidence. Candidates: {', '.join(candidate_urls)}"
-    else:
-        # Low confidence - flag for review
-        result["notes"] = f"Low confidence match ({confidence:.2f}). Manual review needed."
+                # Handle confidence levels
+                if confidence < min_confidence and confidence >= 0.5:
+                    top_candidates = candidates[:3]
+                    candidate_urls = [c["url"] for c in top_candidates]
+                    result["notes"] = f"Medium confidence. Candidates: {', '.join(candidate_urls)}"
+                elif confidence < 0.5:
+                    result["notes"] = f"Low confidence match ({confidence:.2f}). Manual review needed."
+        else:
+            result["notes"] = f"Search error: {search_result.get('error', 'Unknown')}"
 
-    # Search for LinkedIn profiles
+    # Handle person=company case
+    if person_is_company and not is_generic_email:
+        # Can verify via email domain
+        pass  # Already handled above
+    elif person_is_company and is_generic_email:
+        # Cannot verify - flag for manual review
+        if not result["notes"]:
+            result["notes"] = "Person name equals company name with generic email. Verify manually."
+
+    # Search for LinkedIn profiles (with validation)
     if company_name:
         linkedin_company = await search_linkedin_company(company_name, result["country"])
         if linkedin_company.get("success") and linkedin_company.get("url"):
-            result["company_linkedin"] = linkedin_company["url"]
+            # Validate LinkedIn result
+            if validate_linkedin_result(company_name, linkedin_company["url"], linkedin_company.get("title", "")):
+                result["company_linkedin"] = linkedin_company["url"]
+            # If validation fails, don't set company_linkedin (leave empty)
 
     if full_name and company_name:
         linkedin_person = await search_linkedin_person(full_name, company_name, result["country"])
