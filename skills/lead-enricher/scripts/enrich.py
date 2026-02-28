@@ -205,6 +205,33 @@ def validate_linkedin_result(
     return False
 
 
+def person_equals_company(full_name: str, company_name: str) -> bool:
+    """
+    Check if person name equals or is contained in company name.
+
+    Returns: True if they appear to be the same entity
+    """
+    if not full_name or not company_name:
+        return False
+
+    name_lower = full_name.lower().strip()
+    company_lower = company_name.lower().strip()
+
+    # Exact match
+    if name_lower == company_lower:
+        return True
+
+    # Name contained in company (e.g., "Mina" in "Mina GmbH")
+    if name_lower in company_lower:
+        return True
+
+    # Company contained in name (less common but possible)
+    if company_lower in name_lower:
+        return True
+
+    return False
+
+
 async def search_company(
     company_name: str,
     country_code: str = "DE",
