@@ -87,7 +87,7 @@ def country_code_to_location(country_code: str) -> str:
         "PH": "Philippines", "HK": "Hong Kong", "TW": "Taiwan", "AE": "United Arab Emirates",
         "SA": "Saudi Arabia", "IL": "Israel", "TR": "Turkey", "AR": "Argentina",
         "CL": "Chile", "CO": "Colombia", "PE": "Peru", "EG": "Egypt",
-        "NG": "Nigeria", "KE": "Kenya", "NG": "Nigeria", "ZA": "South Africa",
+        "NG": "Nigeria", "KE": "Kenya", "ZA": "South Africa",
     }
     return mapping.get(country_code.upper(), country_code)
 
@@ -233,8 +233,7 @@ async def main():
     if len(sys.argv) < 2:
         print(json.dumps({
             "error": "Usage: search.py <query> [country] [language] [num_results]",
-            "example": 'python search.py "best restaurants" "US" "en" "10"',
-            "env_var_set": bool(os.environ.get("BRIGHTDATA_SERP_API_KEY"))
+            "example": 'python search.py "best restaurants" "US" "en" "10"'
         }))
         sys.exit(1)
 

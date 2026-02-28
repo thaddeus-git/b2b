@@ -921,7 +921,7 @@ def main():
         # Test mode - verify API key works
         try:
             api_key = get_api_key()
-            print(f"API key found: {api_key[:8]}...")
+            print(f"API key configured: ...{api_key[-4:]}")
             print("API configuration OK")
             return
         except ValueError as e:
