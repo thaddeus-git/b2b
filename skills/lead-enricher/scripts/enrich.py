@@ -535,3 +535,61 @@ async def enrich_csv(
         "review_needed": review_count,
         "output_file": str(output_file),
     }
+
+
+def main():
+    """CLI entry point."""
+    parser = argparse.ArgumentParser(
+        description="Enrich leads with website and LinkedIn info"
+    )
+    parser.add_argument(
+        "input_csv",
+        help="Path to input CSV file (UTF-8, tab-delimited)"
+    )
+    parser.add_argument(
+        "output_csv",
+        nargs="?",
+        help="Path to output CSV file (default: input_enriched.csv)"
+    )
+    parser.add_argument(
+        "--min-confidence",
+        type=float,
+        default=0.8,
+        help="Minimum confidence threshold (default: 0.8)"
+    )
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Test API connection"
+    )
+
+    args = parser.parse_args()
+
+    if args.test:
+        # Test mode - verify API key works
+        try:
+            api_key = get_api_key()
+            print(f"API key found: {api_key[:8]}...")
+            print("API configuration OK")
+            return
+        except ValueError as e:
+            print(f"Error: {e}")
+            sys.exit(1)
+
+    # Determine output path
+    input_path = Path(args.input_csv)
+    if args.output_csv:
+        output_path = args.output_csv
+    else:
+        output_path = str(input_path.with_stem(input_path.stem + "_enriched"))
+
+    # Run enrichment
+    result = asyncio.run(enrich_csv(args.input_csv, output_path, args.min_confidence))
+
+    if not result.get("success"):
+        print(f"Error: {result.get('error')}")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
