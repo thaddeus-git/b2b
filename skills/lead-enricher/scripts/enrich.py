@@ -26,23 +26,171 @@ import aiohttp
 CONFIG_DIR = Path.home() / ".claude" / "lead-enricher"
 CONFIG_FILE = CONFIG_DIR / "config.json"
 
-# Generic email domains (ISPs - skip email-first search)
-GENERIC_EMAIL_DOMAINS = {
-    # Global
+# Email ISP domains organized by region (for maintainability)
+# Combined into GENERIC_EMAIL_DOMAINS for efficient lookup
+
+# Global / Multi-region
+GLOBAL_EMAIL_DOMAINS = {
     "gmail.com", "outlook.com", "hotmail.com", "yahoo.com",
     "aol.com", "icloud.com", "mail.com", "live.com", "msn.com",
     "googlemail.com", "ymail.com", "protonmail.com", "zoho.com",
     "fastmail.com",
-    # German/DACH
-    "web.de", "gmx.de", "gmx.at", "gmx.ch", "t-online.de",
-    "online.de", "freenet.de", "1und1.de",
-    # French
-    "orange.fr", "wanadoo.fr", "laposte.net", "free.fr",
-    # Spanish
-    "telefonica.es", "terra.es",
-    # Chinese
-    "qq.com", "163.com", "126.com", "sina.com", "sohu.com",
 }
+
+# North America
+USA_EMAIL_DOMAINS = {
+    "comcast.net", "verizon.net", "att.net", "bellsouth.net",
+    "sbcglobal.net", "cox.net", "charter.net", "earthlink.net",
+}
+CANADA_EMAIL_DOMAINS = {
+    "bell.net", "rogers.com", "shaw.ca", "telus.net",
+    "sympatico.ca", "videotron.ca", "primus.ca",
+}
+
+# Europe
+EU_WEST_EMAIL_DOMAINS = {
+    # UK
+    "btinternet.com", "sky.com", "virginmedia.com", "talktalk.net",
+    # Ireland
+    "eircom.net", "vodafone.ie",
+    # France
+    "orange.fr", "wanadoo.fr", "laposte.net", "free.fr", "sfr.fr",
+    # Netherlands
+    "ziggo.nl", "kpnmail.nl", "planet.nl",
+    # Belgium
+    "telenet.be", "skynet.be",
+}
+EU_DACH_EMAIL_DOMAINS = {
+    # Germany
+    "web.de", "gmx.de", "t-online.de", "online.de", "freenet.de", "1und1.de",
+    # Austria
+    "gmx.at", "aon.at", "chello.at",
+    # Switzerland
+    "gmx.ch", "bluewin.ch", "sunrise.ch",
+}
+EU_SOUTH_EMAIL_DOMAINS = {
+    # Spain
+    "telefonica.es", "terra.es", "movistar.es", "ono.com",
+    # Italy
+    "libero.it", "virgilio.it", "tin.it", "alice.it", "tim.it",
+    # Portugal
+    "sapo.pt", "netcabo.pt", "mail.pt",
+}
+EU_NORDIC_EMAIL_DOMAINS = {
+    # Scandinavia
+    "telenor.no", "telia.com", "tele2.se", "bredband.net",
+    # Finland
+    "luukku.com", "surffi.net", "kolumbus.fi",
+    # Denmark
+    "mail.dk", "ofir.dk", "get2net.dk",
+}
+EU_EAST_EMAIL_DOMAINS = {
+    # Poland
+    "wp.pl", "onet.pl", "interia.pl", "o2.pl",
+    # Czech
+    "seznam.cz", "centrum.cz", "email.cz",
+    # Hungary
+    "freemail.hu", "indamail.hu", "citromail.hu",
+    # Russia/CIS
+    "mail.ru", "yandex.ru", "rambler.ru", "bk.ru",
+}
+
+# Asia-Pacific
+ASIA_EAST_EMAIL_DOMAINS = {
+    # China
+    "qq.com", "163.com", "126.com", "sina.com", "sohu.com",
+    "aliyun.com", "139.com", "yeah.net",
+    # Japan
+    "docomo.ne.jp", "softbank.ne.jp", "ezweb.ne.jp",
+    "yahoo.co.jp", "goo.ne.jp", "au.com",
+    # South Korea
+    "naver.com", "daum.net", "hanmail.net", "kakao.com",
+}
+ASIA_SOUTH_EMAIL_DOMAINS = {
+    # India
+    "rediffmail.com", "indiainfo.com", "vsnl.com", "airtelmail.in",
+    # Pakistan
+    "cyber.net.pk", "wol.net.pk",
+}
+ASIA_SOUTHEAST_EMAIL_DOMAINS = {
+    # Singapore
+    "singnet.com.sg", "starhub.net.sg", "pacific.net.sg",
+    # Malaysia
+    "tm.net.my", "streamyx.com", "celcom.net.my",
+    # Indonesia
+    "telkom.net", "plasa.com", "indosat.net.id",
+    # Thailand
+    "truemail.co.th", "sanook.com", "csloxinfo.com",
+    # Philippines
+    "pldtdsl.net", "globe.com.ph",
+    # Vietnam
+    "vnptmail.vn", "fpt.vn", "viettel.com.vn",
+}
+OCEANIA_EMAIL_DOMAINS = {
+    # Australia
+    "bigpond.com", "optusnet.com.au", "iinet.net.au", "tpg.com.au",
+    "dodo.com.au", "internode.on.net", "westnet.com.au",
+    # New Zealand
+    "xtra.co.nz", "vodafone.co.nz", "slingshot.co.nz",
+}
+
+# Middle East & Africa
+MIDDLE_EAST_EMAIL_DOMAINS = {
+    # UAE/Gulf
+    "etisalat.ae", "du.ae", "eim.ae",
+    # Saudi Arabia
+    "stc.com.sa", "mobily.com.sa",
+    # Israel
+    "walla.co.il", "netvision.net.il", "012.net.il",
+    # Turkey
+    "turkcell.com.tr", "ttmail.com", "superonline.com",
+    # Egypt
+    "te.eg", "link.net", "tedata.net",
+}
+AFRICA_EMAIL_DOMAINS = {
+    # South Africa
+    "telkomsa.net", "vodamail.co.za", "mweb.co.za",
+    "iafrica.com", "webmail.co.za", "absamail.co.za",
+    # Kenya
+    "safaricom.co.ke", "kenyaweb.com",
+    # Nigeria
+    "yahoo.com.ng", "gmail.com.ng",
+}
+
+# Latin America
+LATIN_AMERICA_EMAIL_DOMAINS = {
+    # Brazil
+    "uol.com.br", "bol.com.br", "terra.com.br", "ig.com.br",
+    # Mexico
+    "prodigy.net.mx", "terra.com.mx", "hotmail.com.mx",
+    # Argentina
+    "arnet.com.ar", "ciudad.com.ar", "fibertel.com.ar",
+    # Chile
+    "vtr.net", "terra.cl", "entel.cl",
+    # Colombia
+    "etb.net.co", "une.net.co", "tigo.com.co",
+    # Peru
+    "speedy.com.pe", "infonegocio.net.pe",
+}
+
+# Combined set for efficient lookup
+GENERIC_EMAIL_DOMAINS = (
+    GLOBAL_EMAIL_DOMAINS |
+    USA_EMAIL_DOMAINS |
+    CANADA_EMAIL_DOMAINS |
+    EU_WEST_EMAIL_DOMAINS |
+    EU_DACH_EMAIL_DOMAINS |
+    EU_SOUTH_EMAIL_DOMAINS |
+    EU_NORDIC_EMAIL_DOMAINS |
+    EU_EAST_EMAIL_DOMAINS |
+    ASIA_EAST_EMAIL_DOMAINS |
+    ASIA_SOUTH_EMAIL_DOMAINS |
+    ASIA_SOUTHEAST_EMAIL_DOMAINS |
+    OCEANIA_EMAIL_DOMAINS |
+    MIDDLE_EAST_EMAIL_DOMAINS |
+    AFRICA_EMAIL_DOMAINS |
+    LATIN_AMERICA_EMAIL_DOMAINS
+)
 
 
 def get_api_key() -> str:
