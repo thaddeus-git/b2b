@@ -10,3 +10,10 @@ human_input/
 # macOS
 .DS_Store
 .playwright-cli/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so
