@@ -22,39 +22,18 @@ import os
 import sys
 from pathlib import Path
 
+# Add shared module to path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "shared"))
+from brightdata_utils import get_api_key as shared_get_api_key, LOCATION_MAP
+
 
 CONFIG_DIR = Path.home() / ".claude" / "distributor-inspector"
 CONFIG_FILE = CONFIG_DIR / "config.json"
 
 
 def get_api_key() -> str:
-    """
-    Get API key from environment variable or config file.
-
-    Priority:
-    1. BRIGHTDATA_SERP_API_KEY environment variable
-    2. ~/.claude/distributor-inspector/config.json
-    """
-    # Check environment variable first
-    api_key = os.environ.get("BRIGHTDATA_SERP_API_KEY", "")
-    if api_key:
-        return api_key
-
-    # Fallback to config file
-    if CONFIG_FILE.exists():
-        try:
-            with open(CONFIG_FILE, "r") as f:
-                config = json.load(f)
-                api_key = config.get("api_key", "")
-                if api_key:
-                    return api_key
-        except (json.JSONDecodeError, IOError):
-            pass
-
-    raise ValueError(
-        "API key not found. Please set BRIGHTDATA_SERP_API_KEY environment variable "
-        f"or edit {CONFIG_FILE} and add your API key."
-    )
+    """Get API key using shared utility with distributor-inspector config."""
+    return shared_get_api_key("distributor-inspector")
 
 
 def ensure_sdk_installed():
@@ -73,23 +52,8 @@ def ensure_sdk_installed():
 
 
 def country_code_to_location(country_code: str) -> str:
-    """Convert country code to location name for SDK."""
-    mapping = {
-        "DE": "Germany", "US": "United States", "GB": "United Kingdom",
-        "FR": "France", "IT": "Italy", "ES": "Spain", "NL": "Netherlands",
-        "BE": "Belgium", "AT": "Austria", "CH": "Switzerland", "PL": "Poland",
-        "CZ": "Czech Republic", "CA": "Canada", "AU": "Australia", "JP": "Japan",
-        "KR": "South Korea", "CN": "China", "IN": "India", "BR": "Brazil",
-        "MX": "Mexico", "RU": "Russia", "ZA": "South Africa", "SE": "Sweden",
-        "NO": "Norway", "DK": "Denmark", "FI": "Finland", "GR": "Greece",
-        "PT": "Portugal", "IE": "Ireland", "NZ": "New Zealand", "SG": "Singapore",
-        "MY": "Malaysia", "TH": "Thailand", "VN": "Vietnam", "ID": "Indonesia",
-        "PH": "Philippines", "HK": "Hong Kong", "TW": "Taiwan", "AE": "United Arab Emirates",
-        "SA": "Saudi Arabia", "IL": "Israel", "TR": "Turkey", "AR": "Argentina",
-        "CL": "Chile", "CO": "Colombia", "PE": "Peru", "EG": "Egypt",
-        "NG": "Nigeria", "KE": "Kenya", "ZA": "South Africa",
-    }
-    return mapping.get(country_code.upper(), country_code)
+    """Convert country code to location name using shared LOCATION_MAP."""
+    return LOCATION_MAP.get(country_code.upper(), country_code)
 
 
 async def search_google(

@@ -22,6 +22,10 @@ from typing import Optional
 from urllib.parse import urlparse
 import aiohttp
 
+# Add shared module to path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "shared"))
+from brightdata_utils import get_api_key, LOCATION_MAP
+
 # Configuration
 CONFIG_DIR = Path.home() / ".claude" / "lead-enricher"
 CONFIG_FILE = CONFIG_DIR / "config.json"
@@ -193,25 +197,7 @@ GENERIC_EMAIL_DOMAINS = (
 )
 
 
-def get_api_key() -> str:
-    """Get API key from environment variable or config file."""
-    api_key = os.environ.get("BRIGHTDATA_SERP_API_KEY", "")
-    if api_key:
-        return api_key
-
-    if CONFIG_FILE.exists():
-        try:
-            with open(CONFIG_FILE, "r") as f:
-                config = json.load(f)
-                api_key = config.get("api_key", "")
-                if api_key:
-                    return api_key
-        except (json.JSONDecodeError, IOError):
-            pass
-
-    raise ValueError(
-        f"API key not found. Set BRIGHTDATA_SERP_API_KEY or edit {CONFIG_FILE}"
-    )
+# get_api_key is now imported from shared.brightdata_utils
 
 
 def extract_domain(url: str) -> str:
