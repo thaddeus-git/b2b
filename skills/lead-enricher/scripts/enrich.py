@@ -25,12 +25,22 @@ from urllib.parse import urlparse
 CONFIG_DIR = Path.home() / ".claude" / "lead-enricher"
 CONFIG_FILE = CONFIG_DIR / "config.json"
 
-# Generic email domains (skip domain matching bonus)
+# Generic email domains (ISPs - skip email-first search)
 GENERIC_EMAIL_DOMAINS = {
+    # Global
     "gmail.com", "outlook.com", "hotmail.com", "yahoo.com",
-    "web.de", "gmx.de", "t-online.de", "aol.com", "icloud.com",
-    "mail.com", "googlemail.com", "ymail.com", "live.com",
-    "msn.com", "qq.com", "163.com", "126.com",
+    "aol.com", "icloud.com", "mail.com", "live.com", "msn.com",
+    "googlemail.com", "ymail.com", "protonmail.com", "zoho.com",
+    "fastmail.com",
+    # German/DACH
+    "web.de", "gmx.de", "gmx.at", "gmx.ch", "t-online.de",
+    "online.de", "freenet.de", "1und1.de",
+    # French
+    "orange.fr", "wanadoo.fr", "laposte.net", "free.fr",
+    # Spanish
+    "telefonica.es", "terra.es",
+    # Chinese
+    "qq.com", "163.com", "126.com", "sina.com", "sohu.com",
 }
 
 
