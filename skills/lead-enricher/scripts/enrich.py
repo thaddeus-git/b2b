@@ -20,6 +20,7 @@ import time
 from pathlib import Path
 from typing import Optional
 from urllib.parse import urlparse
+import aiohttp
 
 # Configuration
 CONFIG_DIR = Path.home() / ".claude" / "lead-enricher"
@@ -140,6 +141,31 @@ def detect_country(lead: dict) -> str:
             return "ES"
 
     return "DE"  # Default to Germany for German leads
+
+
+async def try_direct_website(domain: str, timeout: float = 5.0) -> tuple[Optional[str], bool]:
+    """
+    Try to access website directly by domain.
+
+    Returns: (url, success) where url is the final URL after redirects
+    """
+    if not domain:
+        return None, False
+
+    url = f"https://{domain}/"
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.head(
+                url,
+                timeout=aiohttp.ClientTimeout(total=timeout),
+                allow_redirects=True,
+            ) as response:
+                if response.status == 200:
+                    return str(response.url), True
+    except Exception:
+        pass
+
+    return None, False
 
 
 # (Append to enrich.py)
