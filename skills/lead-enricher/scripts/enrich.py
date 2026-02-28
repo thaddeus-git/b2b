@@ -603,6 +603,119 @@ async def search_linkedin_company(
         return {"error": str(e), "success": False}
 
 
+def extract_linkedin_company_data(html: str) -> dict:
+    """
+    Extract employee count and industry from LinkedIn company page HTML.
+
+    Returns dict with employee_count, industry, followers.
+    """
+    import json as json_module
+
+    result = {
+        "employee_count": None,
+        "industry": None,
+        "followers": None,
+    }
+
+    # 1. Extract from JSON-LD structured data (most reliable for employee count)
+    ld_json_match = re.search(
+        r'<script[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
+        html, re.DOTALL | re.IGNORECASE
+    )
+    if ld_json_match:
+        try:
+            data = json_module.loads(ld_json_match.group(1))
+
+            # Handle @graph structure (nested)
+            if isinstance(data, dict) and "@graph" in data:
+                for item in data["@graph"]:
+                    if isinstance(item, dict) and item.get("@type") == "Organization":
+                        data = item
+                        break
+
+            # Handle array structure
+            if isinstance(data, list):
+                for item in data:
+                    if isinstance(item, dict) and item.get("@type") == "Organization":
+                        data = item
+                        break
+
+            if isinstance(data, dict) and "numberOfEmployees" in data:
+                emp = data["numberOfEmployees"]
+                if isinstance(emp, dict) and "value" in emp:
+                    result["employee_count"] = str(emp["value"])
+                elif isinstance(emp, (int, str)):
+                    result["employee_count"] = str(emp)
+        except json_module.JSONDecodeError:
+            pass
+
+    # 2. Extract followers from meta description
+    followers_match = re.search(
+        r'(\d[\d,\.]*)\s*followers?\s+on\s+LinkedIn',
+        html, re.IGNORECASE
+    )
+    if followers_match:
+        result["followers"] = followers_match.group(1).replace(",", "").replace(".", "")
+
+    # 3. Extract industry from about-us section
+    industry_match = re.search(
+        r'about-us__industry[^>]*>.*?<dd[^>]*>([^<]+)</dd>',
+        html, re.DOTALL | re.IGNORECASE
+    )
+    if industry_match:
+        result["industry"] = industry_match.group(1).strip()
+
+    return result
+
+
+async def scrape_linkedin_company(linkedin_url: str, verbose: bool = False) -> dict:
+    """
+    Scrape a LinkedIn company page to extract employee count and industry.
+
+    Returns dict with employee_count, industry, followers, or error.
+    """
+    try:
+        from brightdata import BrightDataClient
+    except ImportError:
+        return {"error": "brightdata-sdk not installed", "success": False}
+
+    try:
+        api_key = get_api_key()
+    except ValueError as e:
+        return {"error": str(e), "success": False}
+
+    try:
+        async with BrightDataClient(
+            token=api_key,
+            validate_token=False,
+            auto_create_zones=False,
+        ) as client:
+            if verbose:
+                print(f"  [LinkedIn] Scraping company page: {linkedin_url}")
+
+            result = await client.scrape_url(linkedin_url)
+
+            if not result.success:
+                return {"error": f"Scrape failed: {result.error}", "success": False}
+
+            data = extract_linkedin_company_data(result.data)
+
+            if verbose:
+                emp = data.get("employee_count") or "N/A"
+                ind = data.get("industry") or "N/A"
+                print(f"  [LinkedIn] Extracted: employees={emp}, industry={ind}")
+
+            return {
+                "success": True,
+                "employee_count": data.get("employee_count"),
+                "industry": data.get("industry"),
+                "followers": data.get("followers"),
+            }
+
+    except Exception as e:
+        return {"error": str(e), "success": False}
+
+
 def score_website_match(
     lead: dict,
     result: dict,
@@ -798,6 +911,14 @@ async def enrich_lead(
                 result["company_linkedin"] = linkedin_company["url"]
                 if verbose:
                     print(f"  [LinkedIn] ✅ Company page validated: {linkedin_company['url']}")
+
+                # Scrape company page for employee count and industry
+                company_data = await scrape_linkedin_company(linkedin_company["url"], verbose)
+                if company_data.get("success"):
+                    if company_data.get("employee_count"):
+                        result["employee_count"] = company_data["employee_count"]
+                    if company_data.get("industry"):
+                        result["industry"] = company_data["industry"]
             else:
                 if verbose:
                     print(f"  [LinkedIn] ⚠️ Result rejected by validation: {linkedin_company['url']}")
