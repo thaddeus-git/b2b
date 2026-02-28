@@ -232,6 +232,68 @@ def person_equals_company(full_name: str, company_name: str) -> bool:
     return False
 
 
+async def search_by_email(
+    email: str,
+    country_code: str = "DE",
+    num_results: int = 5,
+) -> dict:
+    """
+    Search for exact email address to find associated websites.
+
+    Returns dict with results or error.
+    """
+    try:
+        from brightdata import BrightDataClient
+    except ImportError:
+        return {"error": "brightdata-sdk not installed", "success": False}
+
+    try:
+        api_key = get_api_key()
+    except ValueError as e:
+        return {"error": str(e), "success": False}
+
+    query = f'"{email}"'
+
+    location_map = {
+        "DE": "Germany", "AT": "Austria", "CH": "Switzerland",
+        "FR": "France", "ES": "Spain",
+    }
+    location = location_map.get(country_code, "Germany")
+
+    try:
+        async with BrightDataClient(
+            token=api_key,
+            validate_token=False,
+            auto_create_zones=False,
+        ) as client:
+            results = await client.search.google(
+                query=query,
+                location=location,
+                language="de" if country_code in ("DE", "AT", "CH") else "en",
+                num_results=num_results,
+            )
+
+            if not results.success:
+                return {"error": f"Search failed: {results.error}", "success": False}
+
+            mapped = []
+            for item in results.data:
+                mapped.append({
+                    "title": item.get("title", ""),
+                    "url": item.get("url", ""),
+                    "snippet": item.get("description", ""),
+                })
+
+            return {
+                "success": True,
+                "query": query,
+                "results": mapped
+            }
+
+    except Exception as e:
+        return {"error": str(e), "success": False}
+
+
 async def search_company(
     company_name: str,
     country_code: str = "DE",
