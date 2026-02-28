@@ -415,7 +415,7 @@ async def search_linkedin_company(
     company_name: str,
     country_code: str = "DE",
 ) -> dict:
-    """Search for company's LinkedIn page."""
+    """Search for company's LinkedIn page with validation."""
     try:
         from brightdata import BrightDataClient
     except ImportError:
@@ -428,7 +428,10 @@ async def search_linkedin_company(
 
     query = f'"{company_name}" site:linkedin.com/company'
 
-    location_map = {"DE": "Germany", "AT": "Austria", "CH": "Switzerland"}
+    location_map = {
+        "DE": "Germany", "AT": "Austria", "CH": "Switzerland",
+        "FR": "France", "ES": "Spain", "NL": "Netherlands",
+    }
     location = location_map.get(country_code, "Germany")
 
     try:
@@ -441,20 +444,24 @@ async def search_linkedin_company(
                 query=query,
                 location=location,
                 language="en",
-                num_results=5,
+                num_results=10,  # Get more results to find valid one
             )
 
             if not results.success:
-                return {"error": f"Search failed", "success": False}
+                return {"error": f"Search failed: {results.error}", "success": False}
 
+            # Try each result until we find a valid one
             for item in results.data:
                 url = item.get("url", "")
+                title = item.get("title", "")
                 if "linkedin.com/company" in url:
-                    return {
-                        "success": True,
-                        "url": url,
-                        "title": item.get("title", ""),
-                    }
+                    # Validate before returning
+                    if validate_linkedin_result(company_name, url, title):
+                        return {
+                            "success": True,
+                            "url": url,
+                            "title": title,
+                        }
 
             return {"success": True, "url": None}
 
