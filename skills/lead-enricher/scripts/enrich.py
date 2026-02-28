@@ -681,6 +681,7 @@ def find_best_website(
 async def enrich_lead(
     lead: dict,
     min_confidence: float = 0.8,
+    verbose: bool = False,
 ) -> dict:
     """
     Enrich a single lead with website and LinkedIn info.
@@ -719,17 +720,25 @@ async def enrich_lead(
     # Strategy 1: Try direct website from email domain (non-generic emails only)
     website_found = False
     if not is_generic_email and email_domain:
+        if verbose:
+            print(f"  [Strategy 1] Trying direct website: https://{email_domain}/")
         direct_url, success = await try_direct_website(email_domain)
         if success:
             result["website"] = direct_url
-            result["website_confidence"] = 0.7  # Good confidence from direct access
+            result["website_confidence"] = 0.9  # High confidence - exact domain match
             website_found = True
+            if verbose:
+                print(f"  [Strategy 1] ✅ Direct website found: {direct_url} (confidence: 0.9)")
 
     # Strategy 2: Search by email (non-generic emails only)
     if not website_found and not is_generic_email and email:
+        if verbose:
+            print(f"  [Strategy 2] Searching by email: \"{email}\"")
         email_search = await search_by_email(email, result["country"])
         if email_search.get("success"):
             email_results = email_search.get("results", [])
+            if verbose:
+                print(f"  [Strategy 2] Found {len(email_results)} results")
             if email_results:
                 # Look for website in email search results
                 for item in email_results:
@@ -740,12 +749,16 @@ async def enrich_lead(
                     # Check if email domain matches
                     if email_domain and extract_domain(url) == email_domain:
                         result["website"] = url
-                        result["website_confidence"] = 0.8  # High confidence - email search + domain match
+                        result["website_confidence"] = 0.9  # High confidence - email search + exact domain match
                         website_found = True
+                        if verbose:
+                            print(f"  [Strategy 2] ✅ Domain match found: {url} (confidence: 0.9)")
                         break
 
     # Strategy 3: Search by company name (fallback)
     if not website_found:
+        if verbose:
+            print(f"  [Strategy 3] Searching by company name: \"{company_name}\"")
         search_result = await search_company(company_name, result["country"])
 
         if search_result.get("success"):
@@ -776,18 +789,32 @@ async def enrich_lead(
 
     # Search for LinkedIn profiles (with validation)
     if company_name:
+        if verbose:
+            print(f"  [LinkedIn] Searching for company: \"{company_name}\"")
         linkedin_company = await search_linkedin_company(company_name, result["country"])
         if linkedin_company.get("success") and linkedin_company.get("url"):
             # Validate LinkedIn result
             if validate_linkedin_result(company_name, linkedin_company["url"], linkedin_company.get("title", "")):
                 result["company_linkedin"] = linkedin_company["url"]
-            # If validation fails, don't set company_linkedin (leave empty)
+                if verbose:
+                    print(f"  [LinkedIn] ✅ Company page validated: {linkedin_company['url']}")
+            else:
+                if verbose:
+                    print(f"  [LinkedIn] ⚠️ Result rejected by validation: {linkedin_company['url']}")
+        elif verbose:
+            print(f"  [LinkedIn] No company page found")
 
     if full_name and company_name:
+        if verbose:
+            print(f"  [LinkedIn] Searching for person: \"{full_name}\" at \"{company_name}\"")
         linkedin_person = await search_linkedin_person(full_name, company_name, result["country"])
         if linkedin_person.get("success") and linkedin_person.get("url"):
             result["person_linkedin"] = linkedin_person["url"]
             result["person_verified"] = "true"  # Found on LinkedIn with company
+            if verbose:
+                print(f"  [LinkedIn] ✅ Person profile found: {linkedin_person['url']}")
+        elif verbose:
+            print(f"  [LinkedIn] No person profile found")
 
     return result
 
@@ -796,6 +823,7 @@ async def enrich_csv(
     input_path: str,
     output_path: str,
     min_confidence: float = 0.8,
+    verbose: bool = False,
 ) -> dict:
     """
     Enrich all leads in a CSV file.
@@ -826,7 +854,7 @@ async def enrich_csv(
         if (i + 1) % 10 == 0:
             print(f"  Progress: {i + 1}/{len(leads)}")
 
-        enriched_lead = await enrich_lead(lead, min_confidence)
+        enriched_lead = await enrich_lead(lead, min_confidence, verbose)
         enriched.append(enriched_lead)
 
         if enriched_lead["website_confidence"] >= min_confidence:
@@ -900,6 +928,11 @@ def main():
         action="store_true",
         help="Test API connection"
     )
+    parser.add_argument(
+        "--verbose", "-v",
+        action="store_true",
+        help="Show detailed progress and debugging info"
+    )
 
     args = parser.parse_args()
 
@@ -922,7 +955,7 @@ def main():
         output_path = str(input_path.with_stem(input_path.stem + "_enriched"))
 
     # Run enrichment
-    result = asyncio.run(enrich_csv(args.input_csv, output_path, args.min_confidence))
+    result = asyncio.run(enrich_csv(args.input_csv, output_path, args.min_confidence, args.verbose))
 
     if not result.get("success"):
         print(f"Error: {result.get('error')}")
