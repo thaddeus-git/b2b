@@ -299,3 +299,78 @@ async def search_linkedin_company(
 
     except Exception as e:
         return {"error": str(e), "success": False}
+
+
+def score_website_match(
+    lead: dict,
+    result: dict,
+) -> float:
+    """
+    Score how well a search result matches the lead.
+
+    Returns score 0.0-1.0
+    """
+    score = 0.0
+    company_name = lead.get("company_name", "")
+    email = lead.get("work_email", "")
+    phone = lead.get("work_phone_number", "")
+
+    # 1. Email domain match (0.50)
+    email_domain = extract_email_domain(email)
+    if email_domain and not is_generic_email_domain(email_domain):
+        result_domain = extract_domain(result.get("url", ""))
+        if email_domain == result_domain:
+            score += 0.50
+
+    # 2. Company name similarity (0.25)
+    title = result.get("title", "")
+    similarity = fuzzy_similarity(company_name, title)
+    score += similarity * 0.25
+
+    # 3. Phone in snippet (0.15) - weak signal, just check if normalized phone appears
+    snippet = result.get("snippet", "")
+    if phone and normalize_phone(phone) in normalize_phone(snippet):
+        score += 0.15
+
+    return min(score, 1.0)
+
+
+def find_best_website(
+    lead: dict,
+    search_results: list[dict],
+    min_confidence: float = 0.5,
+) -> tuple[Optional[str], float, list[dict]]:
+    """
+    Find best matching website from search results.
+
+    Returns: (best_url, confidence, all_candidates)
+    """
+    candidates = []
+
+    for result in search_results:
+        url = result.get("url", "")
+        if not url:
+            continue
+
+        # Skip LinkedIn, Facebook, etc. for website
+        skip_domains = ["linkedin.com", "facebook.com", "instagram.com",
+                        "twitter.com", "youtube.com", "wikipedia.org"]
+        if any(d in url for d in skip_domains):
+            continue
+
+        score = score_website_match(lead, result)
+        candidates.append({
+            "url": url,
+            "title": result.get("title", ""),
+            "snippet": result.get("snippet", ""),
+            "score": score,
+        })
+
+    # Sort by score descending
+    candidates.sort(key=lambda x: x["score"], reverse=True)
+
+    if not candidates:
+        return None, 0.0, []
+
+    best = candidates[0]
+    return best["url"], best["score"], candidates
