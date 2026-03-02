@@ -150,6 +150,6 @@ class TestBrightDataSDK:
     def test_sdk_has_search_methods(self):
         """Verify SDK has expected search methods."""
         from brightdata import BrightDataClient
-        client = BrightDataClient(token="test", validate_token=False)
+        client = BrightDataClient(token="test_token_12345", validate_token=False)
         assert hasattr(client, 'search')
         assert hasattr(client.search, 'google')
