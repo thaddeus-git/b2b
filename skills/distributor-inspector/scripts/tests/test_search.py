@@ -189,5 +189,21 @@ class TestSearchBatch:
         assert "test query" in result["results_by_query"]
 
 
+class TestBrightDataSDK:
+    """Smoke tests for Bright Data SDK installation."""
+
+    def test_sdk_imports_brightdata_client(self):
+        """Verify the correct SDK is installed with BrightDataClient."""
+        from brightdata import BrightDataClient
+        assert BrightDataClient is not None
+
+    def test_sdk_has_search_methods(self):
+        """Verify SDK has expected search methods."""
+        from brightdata import BrightDataClient
+        client = BrightDataClient(token="test_token_12345", validate_token=False)
+        assert hasattr(client, 'search')
+        assert hasattr(client.search, 'google')
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
