@@ -27,9 +27,14 @@ This skill is **functionally identical** to `distributor-inspector` (MCP version
 # Install Playwright CLI (one-time)
 npm install -g @playwright/cli@latest
 
+# Install dependencies with uv
+cd skills/distributor-inspector/scripts
+uv venv
+source .venv/bin/activate
+uv pip install -e ".[dev]"
+
 # Configure Bright Data SERP API (required for LinkedIn lookup)
-# Run from the distributor-inspector skill directory:
-python3 scripts/setup.py
+python3 setup.py
 # Then edit ~/.claude/distributor-inspector/config.json and add your Bright Data API key
 ```
 

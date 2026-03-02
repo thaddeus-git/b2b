@@ -33,9 +33,14 @@ This skill takes a CSV of leads (from Facebook/Instagram ads) and enriches each 
 ## Prerequisites
 
 ```bash
+# Install dependencies with uv
+cd skills/lead-enricher/scripts
+uv venv
+source .venv/bin/activate
+uv pip install -e ".[dev]"
+
 # Configure Bright Data SERP API
-cd skills/lead-enricher
-python3 scripts/setup.py
+python3 setup.py
 # Then edit ~/.claude/lead-enricher/config.json and add your API key
 ```
 
