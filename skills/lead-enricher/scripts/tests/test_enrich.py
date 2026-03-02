@@ -137,3 +137,19 @@ class TestScoreWebsiteMatch:
         result = {"url": "https://test.com", "title": "Test", "snippet": "Call us at 49123456"}
         score = score_website_match(lead, result)
         assert score >= 0.15  # Phone bonus
+
+
+class TestBrightDataSDK:
+    """Smoke tests for Bright Data SDK installation."""
+
+    def test_sdk_imports_brightdata_client(self):
+        """Verify the correct SDK is installed with BrightDataClient."""
+        from brightdata import BrightDataClient
+        assert BrightDataClient is not None
+
+    def test_sdk_has_search_methods(self):
+        """Verify SDK has expected search methods."""
+        from brightdata import BrightDataClient
+        client = BrightDataClient(token="test", validate_token=False)
+        assert hasattr(client, 'search')
+        assert hasattr(client.search, 'google')
