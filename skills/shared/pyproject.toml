@@ -1,0 +1,7 @@
+[project]
+name = "b2b-shared"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "brightdata-sdk>=2.2.0",
+]
