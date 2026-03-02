@@ -1,0 +1,17 @@
+[project]
+name = "distributor-inspector"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "brightdata-sdk>=2.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
