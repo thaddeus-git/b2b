@@ -313,6 +313,31 @@ Commercial product signals: cleaning equipment, facility management, janitorial 
 - Tagged `pure-2c-retail` with NO commercial products: `exclude`
 - Tagged `hospitality-single-property` (Gasthof, Pension): `nurture` or `exclude`
 
+### Step 6.5: Cross-Route to Channel Partner Inspector (NEW)
+
+**Trigger:** Company fails hard gates BUT has client overlap with target segments
+
+**Detection:**
+After determining route, check for client overlap:
+1. Scan for named clients in target segments (Healthcare, Retail, Hospitality, Property/FM)
+2. If clients detected AND route is `exclude` or `explore`:
+   - Add "Channel Partner Potential" section to output
+
+**Output Addition:**
+```markdown
+### Channel Partner Potential
+
+This company does not qualify as a traditional distributor, but has **client overlap** with target segments:
+
+**Detected Clients:** {list with segments}
+
+**Recommendation:** Re-inspect with `channel-partner-inspector` to evaluate as a referral partner.
+
+**Why this matters:** Their clients are potential end-users for cleaning robots. A partnership could provide warm introductions to facility decision-makers.
+```
+
+**Reference:** See `../_shared/target-segments.md` for target segment definitions.
+
 ## Output Format
 
 ```markdown
