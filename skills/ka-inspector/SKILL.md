@@ -172,6 +172,26 @@ Extract:
 | C | 40-59 | `nurture` |
 | D/F | <40 | `exclude` |
 
+### Cross-Route to Channel Partner Inspector
+
+**Trigger:** Company doesn't operate facilities BUT has client overlap with target segments
+
+**Detection:**
+After determining company is not a KA (doesn't operate facilities), check:
+1. Does this company have named clients in target segments?
+2. If yes, they may be a channel partner rather than end-user
+
+**Output Addition (if triggered):**
+```markdown
+### Channel Partner Potential
+
+This company is not a direct end-user (doesn't operate facilities), but has **client overlap** with target segments:
+
+**Detected Clients:** {list with segments}
+
+**Recommendation:** Re-inspect with `channel-partner-inspector` to evaluate as a referral partner.
+```
+
 ---
 
 ## Output Format
