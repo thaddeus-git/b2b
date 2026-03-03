@@ -284,9 +284,9 @@ Before scoring, check if company has commercial products:
 Commercial product signals: cleaning equipment, facility management, janitorial supplies, robotics/automation, B2B/wholesale.
 
 **Country Adjustments:**
-- France (FR): Competitor footprint +10 bonus
-- Spain (ES): After-sales maturity +10 bonus
-- Germany (DE): System integration +10 bonus
+- See `../_shared/country-strategies.md` for full list (35+ countries)
+- All countries in the strategy document are TARGET MARKETS - do not exclude based on geography
+- Apply region-specific bonuses (IMPORTANT markets: DE, FR, IT, UK, HU get dedicated strategies)
 
 ### Step 6: Route
 
@@ -527,7 +527,7 @@ Classify each company into the most relevant industry and sub-industry from the 
 | `references/icp-sales/bonus-criteria.md` | Bonus criteria from sales ICP |
 | `references/icp-sales/target-industries.md` | Target industry list |
 | `references/icp-sales/exclusion-rules.md` | Exclusion criteria |
-| `references/icp-sales/country-strategies.md` | FR/ES/DE/HU/CH/GR strategies |
+| `../_shared/country-strategies.md` | Global strategies (35+ countries) |
 | `references/icp-skill/gate-translation.md` | How AI interprets each gate |
 | `references/icp-skill/scoring-matrix.md` | Complete bonus scoring matrix |
 | `references/icp-skill/customer-overlap-rules.md` | Explicit customer overlap scoring |
