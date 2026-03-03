@@ -325,7 +325,7 @@ After determining route, check for client overlap:
 
 **Output Addition:**
 ```markdown
-### Channel Partner Potential
+### ⚠️ Channel Partner Potential
 
 This company does not qualify as a traditional distributor, but has **client overlap** with target segments:
 
