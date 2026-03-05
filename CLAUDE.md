@@ -169,10 +169,16 @@ When reaching out to distributors, lead with:
 
 ### Country Strategic Priority
 
-- **France (FR)**: Prioritize "competitor distributors (especially Pudu) → 3C/IT channels (China brand cooperation experience)"
-- **Spain (ES)**: Many project/solution-oriented partners, generally concerned about inventory risk; high requirements for after-sales technical support response
-- **Germany (DE)**: Head channels lean toward "solutions + service providers", usually require 4-8 weeks of rigorous testing before listing
-- Also prioritize: **Hungary, Switzerland, Greece**
+**IMPORTANT (Tier 1):** DE, FR, IT, UK, HU
+
+**OTHERS (Tier 2):**
+- Europe: AT, NL, BE, ES, SE, PL, IE
+- APAC: SG, TH, MY, ID, PH, VN, TW, AU, NZ
+- MENA: AE, SA, QA, KW, OM, BH, TR, IR, IQ, EG
+- Americas: US, CA, MX, CO, CL, PE, BR, AR
+- Africa: ZA
+
+See `skills/distributor-inspector/references/icp-sales/country-strategies.md` for detailed strategies.
 
 ### Exclusive Negotiation Rules
 
@@ -190,7 +196,7 @@ When evaluating a website as a potential distributor:
 2. **Target Industry Match**: Check if they operate in commercial cleaning equipment, property management, cleaning services, or system integration
 3. **Exclusion Screening**: Ensure they are not renovation-focused, pure retail, or too small
 4. **Value Proposition Fit**: Assess if they can benefit from RaaS model, fast deployment, and after-sales support
-5. **Country Context**: Consider strategic priorities and local market conditions (France/Spain/Germany/Hungary/Switzerland/Greece)
+5. **Country Context**: Consider strategic priorities and local market conditions (see country-strategies.md for all 35+ markets)
 
 ## Multi-Skill Workflows
 
