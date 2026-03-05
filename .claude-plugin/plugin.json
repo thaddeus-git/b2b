@@ -1,6 +1,6 @@
 {
   "name": "b2b",
-  "1.31.0",
+  "version": "1.31.1",
   "description": "Agent skills for B2B distributor qualification and localized web research for OrionStar Robotics.",
   "author": {
     "name": "thaddeus-git",
