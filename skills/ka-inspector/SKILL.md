@@ -30,6 +30,12 @@ This skill evaluates companies as **direct customers** (end users) for OrionStar
 ```bash
 # Install Playwright CLI (one-time)
 npm install -g @playwright/cli@latest
+
+# Install shared utilities
+cd skills/shared-scripts
+uv venv
+source .venv/bin/activate
+uv pip install -e ".[dev]"
 ```
 
 ## Deep Mode (Image Analysis)
@@ -47,7 +53,7 @@ When `mode="deep"` is specified, additional image analysis is performed:
 - `home.png` - Full homepage screenshot
 - `locations.png` - Locations/About page screenshot (if available)
 
-**Image analysis delegation:** `references/image-analyzer.md`
+**Image analysis delegation:** `../shared-references/image-analysis-guide.md`
 
 ## Process
 
@@ -114,7 +120,7 @@ Using the Industry Taxonomy below, select the most appropriate industry and sub-
 
 **Only if mode="deep":**
 
-**Delegate to:** `references/image-analyzer.md`
+**Delegate to:** `../shared-references/image-analysis-guide.md`
 
 From captured screenshots (`home.png`, `locations.png`):
 1. **Facility photos** - Verify facility type (retail stores, hotels, offices, warehouses, hospitals)
@@ -136,7 +142,7 @@ Extract:
 
 ### Step 4: Check Hard Gates
 
-**Delegate to:** `references/icp-sales/hard-gates.md`
+**Delegate to:** `../shared-references/icp/hard-gates.md`
 
 | Gate | Requirement | Detection |
 |------|-------------|-----------|
@@ -151,7 +157,7 @@ Extract:
 
 ### Step 5: Score
 
-**Delegate to:** `references/icp-skill/scoring-matrix.md`
+**Delegate to:** `../shared-references/icp/scoring-matrix.md`
 
 | Component | Max Points |
 |-----------|------------|
@@ -180,6 +186,8 @@ Extract:
 After determining company is not a KA (doesn't operate facilities), check:
 1. Does this company have named clients in target segments?
 2. If yes, they may be a channel partner rather than end-user
+
+**See:** `../shared-references/cross-routing.md` for complete routing decision matrix
 
 **Output Addition (if triggered):**
 ```markdown
@@ -319,15 +327,15 @@ Classify each company into the most relevant industry and sub-industry from the 
 
 | File | Purpose |
 |------|---------|
-| `references/icp-summary.md` | Quick reference |
-| `references/icp-sales/hard-gates.md` | Hard qualification gates |
-| `references/icp-sales/bonus-criteria.md` | Bonus criteria |
-| `references/icp-sales/target-industries.md` | Target industry list |
-| `references/icp-sales/exclusion-rules.md` | Exclusion criteria |
-| `references/icp-sales/country-strategies.md` | Country priorities |
-| `references/icp-skill/gate-translation.md` | AI detection logic |
-| `references/icp-skill/scoring-matrix.md` | Complete scoring |
-| `references/icp-skill/site-potential-rules.md` | Multi-site evaluation |
+| `../shared-references/icp-summary.md` | Quick reference |
+| `../shared-references/icp/hard-gates.md` | Hard qualification gates |
+| `../shared-references/icp/bonus-criteria.md` | Bonus criteria |
+| `../shared-references/icp/target-industries.md` | Target industry list |
+| `../shared-references/icp/exclusion-rules.md` | Exclusion criteria |
+| `../shared-references/country-strategies.md` | Country priorities |
+| `../shared-references/icp/gate-translation.md` | AI detection logic |
+| `../shared-references/icp/scoring-matrix.md` | Complete scoring |
+| `../shared-references/icp/site-potential-rules.md` | Multi-site evaluation |
 
 ---
 
