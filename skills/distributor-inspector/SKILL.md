@@ -27,15 +27,11 @@ This skill is **functionally identical** to `distributor-inspector` (MCP version
 # Install Playwright CLI (one-time)
 npm install -g @playwright/cli@latest
 
-# Install dependencies with uv
-cd skills/distributor-inspector/scripts
+# Install shared utilities
+cd skills/shared-scripts
 uv venv
 source .venv/bin/activate
 uv pip install -e ".[dev]"
-
-# Configure Bright Data SERP API (required for LinkedIn lookup)
-python3 setup.py
-# Then edit ~/.claude/distributor-inspector/config.json and add your Bright Data API key
 ```
 
 ## Deep Mode (Image Analysis)
@@ -53,7 +49,7 @@ When `mode="deep"` is specified, additional image analysis is performed:
 - `home.png` - Full homepage screenshot
 - `team.png` - Team/About page screenshot (if available)
 
-**Image analysis delegation:** `references/image-analyzer.md`
+**Image analysis delegation:** `../shared-references/image-analysis-guide.md`
 
 ## Process
 
@@ -92,7 +88,7 @@ if mode == "deep":
 
 ### Step 2: Extract Company Profile
 
-**Delegate to:** `references/company-profiler.md`
+**Delegate to:** `../shared-references/company-profiler.md`
 
 From the snapshot YAML, extract:
 - Company name (page title, headers, Impressum)
@@ -107,7 +103,7 @@ From the snapshot YAML, extract:
 
 **Only if mode="deep":**
 
-**Delegate to:** `references/image-analyzer.md`
+**Delegate to:** `../shared-references/image-analysis-guide.md`
 
 From captured screenshots (`home.png`, `team.png`):
 1. **Team photos** - Count faces, estimate employee count
@@ -120,7 +116,7 @@ Add findings to the report under "### Deep Mode Analysis" section.
 
 ### Step 3: Extract Contact Information
 
-**Delegate to:** `references/contact-extractor.md`
+**Delegate to:** `../shared-references/contact-extractor.md`
 
 Extract:
 - Phone numbers (all formats: +49, 0049, local)
@@ -136,7 +132,7 @@ If LinkedIn not found on website, run the search script directly:
 
 ```bash
 # Run from the distributor-inspector skill directory:
-python3 scripts/search.py "{company_name} linkedin" "{country}" "{language}" "5"
+python3 ../shared-scripts/serp_search.py "{company_name} linkedin" "{country}" "{language}" "5"
 ```
 
 Parse the JSON output and extract the LinkedIn URL from the first matching result.
@@ -145,7 +141,7 @@ If the script fails (missing dependency, API key error, etc.), report "Not found
 
 ### Step 4: Categorize
 
-**Delegate to:** `references/tags.md`
+**Delegate to:** `../shared-references/tags.md`
 
 Apply tags using format: `{category}-{business-model}`
 
@@ -175,7 +171,7 @@ Using the Industry Taxonomy below, select the most appropriate industry and sub-
 
 ### Step 4.5: Classify Company Scale (NEW - CRITICAL)
 
-**Delegate to:** `references/smb-classifier.md`
+**Delegate to:** `../shared-references/smb-classifier.md`
 
 Before evaluating hard gates, classify the company by scale:
 
@@ -198,7 +194,7 @@ Before evaluating hard gates, classify the company by scale:
 
 ### Step 4.6: Check Hard Gates (CRITICAL)
 
-**Delegate to:** `references/icp-sales/hard-gates.md` and `references/icp-skill/gate-translation.md`
+**Delegate to:** `../shared-references/icp/hard-gates.md` and `../shared-references/icp/gate-translation.md`
 
 After classification, evaluate all 6 hard gates:
 
@@ -231,7 +227,7 @@ After classification, evaluate all 6 hard gates:
 
 ### Step 5: Score
 
-**Delegate to:** `references/icp-skill/scoring-matrix.md`
+**Delegate to:** `../shared-references/icp/scoring-matrix.md`
 
 **Scoring Order:**
 1. Determine base score from hard gates result
@@ -284,7 +280,7 @@ Before scoring, check if company has commercial products:
 Commercial product signals: cleaning equipment, facility management, janitorial supplies, robotics/automation, B2B/wholesale.
 
 **Country Adjustments:**
-- See `../_shared/country-strategies.md` for full list (35+ countries)
+- See `../shared-references/country-strategies.md` for full list (35+ countries)
 - All countries in the strategy document are TARGET MARKETS - do not exclude based on geography
 - Apply region-specific bonuses (IMPORTANT markets: DE, FR, IT, UK, HU get dedicated strategies)
 
@@ -336,7 +332,9 @@ This company does not qualify as a traditional distributor, but has **client ove
 **Why this matters:** Their clients are potential end-users for cleaning robots. A partnership could provide warm introductions to facility decision-makers.
 ```
 
-**Reference:** See `../_shared/target-segments.md` for target segment definitions.
+**See:** `../shared-references/cross-routing.md` for complete routing decision matrix
+
+**Reference:** See `../shared-references/target-segments.md` for target segment definitions.
 
 ## Output Format
 
@@ -543,30 +541,32 @@ Classify each company into the most relevant industry and sub-industry from the 
 
 ## Configuration Files
 
-### ICP Reference Files (New Structure)
+### ICP Reference Files (Shared Structure)
 
 | File | Purpose |
 |------|---------|
-| `references/icp-summary.md` | Quick reference for sales team + AI |
-| `references/icp-sales/hard-gates.md` | Hard qualification gates |
-| `references/icp-sales/bonus-criteria.md` | Bonus criteria from sales ICP |
-| `references/icp-sales/target-industries.md` | Target industry list |
-| `references/icp-sales/exclusion-rules.md` | Exclusion criteria |
-| `../_shared/country-strategies.md` | Global strategies (35+ countries) |
-| `references/icp-skill/gate-translation.md` | How AI interprets each gate |
-| `references/icp-skill/scoring-matrix.md` | Complete bonus scoring matrix |
-| `references/icp-skill/customer-overlap-rules.md` | Explicit customer overlap scoring |
+| `../shared-references/icp/hard-gates.md` | Hard qualification gates |
+| `../shared-references/icp/bonus-criteria.md` | Bonus criteria from sales ICP |
+| `../shared-references/icp/target-industries.md` | Target industry list |
+| `../shared-references/icp/exclusion-rules.md` | Exclusion criteria |
+| `../shared-references/country-strategies.md` | Global strategies (35+ countries) |
+| `../shared-references/icp/gate-translation.md` | How AI interprets each gate |
+| `../shared-references/icp/scoring-matrix.md` | Complete bonus scoring matrix |
+| `../shared-references/icp/customer-overlap-rules.md` | Explicit customer overlap scoring |
 
-### Legacy Files (Preserved)
+### Reference Files (Shared)
 
 | File | Purpose |
 |------|---------|
-| `references/tags.md` | Niche market tag taxonomy |
-| `references/scoring-rules.md` | Legacy scoring rules (superseded) |
-| `references/keywords.md` | Product/service keywords by industry |
-| `references/competing-brands.md` | Competitor brands to detect |
-| `references/company-profiler.md` | Company profile extraction |
-| `references/contact-extractor.md` | Contact information extraction |
+| `../shared-references/tags.md` | Niche market tag taxonomy |
+| `../shared-references/keywords.md` | Product/service keywords by industry |
+| `../shared-references/competing-brands.md` | Competitor brands to detect |
+| `../shared-references/company-profiler.md` | Company profile extraction |
+| `../shared-references/contact-extractor.md` | Contact information extraction |
+| `../shared-references/smb-classifier.md` | Company scale classification |
+| `../shared-references/image-analysis-guide.md` | Image analysis procedures |
+| `../shared-references/target-segments.md` | Target segment definitions |
+| `../shared-references/cross-routing.md` | Cross-route decision matrix |
 
 ## Example Usage
 
