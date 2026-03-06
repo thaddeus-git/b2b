@@ -9,33 +9,39 @@ This project is for inspecting and evaluating websites as potential distributors
 ## Project Structure
 
 ```
-possible_distributor_inspection/
-├── .claude-plugin/
-│   └── plugin.json           # Marketplace plugin configuration
-├── skills/
-│   └── distributor-inspector/
-│       ├── SKILL.md          # Main skill for inspecting and scoring websites
-│       ├── scripts/          # setup.py, search.py (Bright Data SERP API)
-│       └── references/       # Bundled reference files
-│           ├── keywords.md   # Product/service keywords by target industry
-│           ├── tags.md       # Niche market tag taxonomy
-│           └── competing-brands.md  # Competitor brands to detect
-├── workspace/                # Your private working data (gitignored)
-│   ├── competitor_distributors.csv  # Known competitor distributors (skip)
-│   ├── serp_results.csv      # Search engine results to process
-│   └── possible_distributors.md     # Examples/notes
-├── scripts/
-│   └── release.sh            # Release automation script
-├── docs/
-│   ├── design.md
-│   └── plans/                # Implementation plans
-├── README.md                 # Marketplace documentation
-└── CLAUDE.md                 # This file
+skills/
+├── lead-classifier/              # Routes to correct inspector (NEW)
+├── shared-references/            # All shared markdown docs (NEW)
+│   ├── icp/                      # ICP files (hard-gates, scoring, etc.)
+│   ├── country-strategies.md
+│   ├── target-segments.md
+│   ├── cross-routing.md
+│   └── image-analysis-guide.md
+├── shared-scripts/               # Python utilities (RENAMED)
+│   ├── serp_search.py           # Unified SERP search
+│   └── brightdata_utils.py
+├── distributor-inspector/        # Evaluates resellers/distributors
+├── ka-inspector/                 # Evaluates key account end customers
+├── channel-partner-inspector/    # Evaluates channel partners
+└── lead-enricher/                # Enriches CSV leads with website data
 ```
 
 ## How to Use
 
-**Inspect a website:**
+**Classify and inspect a lead (recommended workflow):**
+```
+# Step 1: Classify (30s)
+Use the Skill tool with: lead-classifier
+Input: URL to classify
+Output: Recommended inspector skill
+
+# Step 2: Inspect (60s)
+Use the Skill tool with: {recommended-inspector}
+Input: URL to inspect
+Output: Full scored report
+```
+
+**Inspect a website (direct):**
 ```
 Use the Skill tool with: distributor-inspector
 Input: URL to inspect
@@ -44,14 +50,31 @@ Output: Markdown report with company profile, tags, score, and action recommenda
 
 **Prerequisites:**
 ```bash
-# Install Playwright CLI (one-time, required for distributor-inspector)
-npm install -g @playwright/cli@latest
+# Install shared utilities
+cd skills/shared-scripts
+uv venv
+source .venv/bin/activate
+uv pip install -e ".[dev]"
 
-# Configure Bright Data SERP API (required for LinkedIn lookup)
-# Run from the distributor-inspector skill directory:
-python3 scripts/setup.py
-# Then edit ~/.claude/distributor-inspector/config.json and add your API key
+# Configure API key (shared across all skills)
+# Create: ~/.claude/config.json
+{
+  "brightdata_api_key": "your-api-key-here"
+}
 ```
+
+## Routing Workflow
+
+**Recommended:**
+1. Run `lead-classifier` (30s) → Get routing recommendation
+2. Run recommended inspector skill (60s) → Get scored report
+
+**Efficiency:** 50% faster than sequential trial
+
+**Manual routing (if classifier unavailable):**
+- Sells products → distributor-inspector
+- Operates facilities → ka-inspector
+- Has client relationships → channel-partner-inspector
 
 **Manual Inspection:**
 ```bash
