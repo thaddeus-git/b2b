@@ -30,6 +30,12 @@ This skill evaluates companies as **channel partners** - they don't distribute p
 ```bash
 # Install Playwright CLI (one-time)
 npm install -g @playwright/cli@latest
+
+# Install shared utilities
+cd skills/shared-scripts
+uv venv
+source .venv/bin/activate
+uv pip install -e ".[dev]"
 ```
 
 ## Process
@@ -188,12 +194,22 @@ If company fails hard gates BUT has client overlap, suggest re-inspecting with t
 **From `ka-inspector`:**
 If company doesn't operate facilities BUT has client overlap, suggest re-inspecting with this skill.
 
+**See:** `../shared-references/cross-routing.md` for complete routing decision matrix
+
 ## Configuration Files
+
+**Skill-Specific References:**
 
 | File | Purpose |
 |------|---------|
 | `references/hard-gates.md` | Client overlap gate definition |
 | `references/scoring-matrix.md` | Complete bonus scoring matrix |
 | `references/client-detection.md` | How to detect and categorize clients |
-| `../_shared/target-segments.md` | Target segment definitions |
-| `../_shared/country-strategies.md` | Country-specific strategies |
+
+**Shared References:**
+
+| File | Purpose |
+|------|---------|
+| `../shared-references/target-segments.md` | Target segment definitions |
+| `../shared-references/country-strategies.md` | Country-specific strategies |
+| `../shared-references/cross-routing.md` | Complete routing decision matrix |
