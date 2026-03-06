@@ -34,14 +34,13 @@ This skill takes a CSV of leads (from Facebook/Instagram ads) and enriches each 
 
 ```bash
 # Install dependencies with uv
-cd skills/lead-enricher/scripts
+cd skills/shared-scripts
 uv venv
 source .venv/bin/activate
 uv pip install -e ".[dev]"
 
 # Configure Bright Data SERP API
-python3 setup.py
-# Then edit ~/.claude/lead-enricher/config.json and add your API key
+# Edit ~/.claude/config.json and add your API key to the "brightdata_api_key" field
 ```
 
 ## Input Requirements
@@ -93,7 +92,7 @@ python3 scripts/enrich.py --test
 
 ## Confidence Scoring
 
-**Delegate to:** `references/confidence-scoring.md`
+**Delegate to:** `../shared-references/confidence-scoring.md`
 
 | Signal | Weight |
 |--------|--------|
