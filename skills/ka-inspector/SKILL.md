@@ -53,7 +53,7 @@ When `mode="deep"` is specified, additional image analysis is performed:
 - `home.png` - Full homepage screenshot
 - `locations.png` - Locations/About page screenshot (if available)
 
-**Image analysis delegation:** `../shared-references/image-analysis-guide.md`
+**Image analysis:** The LLM reads screenshot files directly using built-in vision capabilities. See `../shared-references/image-analysis-guide.md` for what to look for.
 
 ## Process
 
@@ -63,25 +63,19 @@ When `mode="deep"` is specified, additional image analysis is performed:
 ```bash
 playwright-cli open {url} --persistent -s=ka-inspector
 playwright-cli snapshot -s=ka-inspector
-
-# Deep mode: Capture screenshots for image analysis
-if mode == "deep":
-  playwright-cli screenshot -s=ka-inspector --full-page home.png
-  playwright-cli goto {url}/locations -s=ka-inspector 2>/dev/null || playwright-cli goto {url}/about -s=ka-inspector 2>/dev/null
-  playwright-cli screenshot -s=ka-inspector --full-page locations.png
 ```
+
+**Deep mode:** After snapshot, capture screenshots for image analysis:
+- Navigate to locations/about page if available
+- Capture and save screenshots to files (e.g., `home.png`, `locations.png`)
+- The LLM will read these image files directly using its vision capabilities
 
 **For batch (persistent session):**
 ```bash
 playwright-cli open about:blank --persistent -s=ka-inspector
 playwright-cli goto {url} -s=ka-inspector
 playwright-cli snapshot -s=ka-inspector
-
 # Deep mode: capture screenshots after each snapshot
-if mode == "deep":
-  playwright-cli screenshot -s=ka-inspector --full-page home.png
-  playwright-cli goto {url}/locations -s=ka-inspector 2>/dev/null || playwright-cli goto {url}/about -s=ka-inspector 2>/dev/null
-  playwright-cli screenshot -s=ka-inspector --full-page locations.png
 ```
 
 ### Step 2: Extract Company Profile

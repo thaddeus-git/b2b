@@ -236,25 +236,20 @@ Product images:
 - Image analysis performed
 - Additional "Deep Mode Analysis" section in report
 
-## Screenshot Capture Commands
+## Screenshot Capture
 
-**For single URL:**
-```bash
-playwright-cli screenshot -s=inspector --full-page home.png
+**How image analysis works:**
+1. Capture screenshot using browser tools (MCP or CLI)
+2. Save to file (e.g., `home.png`, `team.png`)
+3. The LLM reads the image file directly using built-in vision capabilities
 
-# For team/about pages
-playwright-cli goto {url}/team -s=inspector 2>/dev/null || playwright-cli goto {url}/about -s=inspector 2>/dev/null
-playwright-cli screenshot -s=inspector --full-page team.png
-```
+**For deep mode:**
+- Navigate to relevant pages (homepage, team, locations)
+- Capture screenshots
+- The multimodal LLM analyzes images automatically
 
-**For batch processing:**
-```bash
-# Capture after each snapshot
-if mode == "deep":
-  playwright-cli screenshot -s=inspector --full-page home.png
-  playwright-cli goto {url}/locations -s=inspector 2>/dev/null || playwright-cli goto {url}/about -s=inspector 2>/dev/null
-  playwright-cli screenshot -s=inspector --full-page locations.png
-```
+**If no images captured:**
+- Report "Not analyzed (image capture failed)" in Deep Mode Analysis section
 
 ## Error Handling
 

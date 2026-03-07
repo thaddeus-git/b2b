@@ -33,6 +33,9 @@ LOCATION_MAP = {
     "FI": "Finland",
     "GR": "Greece",
     "RU": "Russia",
+    "GB": "United Kingdom",
+    "UK": "United Kingdom",  # Alias
+    "HU": "Hungary",
     # North America
     "US": "United States",
     "CA": "Canada",

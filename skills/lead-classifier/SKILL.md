@@ -40,7 +40,60 @@ playwright-cli open {url} --persistent -s=classifier
 playwright-cli snapshot -s=classifier
 ```
 
-### Step 2: Scan for Classification Signals
+### Step 2: Pre-Classification Exclusion Gates
+
+**Before detailed analysis, check for quick exclusions:**
+
+| Condition | Action | Reason |
+|-----------|--------|--------|
+| Website under construction | **exclude** | Insufficient information to classify |
+| 403 Forbidden / bot blocked | **flag for manual** | Cannot access content |
+| Domain not found / DNS error | **exclude** | Invalid lead |
+| Timeout after 2 retries | **flag for manual** | Site performance issue |
+| Personal email domain only (gmail, web.de, etc.) | **exclude** | Individual, not company |
+
+**Output for quick exclusions:**
+```markdown
+## {url} - EXCLUDED
+
+**Reason:** {under-construction / 403-error / invalid-domain / timeout}
+**Action:** {Manual review recommended / Remove from list}
+```
+
+### Step 3: Check Industry Relevance
+
+**Target industries for OrionStar cleaning robots:**
+- ✅ Cleaning equipment / janitorial supplies
+- ✅ Facility management / property management
+- ✅ Hospitality (hotels, resorts, casinos)
+- ✅ Retail (chains, supermarkets, malls)
+- ✅ Healthcare (hospitals, clinics)
+- ✅ Logistics (warehouses, distribution centers)
+- ✅ Commercial real estate / offices
+
+**Irrelevant industries (early exclude):**
+- ❌ Construction / renovation (unless FM-related)
+- ❌ Financial services / banking
+- ❌ Legal / accounting
+- ❌ Education (unless large campus FM)
+- ❌ Pure software / IT services (no physical operations)
+- ❌ Manufacturing (unless logistics/warehouse focus)
+
+**Relevance decision:**
+```
+IF industry is target OR could be channel partner serving target industries
+  → Continue to Step 4
+ELSE
+  → exclude with reason "Industry not relevant"
+```
+
+**Edge case - Service providers:**
+If company provides services (security, HVAC, cleaning, IT) but doesn't sell products or operate facilities:
+- Check for **client overlap** with target industries
+- If clients include hospitality/retail/healthcare/FM → route to **channel-partner-inspector**
+- If no client overlap → **exclude** (not relevant)
+
+### Step 4: Scan for Classification Signals
 
 From the snapshot, detect:
 
@@ -49,49 +102,74 @@ From the snapshot, detect:
 - "Distributor", "Reseller", "Partner" language
 - Multiple brand logos (footer, partners section)
 - B2B pricing, wholesale mentions
+- Shopping cart / checkout functionality
 
 **KA End-User Signals:**
 - Facility locations (hotels, retail stores, hospitals)
 - "Our locations", "Find a store", "Branches"
 - Chain/multi-site indicators
 - Operates physical properties
+- Booking/reservation system (for hospitality)
 
 **Channel Partner Signals:**
 - Client logos/testimonials
 - "Who we serve", "Our clients"
 - Case studies with named companies
 - Service/consulting business model
+- "Solutions provider", "Systems integrator" language
+
+**Service Provider Signals (NEW):**
+- Offers services, not products (security, HVAC, IT, consulting)
+- "Dienstleistungen", "Services" prominent
+- No product catalog or shop
+- Project-based work descriptions
+- Team page shows technicians/consultants, not sales
 
 **Exclusion Signals:**
 - Pure B2C retail (no commercial products)
 - Renovation/decoration focus
 - Individual/freelancer
 - Unrelated industry
+- No business contact info (only personal email)
 
-### Step 3: Classify and Route
+### Step 5: Classify and Route
 
-**Decision Tree:**
+**Decision Tree (Updated):**
 
 ```
-1. Sells physical products?
+1. Quick exclusion triggered?
+   YES → exclude with reason
+
+2. Industry relevant OR has client overlap?
+   NO → exclude "not relevant"
+
+3. Sells physical products?
    YES → distributor-inspector
-   
-2. Operates facilities (hotels, retail, offices, etc.)?
+
+4. Operates facilities (hotels, retail, offices, etc.)?
    YES → ka-inspector
-   
-3. Has client relationships (logos, case studies)?
+
+5. Has client relationships in target industries?
    YES → channel-partner-inspector
-   
-4. None of above?
-   → exclude or end-client
+
+6. Service provider with NO client overlap?
+   → exclude "not relevant"
+
+7. None of above?
+   → exclude "unclear business model"
 ```
 
 **Confidence Levels:**
-- HIGH: Clear signals present
-- MEDIUM: Some signals, may need verification
-- LOW: Weak signals, manual review suggested
+- HIGH: Clear signals present, unambiguous classification
+- MEDIUM: Some signals present, may need verification
+- LOW: Weak or mixed signals, manual review suggested
 
-### Step 4: Output Classification Result
+**When to search LinkedIn for verification:**
+- Company size unclear (need to verify 20-500 employees)
+- Team structure unknown
+- Use: `python3 ../shared-scripts/serp_search.py --linkedin-company "{company_name}" "{country}" "en" "5"`
+
+### Step 6: Output Classification Result
 
 ```markdown
 ## {company_name} - Classification
@@ -157,32 +235,72 @@ From the snapshot, detect:
 - Confidence: MEDIUM
 - Route To: channel-partner-inspector
 
-### Example 4: Excluded
+### Example 4: Excluded (Industry Not Relevant)
 
-**URL:** home-decoration-shop.de
+**URL:** frigosystem.de (HVAC/refrigeration service)
 
 **Signals:**
-- Pure B2C retail
-- Home decoration products only
-- No commercial/industrial products
-- No B2B signals
+- Service company (Kälte-Klima-Service)
+- No product catalog
+- ~7 employees (SMB)
+- Industry: HVAC/refrigeration
 
 **Classification:**
-- Type: end-client
+- Type: service-provider
 - Confidence: HIGH
 - Route To: exclude
-- Reason: Pure B2C retail, no commercial products
+- Reason: HVAC service company, no cleaning equipment, no client overlap with target industries
+
+### Example 5: Excluded (Under Construction)
+
+**URL:** philipps-neumuenster.de
+
+**Signals:**
+- "Unsere Webseite befindet sich im Aufbau"
+- Minimal content
+- No product/service information
+
+**Classification:**
+- Type: under-construction
+- Confidence: HIGH
+- Route To: exclude
+- Reason: Website under construction, insufficient information
+
+### Example 6: Excluded (Service Provider, No Client Overlap)
+
+**URL:** bos-franken.de (Security services)
+
+**Signals:**
+- Security services company
+- Multiple locations
+- ISO certified
+- No product sales
+- No visible client overlap with hospitality/retail/healthcare
+
+**Classification:**
+- Type: service-provider
+- Confidence: MEDIUM
+- Route To: exclude
+- Reason: Security services, no client overlap with target industries for cleaning robots
+- **Note:** If they list clients in hospitality/retail, re-evaluate as channel-partner
 
 ## Error Handling
 
-### Navigation Failure
+### Navigation Errors
 
-If website cannot be accessed:
+| Error | Action | Output |
+|-------|--------|--------|
+| 403 Forbidden | Flag for manual review | `**Error:** 403 - Bot detection triggered` |
+| Timeout | Retry once, then flag | `**Error:** Timeout after 2 attempts` |
+| DNS failure | Exclude | `**Error:** Domain not found` |
+| SSL certificate error | Exclude | `**Error:** SSL certificate invalid` |
+
+**Output format for errors:**
 ```markdown
 ## {url} - ERROR
 
-**Error:** Navigation failed - {reason}
-**Action:** Manual review required
+**Error:** {error_type} - {details}
+**Action:** {Manual review required / Exclude from list}
 ```
 
 ### Ambiguous Classification
@@ -194,6 +312,21 @@ If signals are mixed or unclear:
 **Confidence:** LOW
 **Possible Types:** {list 2-3 possibilities}
 **Recommendation:** Manual review or try multiple inspectors
+```
+
+### Known Issues
+
+**403 Bot Detection:**
+Some large websites (e.g., metro.de, amazon.de) block headless browsers. Workarounds:
+- Try with different user-agent: `playwright-cli open {url} --user-agent="Mozilla/5.0..."`
+- Flag for manual review if automated access fails
+- Consider using residential proxies for high-value targets
+
+**Cookie Modals:**
+Always check for and dismiss cookie modals before capturing snapshot:
+```bash
+# Common cookie button selectors
+[data-testid="cookie-accept"], .cookie-accept, #onetrust-accept-btn
 ```
 
 ## Integration with Other Skills

@@ -49,7 +49,7 @@ When `mode="deep"` is specified, additional image analysis is performed:
 - `home.png` - Full homepage screenshot
 - `team.png` - Team/About page screenshot (if available)
 
-**Image analysis delegation:** `../shared-references/image-analysis-guide.md`
+**Image analysis:** The LLM reads screenshot files directly using built-in vision capabilities. See `../shared-references/image-analysis-guide.md` for what to look for.
 
 ## Process
 
@@ -62,13 +62,12 @@ playwright-cli open {url} --persistent -s=inspector
 
 # Capture snapshot (YAML appears in stdout)
 playwright-cli snapshot -s=inspector
-
-# Deep mode: Capture screenshots for image analysis
-if mode == "deep":
-  playwright-cli screenshot -s=inspector --full-page home.png
-  playwright-cli goto {url}/team -s=inspector 2>/dev/null || playwright-cli goto {url}/about -s=inspector 2>/dev/null
-  playwright-cli screenshot -s=inspector --full-page team.png
 ```
+
+**Deep mode:** After snapshot, capture screenshots for image analysis:
+- Navigate to team/about page if available
+- Capture and save screenshots to files (e.g., `home.png`, `team.png`)
+- The LLM will read these image files directly using its vision capabilities
 
 **For batch (persistent session):**
 ```bash
@@ -78,12 +77,7 @@ playwright-cli open about:blank --persistent -s=inspector
 # For each URL:
 playwright-cli goto {url} -s=inspector
 playwright-cli snapshot -s=inspector
-
 # Deep mode: capture screenshots after each snapshot
-if mode == "deep":
-  playwright-cli screenshot -s=inspector --full-page home.png
-  playwright-cli goto {url}/team -s=inspector 2>/dev/null || playwright-cli goto {url}/about -s=inspector 2>/dev/null
-  playwright-cli screenshot -s=inspector --full-page team.png
 ```
 
 ### Step 2: Extract Company Profile
@@ -105,10 +99,12 @@ From the snapshot YAML, extract:
 
 **Delegate to:** `../shared-references/image-analysis-guide.md`
 
-From captured screenshots (`home.png`, `team.png`):
+From captured screenshots:
 1. **Team photos** - Count faces, estimate employee count
 2. **Brand logos** - Detect Pudu, Gausium, LionsBot, Tennant, etc.
 3. **Certifications** - Detect ISO badges, "Authorized Dealer" badges
+
+**How image analysis works:** The LLM reads screenshot files directly using built-in vision capabilities. No special image processing tools needed.
 
 Add findings to the report under "### Deep Mode Analysis" section.
 
@@ -155,19 +151,14 @@ Multiple tags allowed per company.
 
 ### Step 4.1: Classify Industry
 
-Using the Industry Taxonomy below, select the most appropriate industry and sub-industry:
+**Delegate to:** `references/industry-taxonomy.md`
 
-1. **Identify primary business** - What products/services do they primarily offer?
-2. **Determine customer type** - Are they an agent/distributor or end user?
-3. **Match to taxonomy** - Find the closest match from the Industry Taxonomy table
+Select the most appropriate industry and sub-industry based on:
+1. **Primary business** - What products/services do they primarily offer?
+2. **Customer type** - Are they an agent/distributor or end user?
+3. **Match to taxonomy** - Find the closest match from the Industry Taxonomy
 
 **Format:** `{Industry Chinese} ({Industry English}) → {Sub-industry}`
-
-**Examples:**
-- Cleaning equipment distributor → `清洁 (Cleaning) → 清洁代理商-机械类`
-- Hotel chain → `酒店 (Hospitality) → 酒店终端方向-KA`
-- IT systems integrator → `IT信息技术 (IT) → IT代理商-餐饮酒店方向`
-- Unrelated business → `弱相关 /不相关 (Unrelated) → 无二级行业`
 
 ### Step 4.5: Classify Company Scale (NEW - CRITICAL)
 
@@ -338,131 +329,29 @@ This company does not qualify as a traditional distributor, but has **client ove
 
 ## Output Format
 
-```markdown
-## {company_name} - {grade} ({score}/100)
+**Delegate to:** `references/output-format.md`
 
-**URL:** {url}
-**Country:** {country} (detected from TLD/address/content)
-**Language:** {language} (detected from content)
-**Tags:** {tag1}, {tag2}
-**Industry:** {Industry Chinese} ({Industry English}) → {Sub-industry}
-**Classification:** {SMB | MID-MARKET | KA}
-**Action:** {action}
-**Play:** {play} (optional - only if competitor footprint detected)
+Use the exact template structure from the output format reference. The report must include:
+- Company profile with products, services, brands, geography, team, SLA
+- Deep Mode Analysis (if applicable)
+- Contact information
+- Classification with rationale
+- Hard Gates Evaluation
+- Scoring Details
+- Summary
 
-### Company Profile
+**Key sections to include:**
 
-**Products:**
-{list of products}
-
-**Services:**
-{list of services}
-
-**Brands:**
-{brands carried}
-
-**Geography:**
-{geographic coverage}
-
-**Team:**
-{team info}
-
-**SLA:**
-{SLA mentions or "None detected"}
-
-### Deep Mode Analysis (if mode="deep")
-
-**Team Photos:**
-{analysis results or "Not analyzed (standard mode)"}
-
-**Logo Detection:**
-{analysis results or "Not analyzed (standard mode)"}
-
-**Certifications:**
-{analysis results or "Not analyzed (standard mode)"}
-
-### Contact
-
-**Phone:** {phone}
-**Email:** {email}
-**Headquarters:** {city}, {region}, {country}
-**Address:** {full address or "Not found"}
-**Additional Locations:** {count} offices/branches (list if found) or "Single location"
-**WhatsApp:** {whatsapp_number or "Not found"}
-**Website:** {main website or "Same as URL"}
-**LinkedIn:** {linkedin_url or "Not found (searched)"}
-**Additional Channels:** {youtube, twitter, facebook, instagram, etc. or "None detected"}
-
-### Key Signals
-
-{bullet list of notable signals}
-
-### Classification
-
-| Criterion | Value | Signal |
-|-----------|-------|--------|
-| Employees | {count or "Unknown"} | {SMB/MID-MARKET/KA signal} |
-| Locations | {count} | {SMB/MID-MARKET/KA signal} |
-| Structure | {description} | {SMB/MID-MARKET/KA signal} |
-
-**Classification:** {SMB | MID-MARKET | KA}
-**Confidence:** {HIGH | MEDIUM | LOW}
-**Score Cap:** {50 | 75 | 100}
-**Rationale:** {brief explanation of classification decision}
-
-### Hard Gates Evaluation
-
-| Gate | Result | Evidence |
-|------|--------|----------|
-| Company Size (20-500 emp) | {PASS/FAIL/UNCLEAR} | {evidence} |
-| Team Capability (3 functions) | {PASS/FAIL/UNCLEAR} | {evidence} |
-| SLA Capability | {PASS/FAIL/UNCLEAR} | {evidence} |
-| PoC Capability | {PASS/FAIL/UNCLEAR} | {evidence} |
-| Market Coverage | {PASS/FAIL/UNCLEAR} | {evidence} |
-| Price Discipline | {PASS/FAIL/UNCLEAR} | {evidence} |
-
-**Gate Result:** {ALL_PASS / SOME_FAIL (1-2) / MOST_FAIL (3+)} → {Eligible for A/B / Capped at 50 / Exclude}
-
-### Scoring Details
-
-| Component | Result | Points |
-|-----------|--------|--------|
-| Base score | {qualified/partial/unqualified} | {base} |
-| Cleaning equipment | {level with evidence} | +{bonus} |
-| Competitor footprint | {tier with evidence} | +{bonus} |
-| Distribution network | {signals} | +{bonus} |
-| System integration | {signals} | +{bonus} |
-| FM/property customers | {categories} | +{bonus} |
-| After-sales maturity | {signals} | +{bonus} |
-| Demo capability | {signals} | +{bonus} |
-| Marketing investment | {signals} | +{bonus} |
-| Customer overlap | {categories} | +{bonus} |
-| Country adjustment | {country} | +{adjustment} |
-| **Raw Total** | | **{raw_total}** |
-| **Cap Applied** | ({classification} + {gate_result}) | **{cap}** |
-| **Final Score** | (capped at {cap}) | **{total}** |
-
-### Sales Play (if applicable)
-
-{play_name}: {play_description}
-
-### Summary
-
-{2-3 sentence summary}
-
-### ⚠️ Manual Review Suggested (if applicable)
-
-**Only include this section if:** Company routes to `exclude` BUT has named enterprise clients in target segments.
-
-```markdown
-**Named Enterprise Clients:**
-- {Client Name} ({segment}) - Target segment
-- {Client Name} ({segment}) - Target segment
-
-**Potential Value:** This company has relationships with enterprises in your target segments. Consider manual outreach to explore referral partnership opportunities.
-
-**Gate Failure Summary:** Excluded due to: {failed gates}
-```
+| Section | Required |
+|---------|----------|
+| Company Profile | ✅ Always |
+| Contact | ✅ Always |
+| Classification | ✅ Always |
+| Hard Gates Evaluation | ✅ Always |
+| Scoring Details | ✅ Always |
+| Deep Mode Analysis | Only if mode="deep" |
+| Channel Partner Potential | Only if client overlap detected |
+| Sales Play | Only if competitor footprint detected |
 
 ## Error Handling
 
@@ -505,38 +394,6 @@ If the snapshot is empty or missing key information:
 - Proceed with available snapshot
 - Add warning to output: `**Warning:** Cookie popup present - could not dismiss`
 
-## Industry Classification
-
-Classify each company into the most relevant industry and sub-industry from the taxonomy below.
-
-**Classification criteria:**
-- Primary business activity (products/services offered)
-- Customer type (agent vs. end user)
-- Business model (B2B, B2C, distribution)
-
-**Format:** `{Industry Chinese} ({Industry English}) → {Sub-industry}`
-
-**Example:** `清洁 (Cleaning) → 清洁代理商-机械类`
-
-### Industry Taxonomy
-
-| Industry (行业) | English | Sub-industries |
-|-----------------|---------|----------------|
-| 餐饮 | F&B | 餐饮代理商-供应链方向, 餐饮代理商-食品类方向, 餐饮终端方向-个体, 餐厅终端方向-KA |
-| 医疗 | Healthcare | 医疗代理商-设备方向, 医疗终端方向-个体, 医疗终端方向-KA |
-| 商超 | Retail | 商超终端方向-个体, 商超终端方向-KA |
-| 酒店 | Hospitality | 酒店代理商-供应链方向, 酒店终端方向-个体, 酒店终端方向-KA |
-| 机器人代理商 | Robot Distributor | 机器人业务代理商 |
-| 工厂物流 | Factory/Logistics | 工厂代理商-自动化类, 工厂终端-小型物件, 工厂终端-大型物件, 工厂终端-物流方向 |
-| IT信息技术 | IT | IT代理商-餐饮酒店方向, IT代理商-医疗方向, IT代理商-营销方向 |
-| 贸易商/批发/零售 | Trading | 贸易代理商 |
-| 金融 | Finance | 金融代理商 |
-| 娱乐 | Entertainment | 娱乐终端方向-个体 |
-| 服务行业 | Services | 服务代理商 |
-| 其他行业 | Other | 其他行业代理商 |
-| 弱相关 /不相关 | Unrelated | 无二级行业 |
-| 清洁 | Cleaning | 清洁终端, 清洁代理商-能源类, 清洁代理商-其他相关类, 清洁代理商-清洁公司, 清洁代理商-建材类, 清洁代理商-机械类 |
-
 ---
 
 ## Configuration Files
@@ -567,6 +424,26 @@ Classify each company into the most relevant industry and sub-industry from the 
 | `../shared-references/image-analysis-guide.md` | Image analysis procedures |
 | `../shared-references/target-segments.md` | Target segment definitions |
 | `../shared-references/cross-routing.md` | Cross-route decision matrix |
+
+### Local Reference Files
+
+| File | Purpose |
+|------|---------|
+| `references/output-format.md` | Report template structure |
+| `references/industry-taxonomy.md` | Industry classification table |
+| `references/scoring-rules.md` | Legacy scoring reference |
+| `references/icp-summary.md` | Quick ICP reference |
+| `references/image-analyzer.md` | Image analysis procedures |
+
+### Local Reference Files
+
+| File | Purpose |
+|------|---------|
+| `references/output-format.md` | Report template structure |
+| `references/industry-taxonomy.md` | Industry classification table |
+| `references/scoring-rules.md` | Legacy scoring reference |
+| `references/icp-summary.md` | Quick ICP reference |
+| `references/image-analyzer.md` | Image analysis procedures |
 
 ## Example Usage
 
