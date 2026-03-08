@@ -10,13 +10,14 @@ This project is for inspecting and evaluating websites as potential distributors
 
 ```
 skills/
-├── lead-classifier/              # Routes to correct inspector (NEW)
+├── lead-classifier/              # Classifies industry + routes to inspector (ENHANCED)
 ├── shared-references/            # All shared markdown docs (NEW)
 │   ├── icp/                      # ICP files (hard-gates, scoring, etc.)
 │   ├── country-strategies.md
 │   ├── target-segments.md
 │   ├── cross-routing.md
-│   └── image-analysis-guide.md
+│   ├── image-analysis-guide.md
+│   └── industry-taxonomy.md      # Fixed industry dictionary (NEW)
 ├── shared-scripts/               # Python utilities (RENAMED)
 │   ├── serp_search.py           # Unified SERP search
 │   └── brightdata_utils.py
@@ -28,12 +29,47 @@ skills/
 
 ## How to Use
 
-**Classify and inspect a lead (recommended workflow):**
+### Full Pipeline: CSV Leads → CRM (Recommended)
+
+**Use this when you have leads WITHOUT websites** (names, companies, emails only):
+
+```
+# Step 1: Enrich CSV with website data (2-5 min)
+cd skills/lead-enricher
+python3 scripts/enrich.py /path/to/leads.csv
+
+# Input CSV format (tab-delimited):
+# full_name	company_name	work_phone_number	work_email
+# Sven Haubert	Reha360	+4951418879605	Office@reha360.de
+
+# Output: leads_enriched.csv with website URLs, LinkedIn profiles
+
+# Step 2: Classify each URL for industry + routing (30s per URL)
+Use the Skill tool with: lead-classifier
+Input: Each website URL from enriched CSV
+Output:
+  - primary_industry: e.g., 商超 (Retail)
+  - secondary_industry: e.g., 商超终端方向-KA
+  - lead_type: distributor/ka-end-user/channel-partner
+  - route_to: recommended inspector skill
+
+# Step 3: Run recommended inspector on qualified leads (60s per URL)
+Use the Skill tool with: {recommended-inspector}
+Input: URL to inspect
+Output: Full scored report with action recommendation
+
+# Step 4: Manual CRM insertion
+Copy classification output (primary_industry, secondary_industry, lead_type) to CRM
+```
+
+### Single URL Workflow
+
+**If you already have a website URL:**
 ```
 # Step 1: Classify (30s)
 Use the Skill tool with: lead-classifier
 Input: URL to classify
-Output: Recommended inspector skill
+Output: Industry classification + routing recommendation
 
 # Step 2: Inspect (60s)
 Use the Skill tool with: {recommended-inspector}
@@ -41,12 +77,57 @@ Input: URL to inspect
 Output: Full scored report
 ```
 
-**Inspect a website (direct):**
+**If you DON'T have a website URL (only company name, email, or person info):**
 ```
-Use the Skill tool with: distributor-inspector
+# Step 1: Enrich the lead first
+Use the Skill tool with: lead-enricher
+Input: CSV with company_name, work_email, full_name
+Output: CSV with website URL found
+
+# Step 2: Classify (30s)
+Use the Skill tool with: lead-classifier
+Input: URL from enriched output
+Output: Industry classification + routing recommendation
+
+# Step 3: Inspect (60s)
+Use the Skill tool with: {recommended-inspector}
 Input: URL to inspect
-Output: Markdown report with company profile, tags, score, and action recommendation
+Output: Full scored report
 ```
+
+**Direct inspection (if you already know lead type):**
+```
+Use the Skill tool with: distributor-inspector / ka-inspector / channel-partner-inspector
+Input: URL to inspect
+Output: Full scored report
+```
+
+---
+
+## Workflow Decision Tree
+
+```
+What input do you have?
+│
+├─ Website URL
+│   └─→ Run: lead-classifier → inspector → CRM
+│
+├─ Company name only
+│   └─→ Run: lead-enricher (finds website) → lead-classifier → inspector → CRM
+│
+├─ Email address
+│   └─→ Run: lead-enricher (finds website) → lead-classifier → inspector → CRM
+│
+├─ Person name + company name
+│   └─→ Run: lead-enricher (finds website + LinkedIn) → lead-classifier → inspector → CRM
+│
+└─ CSV with multiple leads (names, companies, emails)
+    └─→ Run: lead-enricher (batch) → lead-classifier (each URL) → inspector → CRM
+```
+
+**Key point:** `lead-classifier` requires a URL. If you don't have one, run `lead-enricher` first.
+
+---
 
 **Prerequisites:**
 ```bash
@@ -66,15 +147,92 @@ uv pip install -e ".[dev]"
 ## Routing Workflow
 
 **Recommended:**
-1. Run `lead-classifier` (30s) → Get routing recommendation
+1. Run `lead-classifier` (30s) → Get industry classification + routing recommendation
 2. Run recommended inspector skill (60s) → Get scored report
+3. Copy industry fields to CRM
 
 **Efficiency:** 50% faster than sequential trial
+
+**Output fields from lead-classifier:**
+| Field | Example | Purpose |
+|-------|---------|---------|
+| `primary_industry` | 商超 (Retail) | CRM industry category |
+| `secondary_industry` | 商超终端方向-KA | CRM sub-industry |
+| `lead_type` | ka-end-user | Business model type |
+| `route_to` | ka-inspector | Next action |
 
 **Manual routing (if classifier unavailable):**
 - Sells products → distributor-inspector
 - Operates facilities → ka-inspector
 - Has client relationships → channel-partner-inspector
+
+---
+
+## Use Case: 商超 (Supermarket/Retail) Classification
+
+**Scenario:** You have a lead list of supermarket chains and need to classify them for CRM.
+
+**Example 1: Retail Chain (KA End-User)**
+```
+Input URL: real-supermarkt.de
+
+Step 1: Run lead-classifier
+Output:
+  - Primary Industry: 商超 (Retail)
+  - Secondary Industry: 商超终端方向-KA
+  - Lead Type: ka-end-user
+  - Route To: ka-inspector
+
+Step 2: Run ka-inspector (because route_to = ka-inspector)
+Output: Full scored report with pilot-readiness assessment
+
+CRM Fields:
+  primary_industry = "商超"
+  secondary_industry = "商超终端方向-KA"
+  lead_type = "ka-end-user"
+```
+
+**Example 2: Single Retail Store (Individual)**
+```
+Input URL: kleine-laden-berlin.de
+
+Step 1: Run lead-classifier
+Output:
+  - Primary Industry: 商超 (Retail)
+  - Secondary Industry: 商超终端方向 - 个体
+  - Lead Type: ka-end-user
+  - Route To: ka-inspector (or exclude if too small)
+
+CRM Fields:
+  primary_industry = "商超"
+  secondary_industry = "商超终端方向 - 个体"
+```
+
+**Example 3: Cleaning Equipment Distributor (sells to supermarkets)**
+```
+Input URL: cleaning-equipment-de.de
+
+Step 1: Run lead-classifier
+Output:
+  - Primary Industry: 清洁 (Cleaning)
+  - Secondary Industry: 清洁代理商 - 机械类
+  - Lead Type: distributor
+  - Route To: distributor-inspector
+
+CRM Fields:
+  primary_industry = "清洁"
+  secondary_industry = "清洁代理商 - 机械类"
+  lead_type = "distributor"
+```
+
+**Decision Logic:**
+| Company Type | Primary | Secondary | Route To |
+|--------------|---------|-----------|----------|
+| Supermarket chain (50+ locations) | 商超 | 商超终端方向-KA | ka-inspector |
+| Single supermarket | 商超 | 商超终端方向 - 个体 | ka-inspector |
+| Retail chain (non-supermarket) | 商超 | 商超终端方向-KA | ka-inspector |
+| Cleaning equipment seller | 清洁 | 清洁代理商 - 机械类 | distributor-inspector |
+| FM service provider | 服务行业 | 服务代理商 | channel-partner-inspector |
 
 **Manual Inspection:**
 ```bash

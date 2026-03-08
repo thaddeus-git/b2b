@@ -1,6 +1,6 @@
 ---
 name: lead-classifier
-description: Quickly classify lead type from basic website info. Routes to correct inspector skill. Run BEFORE detailed inspection. Output: recommended inspector or exclude reason.
+description: Quickly classify lead type from basic website info. Outputs industry classification (primary_industry + secondary_industry) and routes to correct inspector skill. Run BEFORE detailed inspection. Ideal for CRM data prep.
 arguments:
   url:
     description: The URL of the website to classify (e.g., "company.com" or "https://company.com")
@@ -12,9 +12,94 @@ arguments:
 
 Quickly determine lead type to route efficiently to the correct inspector skill.
 
+## Quick Start (For Agents)
+
+**What this skill does:**
+1. Reads a website snapshot
+2. Classifies the company into a fixed industry taxonomy
+3. Routes to the correct inspector skill
+4. Outputs CRM-ready fields
+
+**Input:** URL (e.g., "metro.de" or "https://metro.de")
+
+**Important: Do you have a URL?**
+
+| If you have... | Do this first | Then use lead-classifier |
+|----------------|---------------|-------------------------|
+| **Website URL** | Nothing - you're ready! | ✅ Run lead-classifier |
+| **Company name only** | Run lead-enricher to find website | ✅ Then classify |
+| **Email address** | Run lead-enricher to find website | ✅ Then classify |
+| **CSV with names, companies, emails** | Run lead-enricher on CSV | ✅ Then classify each URL |
+| **Person name + company** | Run lead-enricher to find website + LinkedIn | ✅ Then classify |
+
+**Example workflows:**
+
+```
+# Scenario 1: User has URL
+User: "Classify metro.de"
+→ Run: lead-classifier with url="metro.de"
+
+# Scenario 2: User has company name only
+User: "Classify Real Supermarkt GmbH"
+→ Run: lead-enricher first (or search for website)
+→ Then: lead-classifier with the found URL
+
+# Scenario 3: User has CSV lead list
+User: "I have 50 leads in leads.csv"
+→ Run: lead-enricher scripts/enrich.py leads.csv
+→ Then: lead-classifier on each website URL found
+```
+
+**Output:**
+```markdown
+## Company Name - Classification
+
+**URL:** {url}
+**Country:** {detected country}
+**Type:** {distributor/ka-end-user/channel-partner}
+**Confidence:** {HIGH/MEDIUM/LOW}
+**Route To:** {skill-name}
+
+**Industry Classification:**
+- Primary Industry: 商超 (Retail)
+- Secondary Industry: 商超终端方向-KA
+
+**Next Step:** Run `ka-inspector` skill
+```
+
+**CRM Fields (copy these):**
+- `primary_industry`: The industry category (Chinese + English)
+- `secondary_industry`: The sub-industry (Chinese)
+- `lead_type`: Business model (distributor/ka-end-user/channel-partner)
+
+**What this skill does NOT do:**
+- Does NOT perform deep evaluation (use inspector skills for that)
+- Does NOT insert data into CRM (manual step)
+- Does NOT enrich leads with website URLs (use lead-enricher first)
+
+---
+
 ## Overview
 
-This skill performs a **30-second classification** to determine what type of lead this is, then routes to the appropriate inspector skill. This saves time by avoiding trial-and-error with multiple inspectors.
+This skill performs a **30-second classification** to determine:
+1. **Lead type**: distributor, ka-end-user, channel-partner, or exclude
+2. **Industry classification**: Primary and secondary industry from fixed taxonomy (for CRM)
+3. **Routing**: Which inspector skill to run next
+
+**Output fields for CRM:**
+- `primary_industry`: Industry category (e.g., `商超 (Retail)`)
+- `secondary_industry`: Sub-industry (e.g., `商超终端方向-KA`)
+- `lead_type`: Business model classification
+- `route_to`: Recommended next action
+
+**Workflow position:**
+```
+lead-enricher (finds websites)
+    ↓
+lead-classifier (this skill) → CRM industry fields
+    ↓
+inspector skills (deep evaluation)
+```
 
 **Use BEFORE:**
 - distributor-inspector
@@ -159,6 +244,12 @@ From the snapshot, detect:
    → exclude "unclear business model"
 ```
 
+### Step 5.5: Assign Industry Classification
+
+**After determining the lead type, assign the industry classification from the fixed taxonomy.**
+
+**Delegate to:** `../shared-references/industry-taxonomy.md`
+
 **Confidence Levels:**
 - HIGH: Clear signals present, unambiguous classification
 - MEDIUM: Some signals present, may need verification
@@ -171,14 +262,41 @@ From the snapshot, detect:
 
 ### Step 6: Output Classification Result
 
+**Handling Missing URL:**
+
+If the user provides company name, email, or person info but NO website URL:
+
+```markdown
+**Response:**
+"I need a website URL to run lead-classifier.
+
+Based on your input, here's what to do first:
+
+| You provided | Run this first | Then I can classify |
+|--------------|----------------|---------------------|
+| Company name only | `lead-enricher` or search for website | ✅ |
+| Email address | `lead-enricher` (finds website from email domain) | ✅ |
+| Person name + company | `lead-enricher` (finds website + LinkedIn) | ✅ |
+| CSV with leads | `lead-enricher` batch mode | ✅ |
+
+Would you like me to help run lead-enricher first?"
+```
+
+**Once you have the URL, proceed with classification.**
+
 ```markdown
 ## {company_name} - Classification
 
 **URL:** {url}
+**Country:** {detected country}
 **Type:** {distributor/ka-end-user/channel-partner/end-client}
 **Confidence:** {HIGH/MEDIUM/LOW}
 **Route To:** {skill-name or "exclude"}
 **Reason:** {1-2 sentence explanation}
+
+**Industry Classification:**
+- Primary Industry: {行业 Chinese} ({English})
+- Secondary Industry: {Sub-industry Chinese}
 
 **Signals Detected:**
 - {signal 1}
@@ -204,6 +322,8 @@ From the snapshot, detect:
 - Type: distributor
 - Confidence: HIGH
 - Route To: distributor-inspector
+- Primary Industry: 清洁 (Cleaning)
+- Secondary Industry: 清洁代理商 - 机械类
 
 ### Example 2: KA End-User
 
@@ -219,6 +339,8 @@ From the snapshot, detect:
 - Type: ka-end-user
 - Confidence: HIGH
 - Route To: ka-inspector
+- Primary Industry: 酒店 (Hospitality)
+- Secondary Industry: 酒店终端方向-KA
 
 ### Example 3: Channel Partner
 
@@ -234,6 +356,8 @@ From the snapshot, detect:
 - Type: channel-partner
 - Confidence: MEDIUM
 - Route To: channel-partner-inspector
+- Primary Industry: 服务行业 (Services)
+- Secondary Industry: 服务代理商
 
 ### Example 4: Excluded (Industry Not Relevant)
 
@@ -249,6 +373,8 @@ From the snapshot, detect:
 - Type: service-provider
 - Confidence: HIGH
 - Route To: exclude
+- Primary Industry: 弱相关 /不相关 (Unrelated)
+- Secondary Industry: 无二级行业
 - Reason: HVAC service company, no cleaning equipment, no client overlap with target industries
 
 ### Example 5: Excluded (Under Construction)
@@ -264,6 +390,8 @@ From the snapshot, detect:
 - Type: under-construction
 - Confidence: HIGH
 - Route To: exclude
+- Primary Industry: 弱相关 /不相关 (Unrelated)
+- Secondary Industry: 无二级行业
 - Reason: Website under construction, insufficient information
 
 ### Example 6: Excluded (Service Provider, No Client Overlap)
@@ -281,8 +409,27 @@ From the snapshot, detect:
 - Type: service-provider
 - Confidence: MEDIUM
 - Route To: exclude
+- Primary Industry: 弱相关 /不相关 (Unrelated)
+- Secondary Industry: 无二级行业
 - Reason: Security services, no client overlap with target industries for cleaning robots
 - **Note:** If they list clients in hospitality/retail, re-evaluate as channel-partner
+
+### Example 7: Supermarket/Retail (商超)
+
+**URL:** real-supermarket-kette.de
+
+**Signals:**
+- "50+ Märkte in Deutschland"
+- Online shop with B2B pricing
+- Commercial/wholesale section
+- Fresh food, groceries, household products
+
+**Classification:**
+- Type: ka-end-user
+- Confidence: HIGH
+- Route To: ka-inspector
+- Primary Industry: 商超 (Retail)
+- Secondary Industry: 商超终端方向-KA
 
 ## Error Handling
 
@@ -331,14 +478,42 @@ Always check for and dismiss cookie modals before capturing snapshot:
 
 ## Integration with Other Skills
 
-**After classification, invoke the appropriate skill:**
+**Complete Workflow:**
 
 ```
-User: "Inspect cleaning-equipment-de.de"
+Step 1: lead-enricher
+  └─> Input: CSV with names, companies, emails
+  └─> Output: CSV with website URLs, LinkedIn, contacts
+
+Step 2: lead-classifier (this skill)
+  └─> Input: URL from enriched CSV
+  └─> Output: Industry classification + routing decision
+
+Step 3: Appropriate inspector (distributor/ka/channel-partner)
+  └─> Input: URL + classification data
+  └─> Output: Scored report with action recommendation
+
+Step 4: CRM insertion (MANUAL - not part of skill set)
+  └─> User copies classification output to CRM
+  └─> CRM fields: primary_industry, secondary_industry, lead_type, website, etc.
+```
+
+**Example Flow:**
+
+```
+User: "Classify metro.de"
 Claude: [Runs lead-classifier]
-Output: "Route to: distributor-inspector"
-Claude: [Runs distributor-inspector]
-Output: Full scored report
+Output:
+  - Type: ka-end-user
+  - Primary Industry: 商超 (Retail)
+  - Secondary Industry: 商超终端方向-KA
+  - Route To: ka-inspector
+
+User: "Now inspect it"
+Claude: [Runs ka-inspector]
+Output: Full scored report with action recommendation
+
+User: [Manually copies industry fields to CRM]
 ```
 
 **Workflow time savings:**
@@ -346,9 +521,20 @@ Output: Full scored report
 - After: 1 classification + 1 inspection (90s)
 - **50% faster**
 
+**CRM Field Mapping:**
+
+| CRM Field | Source |
+|-----------|--------|
+| `primary_industry` | lead-classifier output |
+| `secondary_industry` | lead-classifier output |
+| `website` | lead-enricher output |
+| `company_linkedin` | lead-enricher output |
+| `lead_type` | lead-classifier output (distributor/ka/channel-partner) |
+| `classification_confidence` | lead-classifier output |
+
 ## Batch Processing
 
-For multiple URLs:
+### Option 1: Individual URL Classification
 
 ```bash
 # Initialize session
@@ -357,8 +543,39 @@ playwright-cli open about:blank --persistent -s=classifier
 # For each URL:
 playwright-cli goto {url} -s=classifier
 playwright-cli snapshot -s=classifier
-# Claude classifies and outputs routing decision
+# Claude classifies and outputs routing decision + industry classification
 
 # Cleanup
 playwright-cli close-all -s=classifier
+```
+
+### Option 2: CSV Batch Workflow (Recommended for CRM)
+
+```bash
+# Step 1: Enrich CSV with lead-enricher
+python3 ../lead-enricher/scripts/enrich.py leads.csv leads_enriched.csv
+
+# Step 2: Classify each URL (batch script or manual)
+# For each website in leads_enriched.csv:
+playwright-cli open {website} --persistent -s=classifier
+playwright-cli snapshot -s=classifier
+# Claude outputs: primary_industry, secondary_industry, route_to
+
+# Step 3: Consolidate results for CRM
+# Combine lead-enricher + lead-classifier outputs
+# CRM-ready CSV columns:
+#   full_name, company_name, website, company_linkedin,
+#   primary_industry, secondary_industry, lead_type, route_to, confidence
+```
+
+### Option 3: Persistent Session for High Volume
+
+```bash
+# Start persistent session
+playwright-cli open about:blank --persistent -s=classifier
+
+# Process URLs in sequence (Claude maintains context)
+goto url1 → snapshot → classify → goto url2 → snapshot → classify → ...
+
+# Session preserves learned patterns for faster classification
 ```
